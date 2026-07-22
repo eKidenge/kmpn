@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Newsletters - Admin - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="section-title">
+                    <i class="fas fa-envelope-open-text text-gold me-2"></i> Newsletters
+                </h1>
+                <p class="text-muted">Create and manage email newsletters for your members</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'newsletters:create' %}" class="btn-gold">
+                    <i class="fas fa-plus-circle me-2"></i> New Newsletter
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="card-government text-center p-3">
+                    <h6 class="text-muted">Total</h6>
+                    <p class="display-6 fw-bold text-gold mb-0">{{ total_newsletters }}</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card-government text-center p-3">
+                    <h6 class="text-muted">Sent</h6>
+                    <p class="display-6 fw-bold text-success mb-0">{{ sent_count }}</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card-government text-center p-3">
+                    <h6 class="text-muted">Scheduled</h6>
+                    <p class="display-6 fw-bold text-warning mb-0">{{ scheduled_count }}</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card-government text-center p-3">
+                    <h6 class="text-muted">Drafts</h6>
+                    <p class="display-6 fw-bold text-secondary mb-0">{{ draft_count }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background: var(--cream-color);">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="Search newsletters..." value="{{ search_query }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="status" class="form-control">
+                                    <option value="">All Status</option>
+                                    <option value="draft" {% if status == 'draft' %}selected{% endif %}>Draft</option>
+                                    <option value="scheduled" {% if status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                                    <option value="sent" {% if status == 'sent' %}selected{% endif %}>Sent</option>
+                                    <option value="failed" {% if status == 'failed' %}selected{% endif %}>Failed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-filter me-1"></i> Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletters Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-government mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Status</th>
+                                        <th>Recipients</th>
+                                        <th>Open Rate</th>
+                                        <th>Click Rate</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for newsletter in newsletters %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold">{{ newsletter.subject|truncatechars:50 }}</span>
+                                        </td>
+                                        <td>
+                                            {% if newsletter.status == 'sent' %}
+                                                <span class="badge" style="background: var(--success-color); color: white;">
+                                                    <i class="fas fa-check-circle me-1"></i> Sent
+                                                </span>
+                                            {% elif newsletter.status == 'scheduled' %}
+                                                <span class="badge" style="background: var(--warning-color); color: white;">
+                                                    <i class="fas fa-clock me-1"></i> Scheduled
+                                                </span>
+                                            {% elif newsletter.status == 'sending' %}
+                                                <span class="badge" style="background: var(--info-color); color: white;">
+                                                    <i class="fas fa-spinner fa-spin me-1"></i> Sending
+                                                </span>
+                                            {% elif newsletter.status == 'draft' %}
+                                                <span class="badge" style="background: var(--secondary-color); color: white;">
+                                                    <i class="fas fa-pencil-alt me-1"></i> Draft
+                                                </span>
+                                            {% else %}
+                                                <span class="badge" style="background: var(--danger-color); color: white;">
+                                                    <i class="fas fa-times-circle me-1"></i> {{ newsletter.get_status_display }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ newsletter.total_recipients }}</td>
+                                        <td>
+                                            {% if newsletter.get_open_rate > 0 %}
+                                                {{ newsletter.get_open_rate|floatformat:1 }}%
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if newsletter.get_click_rate > 0 %}
+                                                {{ newsletter.get_click_rate|floatformat:1 }}%
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ newsletter.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'newsletters:detail' newsletter_id=newsletter.id %}" class="btn btn-outline-gold">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if newsletter.status == 'draft' %}
+                                                    <a href="{% url 'newsletters:edit' newsletter_id=newsletter.id %}" class="btn btn-outline-secondary">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="{% url 'newsletters:send' newsletter_id=newsletter.id %}" class="btn btn-outline-success">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </a>
+                                                {% endif %}
+                                                {% if newsletter.status == 'draft' or newsletter.status == 'scheduled' %}
+                                                    <a href="{% url 'newsletters:delete' newsletter_id=newsletter.id %}" class="btn btn-outline-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">
+                                            <p class="text-muted mb-0">No newsletters found</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <!-- Pagination -->
+                        {% if newsletters.has_other_pages %}
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-0">
+                                {% if newsletters.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ newsletters.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                {% for num in newsletters.paginator.page_range %}
+                                    {% if newsletters.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                                {{ num }}
+                                            </span>
+                                        </li>
+                                    {% elif num > newsletters.number|add:'-3' and num < newsletters.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if newsletters.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ newsletters.next_page_number }}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

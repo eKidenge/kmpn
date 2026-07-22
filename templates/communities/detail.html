@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ community.name }} - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Community Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h1 class="h2 mb-2">{{ community.name }}</h1>
+                                <div class="mb-2">
+                                    <span class="badge" style="background: var(--secondary-color); color: white;">
+                                        {{ community.get_community_type_display }}
+                                    </span>
+                                    <span class="badge" style="background: var(--navy-blue); color: white;">
+                                        <i class="fas fa-{% if community.access_type == 'public' %}globe{% elif community.access_type == 'members_only' %}lock{% else %}user-lock{% endif %} me-1"></i>
+                                        {{ community.get_access_type_display }}
+                                    </span>
+                                    <span class="badge" style="background: var(--gold-color); color: white;">
+                                        <i class="fas fa-users me-1"></i> {{ member_count }} Members
+                                    </span>
+                                </div>
+                                <p class="text-muted">{{ community.description|safe }}</p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                {% if is_member %}
+                                    <form action="{% url 'communities:leave' slug=community.slug %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="fas fa-sign-out-alt me-1"></i> Leave
+                                        </button>
+                                    </form>
+                                    {% if is_admin %}
+                                        <a href="{% url 'communities:settings' slug=community.slug %}" class="btn-navy">
+                                            <i class="fas fa-cog me-1"></i> Settings
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <form action="{% url 'communities:join' slug=community.slug %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-gold">
+                                            <i class="fas fa-user-plus me-1"></i> Join Community
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Community Content -->
+        <div class="row g-4">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Create Post Button -->
+                {% if is_member %}
+                <div class="mb-4">
+                    <a href="{% url 'communities:create_post' slug=community.slug %}" class="btn-gold w-100">
+                        <i class="fas fa-plus-circle me-2"></i> Create New Post
+                    </a>
+                </div>
+                {% endif %}
+                
+                <!-- Post Filters -->
+                <div class="mb-4">
+                    <div class="btn-group w-100" role="group">
+                        <a href="?type=" class="btn {% if not current_type %}btn-gold{% else %}btn-outline-gold{% endif %}">
+                            All
+                        </a>
+                        {% for type_value, type_label in post_types %}
+                            <a href="?type={{ type_value }}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
+                               class="btn {% if current_type == type_value %}btn-gold{% else %}btn-outline-gold{% endif %}">
+                                {{ type_label }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Posts -->
+                {% if posts %}
+                    {% for post in posts %}
+                    <div class="card-government mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <div class="me-3">
+                                    {% if post.author.profile_picture %}
+                                        <img src="{{ post.author.profile_picture.url }}" alt="{{ post.author.get_full_name }}" 
+                                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--gold-color); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900;">
+                                            {{ post.author.get_full_name|slice:":1"|upper }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="mb-1">
+                                                <a href="{% url 'communities:post_detail' slug=community.slug post_id=post.id %}" class="text-dark text-decoration-none">
+                                                    {{ post.title }}
+                                                </a>
+                                            </h5>
+                                            <p class="small text-muted mb-2">
+                                                Posted by <strong>{{ post.author.get_full_name }}</strong> 
+                                                {{ post.created_at|timesince }} ago
+                                                <span class="badge" style="background: var(--cream-color); color: var(--dark-blue); border: 1px solid var(--gold-color);">
+                                                    {{ post.get_post_type_display }}
+                                                </span>
+                                                {% if post.status == 'pinned' %}
+                                                    <span class="badge" style="background: var(--gold-color); color: white;">
+                                                        <i class="fas fa-thumbtack me-1"></i> Pinned
+                                                    </span>
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p>{{ post.content|truncatewords:30|striptags }}</p>
+                                    <div class="d-flex gap-3 text-muted small">
+                                        <span><i class="far fa-eye me-1"></i> {{ post.view_count }}</span>
+                                        <span><i class="far fa-comment me-1"></i> {{ post.comment_count }}</span>
+                                        <span><i class="far fa-heart me-1"></i> {{ post.like_count }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Pagination -->
+                    {% if posts.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if posts.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            {% for num in posts.paginator.page_range %}
+                                {% if posts.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                            {{ num }}
+                                        </span>
+                                    </li>
+                                {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if posts.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ posts.next_page_number }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+                        <h4>No posts yet</h4>
+                        <p class="text-muted">Be the first to start a discussion!</p>
+                        {% if is_member %}
+                            <a href="{% url 'communities:create_post' slug=community.slug %}" class="btn-gold">
+                                <i class="fas fa-plus-circle me-2"></i> Create Post
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Community Info -->
+                <div class="card-government mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Community Info</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="small mb-2">
+                            <i class="fas fa-calendar-alt text-gold me-2"></i>
+                            Created: {{ community.created_at|date:"M d, Y" }}
+                        </p>
+                        <p class="small mb-2">
+                            <i class="fas fa-user text-gold me-2"></i>
+                            Created by: {{ community.created_by.get_full_name }}
+                        </p>
+                        <p class="small mb-2">
+                            <i class="fas fa-users text-gold me-2"></i>
+                            {{ member_count }} Members
+                        </p>
+                        <p class="small mb-0">
+                            <i class="fas fa-comments text-gold me-2"></i>
+                            {{ community.post_count }} Posts
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Moderators -->
+                <div class="card-government mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-user-shield me-2"></i> Moderators</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if moderators %}
+                            {% for mod in moderators %}
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="me-2">
+                                        {% if mod.user.profile_picture %}
+                                            <img src="{{ mod.user.profile_picture.url }}" alt="{{ mod.user.get_full_name }}" 
+                                                 style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+                                        {% else %}
+                                            <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--gold-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 900;">
+                                                {{ mod.user.get_full_name|slice:":1"|upper }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <p class="mb-0 small fw-bold">{{ mod.user.get_full_name }}</p>
+                                        <span class="badge" style="background: var(--gold-color); color: white; font-size: 0.6rem;">
+                                            {{ mod.get_role_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted small">No moderators assigned</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Tags -->
+                {% if community.tags %}
+                <div class="card-government">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-tags me-2"></i> Tags</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for tag in community.tags %}
+                                <span class="badge" style="background: var(--cream-color); color: var(--dark-blue); border: 1px solid var(--gold-color); padding: 4px 10px;">
+                                    #{{ tag }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

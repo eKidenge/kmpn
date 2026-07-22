@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Forums - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="section-title">
+                    <i class="fas fa-comments text-gold me-2"></i> Forums
+                </h1>
+                <p class="text-muted">Discuss academic topics, share ideas, and connect with fellow scholars</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'forums:create_thread' %}" class="btn-gold">
+                    <i class="fas fa-plus-circle me-2"></i> New Thread
+                </a>
+            </div>
+        </div>
+        
+        <!-- Categories -->
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <h5 class="mb-3">Categories</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'forums:list' %}" class="btn {% if not request.GET.category %}btn-gold{% else %}btn-outline-gold{% endif %}">
+                        All
+                    </a>
+                    {% for category in categories %}
+                        <a href="{% url 'forums:category' slug=category.slug %}" class="btn btn-outline-gold">
+                            {{ category.name }}
+                            <span class="badge" style="background: var(--gold-color); color: white;">
+                                {{ category.thread_count }}
+                            </span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background: var(--cream-color);">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="Search threads..." value="{{ search_query }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <select name="category" class="form-control">
+                                    <option value="">All Categories</option>
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == current_category %}selected{% endif %}>
+                                            {{ cat.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Threads -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body p-0">
+                        {% if threads %}
+                            <div class="list-group list-group-flush">
+                                {% for thread in threads %}
+                                <div class="list-group-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-7">
+                                            <div class="d-flex align-items-start">
+                                                <div class="me-2">
+                                                    {% if thread.is_sticky %}
+                                                        <i class="fas fa-thumbtack text-gold"></i>
+                                                    {% endif %}
+                                                    {% if thread.is_locked %}
+                                                        <i class="fas fa-lock text-danger"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div>
+                                                    <a href="{% url 'forums:thread_detail' thread_id=thread.id %}" class="text-dark text-decoration-none fw-bold">
+                                                        {{ thread.title }}
+                                                    </a>
+                                                    <br>
+                                                    <span class="badge" style="background: var(--cream-color); color: var(--dark-blue); font-size: 0.6rem;">
+                                                        {{ thread.category.name }}
+                                                    </span>
+                                                    <span class="small text-muted ms-2">
+                                                        by {{ thread.author.get_full_name }}
+                                                        {{ thread.created_at|timesince }} ago
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="row text-center small">
+                                                <div class="col-3">
+                                                    <div class="fw-bold">{{ thread.reply_count }}</div>
+                                                    <div class="text-muted">Replies</div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="fw-bold">{{ thread.view_count }}</div>
+                                                    <div class="text-muted">Views</div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="fw-bold">{{ thread.like_count }}</div>
+                                                    <div class="text-muted">Likes</div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="text-muted small">
+                                                        {{ thread.last_activity|timesince }} ago
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+                                <h4>No threads found</h4>
+                                <p class="text-muted">Be the first to start a discussion!</p>
+                                <a href="{% url 'forums:create_thread' %}" class="btn-gold">
+                                    <i class="fas fa-plus-circle me-2"></i> Start Thread
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                {% if threads.has_other_pages %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                {% if threads.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ threads.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                {% for num in threads.paginator.page_range %}
+                                    {% if threads.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                                {{ num }}
+                                            </span>
+                                        </li>
+                                    {% elif num > threads.number|add:'-3' and num < threads.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if threads.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ threads.next_page_number }}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

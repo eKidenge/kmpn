@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Notifications - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="section-title">
+                    <i class="fas fa-bell text-gold me-2"></i> Notifications
+                    {% if unread_count %}
+                        <span class="badge" style="background: var(--danger-color); color: white; font-size: 1rem;">
+                            {{ unread_count }} unread
+                        </span>
+                    {% endif %}
+                </h1>
+                <p class="text-muted">Stay updated with activities and announcements</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <form method="post" action="{% url 'notifications:mark_all_read' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-navy btn-sm">
+                        <i class="fas fa-check-double me-1"></i> Mark All Read
+                    </button>
+                </form>
+                <form method="post" action="{% url 'notifications:delete_all' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-trash me-1"></i> Delete All
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-3">
+                                <select name="notification_type" class="form-control">
+                                    <option value="">All Types</option>
+                                    {% for type_value, type_label in notification_types %}
+                                        <option value="{{ type_value }}" {% if type_value == current_type %}selected{% endif %}>
+                                            {{ type_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="is_read" class="form-control">
+                                    <option value="">All</option>
+                                    <option value="true" {% if is_read == 'true' %}selected{% endif %}>Unread Only</option>
+                                    <option value="false" {% if is_read == 'false' %}selected{% endif %}>Read Only</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-filter me-1"></i> Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="row">
+            <div class="col-12">
+                {% if notifications %}
+                    <div class="list-group">
+                        {% for notification in notifications %}
+                        <div class="list-group-item list-group-item-action {% if not notification.is_read %}active{% endif %}" 
+                             style="{% if not notification.is_read %}background: var(--cream-color); border-left: 4px solid var(--gold-color);{% endif %}">
+                            <div class="d-flex align-items-start">
+                                <div class="me-3">
+                                    <i class="fas fa-{% if notification.notification_type == 'event' %}calendar-alt{% elif notification.notification_type == 'opportunity' %}briefcase{% elif notification.notification_type == 'community' %}users{% elif notification.notification_type == 'message' %}envelope{% elif notification.notification_type == 'payment' %}money-bill-wave{% else %}bell{% endif %} 
+                                       text-gold" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1">{{ notification.title }}</h6>
+                                        <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                                    </div>
+                                    <p class="mb-1">{{ notification.message }}</p>
+                                    <div class="d-flex gap-2 mt-2">
+                                        <span class="badge" style="background: var(--secondary-color); color: white;">
+                                            {{ notification.get_notification_type_display }}
+                                        </span>
+                                        <span class="badge" style="background: var(--navy-blue); color: white;">
+                                            {{ notification.get_priority_display }}
+                                        </span>
+                                    </div>
+                                    <div class="mt-2">
+                                        {% if notification.link %}
+                                            <a href="{{ notification.link }}" class="btn btn-sm btn-outline-gold">
+                                                <i class="fas fa-eye me-1"></i> View
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'notifications:mark_read' notif_id=notification.id %}" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-check me-1"></i> Mark Read
+                                        </a>
+                                        <a href="{% url 'notifications:delete' notif_id=notification.id %}" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash me-1"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-bell-slash fa-4x text-muted mb-3"></i>
+                        <h4>No notifications</h4>
+                        <p class="text-muted">You're all caught up!</p>
+                    </div>
+                {% endif %}
+
+                <!-- Pagination -->
+                {% if notifications.has_other_pages %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                {% if notifications.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ notifications.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                {% for num in notifications.paginator.page_range %}
+                                    {% if notifications.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                                {{ num }}
+                                            </span>
+                                        </li>
+                                    {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if notifications.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ notifications.next_page_number }}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Communities - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="section-title">
+                    <i class="fas fa-users text-gold me-2"></i> Communities
+                </h1>
+                <p class="text-muted">Join discipline-based communities to connect with fellow researchers</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'communities:create' %}" class="btn-gold">
+                    <i class="fas fa-plus-circle me-2"></i> Create Community
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background: var(--cream-color);">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="Search communities..." value="{{ search_query }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="type" class="form-control">
+                                    <option value="">All Types</option>
+                                    {% for type_value, type_label in community_types %}
+                                        <option value="{{ type_value }}" {% if type_value == current_type %}selected{% endif %}>
+                                            {{ type_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="access" class="form-control">
+                                    <option value="">All Access</option>
+                                    {% for access_value, access_label in access_types %}
+                                        <option value="{{ access_value }}" {% if access_value == current_access %}selected{% endif %}>
+                                            {{ access_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="sort" class="form-control">
+                                    <option value="-member_count" {% if current_sort == '-member_count' %}selected{% endif %}>Most Members</option>
+                                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Newest</option>
+                                    <option value="-post_count" {% if current_sort == '-post_count' %}selected{% endif %}>Most Active</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Community Cards -->
+        <div class="row g-4">
+            {% if communities %}
+                {% for community in communities %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card-government h-100">
+                        <div class="card-body">
+                            <!-- Logo/Banner -->
+                            <div class="text-center mb-3">
+                                {% if community.logo %}
+                                    <img src="{{ community.logo.url }}" alt="{{ community.name }}" 
+                                         style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold-color);">
+                                {% else %}
+                                    <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--gold-color); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 2rem; font-weight: 900;">
+                                        {{ community.name|slice:":1"|upper }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Name -->
+                            <h4 class="text-center mb-2">{{ community.name }}</h4>
+                            
+                            <!-- Type & Access Badges -->
+                            <div class="text-center mb-3">
+                                <span class="badge" style="background: var(--secondary-color); color: white;">
+                                    {{ community.get_community_type_display }}
+                                </span>
+                                <span class="badge" style="background: var(--navy-blue); color: white;">
+                                    <i class="fas fa-{% if community.access_type == 'public' %}globe{% elif community.access_type == 'members_only' %}lock{% elif community.access_type == 'private' %}user-lock{% else %}user-plus{% endif %} me-1"></i>
+                                    {{ community.get_access_type_display }}
+                                </span>
+                            </div>
+                            
+                            <!-- Description -->
+                            <p class="small text-muted">{{ community.description|truncatewords:20|striptags }}</p>
+                            
+                            <!-- Stats -->
+                            <div class="d-flex justify-content-between text-center mb-3">
+                                <div>
+                                    <i class="fas fa-users text-gold"></i>
+                                    <div class="fw-bold">{{ community.member_count }}</div>
+                                    <small class="text-muted">Members</small>
+                                </div>
+                                <div>
+                                    <i class="fas fa-comments text-gold"></i>
+                                    <div class="fw-bold">{{ community.post_count }}</div>
+                                    <small class="text-muted">Posts</small>
+                                </div>
+                                <div>
+                                    <i class="fas fa-eye text-gold"></i>
+                                    <div class="fw-bold">{{ community.view_count }}</div>
+                                    <small class="text-muted">Views</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Tags -->
+                            {% if community.tags %}
+                                <div class="mb-3">
+                                    {% for tag in community.tags|slice:":3" %}
+                                        <span class="badge" style="background: var(--cream-color); color: var(--dark-blue); border: 1px solid var(--gold-color);">
+                                            #{{ tag }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'communities:detail' slug=community.slug %}" class="btn-outline-gold">
+                                    <i class="fas fa-eye me-1"></i> View Community
+                                </a>
+                                {% if community.id in user_communities %}
+                                    <form action="{% url 'communities:leave' slug=community.slug %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger w-100">
+                                            <i class="fas fa-sign-out-alt me-1"></i> Leave
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <form action="{% url 'communities:join' slug=community.slug %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-navy w-100">
+                                            <i class="fas fa-user-plus me-1"></i> Join Community
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                        <h3>No communities found</h3>
+                        <p class="text-muted">Be the first to create a community!</p>
+                        <a href="{% url 'communities:create' %}" class="btn-gold">
+                            <i class="fas fa-plus-circle me-2"></i> Create Community
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if communities.has_other_pages %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if communities.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ communities.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in communities.paginator.page_range %}
+                            {% if communities.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                        {{ num }}
+                                    </span>
+                                </li>
+                            {% elif num > communities.number|add:'-3' and num < communities.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if communities.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ communities.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

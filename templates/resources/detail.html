@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ resource.title }} - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <div class="card-government">
+                    <div class="card-body">
+                        <!-- Header -->
+                        <div class="mb-3">
+                            <span class="badge" style="background: var(--secondary-color); color: white; padding: 6px 12px;">
+                                {{ resource.get_resource_type_display }}
+                            </span>
+                            <span class="badge" style="background: var(--navy-blue); color: white; padding: 6px 12px;">
+                                {{ resource.get_access_type_display }}
+                            </span>
+                            {% if resource.is_featured %}
+                                <span class="badge" style="background: var(--gold-color); color: white; padding: 6px 12px;">
+                                    <i class="fas fa-star me-1"></i> Featured
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <h1 class="h2 mb-3">{{ resource.title }}</h1>
+                        
+                        <!-- Author Info -->
+                        <p class="small text-muted mb-3">
+                            {% if resource.author %}
+                                <i class="fas fa-user me-1"></i> {{ resource.author }}
+                            {% endif %}
+                            {% if resource.publication_date %}
+                                <span class="ms-2">
+                                    <i class="fas fa-calendar-alt me-1"></i> {{ resource.publication_date|date:"M d, Y" }}
+                                </span>
+                            {% endif %}
+                            {% if resource.publisher %}
+                                <span class="ms-2">
+                                    <i class="fas fa-building me-1"></i> {{ resource.publisher }}
+                                </span>
+                            {% endif %}
+                        </p>
+                        
+                        <!-- Description -->
+                        <div class="mb-4">
+                            {{ resource.description|safe }}
+                        </div>
+                        
+                        <!-- Content -->
+                        {% if resource.content %}
+                            <div class="mb-4">
+                                <h5>Content</h5>
+                                <div class="p-3" style="background: var(--cream-color); border-radius: 4px;">
+                                    {{ resource.content|safe }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Keywords -->
+                        {% if resource.keywords %}
+                            <div class="mb-4">
+                                <h6 class="mb-2">Keywords</h6>
+                                {% for keyword in resource.keywords %}
+                                    <span class="badge" style="background: var(--cream-color); color: var(--dark-blue); border: 1px solid var(--gold-color); padding: 4px 10px; margin: 2px;">
+                                        {{ keyword }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Download / Access -->
+                        <div class="mt-4">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'resources:download' slug=resource.slug %}" class="btn-gold">
+                                    <i class="fas fa-download me-2"></i> 
+                                    {% if resource.file %}Download Resource{% elif resource.external_url %}Access Resource{% else %}View Resource{% endif %}
+                                </a>
+                            {% else %}
+                                <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn-gold">
+                                    <i class="fas fa-sign-in-alt me-2"></i> Login to Access
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Resources -->
+                {% if related_resources %}
+                <div class="card-government mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-link me-2"></i> Related Resources</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            {% for related in related_resources %}
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-file-alt text-gold me-2 mt-1"></i>
+                                    <div>
+                                        <a href="{% url 'resources:detail' slug=related.slug %}" class="text-dark text-decoration-none">
+                                            {{ related.title|truncatechars:60 }}
+                                        </a>
+                                        <br>
+                                        <span class="badge" style="background: var(--cream-color); color: var(--dark-blue); font-size: 0.6rem;">
+                                            {{ related.get_resource_type_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Resource Info -->
+                <div class="card-government mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i> Resource Info</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="small mb-2">
+                            <i class="fas fa-eye text-gold me-2"></i>
+                            <strong>Views:</strong> {{ resource.view_count }}
+                        </p>
+                        <p class="small mb-2">
+                            <i class="fas fa-download text-gold me-2"></i>
+                            <strong>Downloads:</strong> {{ resource.download_count }}
+                        </p>
+                        <p class="small mb-2">
+                            <i class="fas fa-star text-gold me-2"></i>
+                            <strong>Rating:</strong> {{ resource.average_rating|floatformat:1 }} ({{ resource.rating_count }} reviews)
+                        </p>
+                        <p class="small mb-2">
+                            <i class="fas fa-tag text-gold me-2"></i>
+                            <strong>Type:</strong> {{ resource.get_resource_type_display }}
+                        </p>
+                        <p class="small mb-0">
+                            <i class="fas fa-lock text-gold me-2"></i>
+                            <strong>Access:</strong> {{ resource.get_access_type_display }}
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Rate Resource -->
+                {% if user.is_authenticated %}
+                <div class="card-government mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-star me-2"></i> Rate this Resource</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if user_rating %}
+                            <p class="text-muted small">
+                                <i class="fas fa-check-circle text-success me-1"></i>
+                                You rated this {{ user_rating.rating }}/5
+                            </p>
+                            <a href="{% url 'resources:rate' slug=resource.slug %}" class="btn-outline-gold btn-sm w-100">
+                                <i class="fas fa-edit me-1"></i> Update Rating
+                            </a>
+                        {% else %}
+                            <a href="{% url 'resources:rate' slug=resource.slug %}" class="btn-outline-gold w-100">
+                                <i class="fas fa-star me-1"></i> Rate Now
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Categories -->
+                {% if resource.categories.all %}
+                <div class="card-government">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-folder me-2"></i> Categories</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for category in resource.categories.all %}
+                            <a href="{% url 'resources:list' %}?category={{ category.slug }}" class="btn btn-sm" style="background: var(--cream-color); border: 1px solid var(--gold-color); margin: 2px;">
+                                {{ category.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

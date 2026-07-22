@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Member Directory - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="section-title">
+                    <i class="fas fa-address-book text-gold me-2"></i> Member Directory
+                </h1>
+                <p class="text-muted">Connect with fellow postgraduate scholars across Kenya</p>
+            </div>
+        </div>
+        
+        <!-- Search & Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background: var(--cream-color);">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="Search by name, institution, interests..." 
+                                           value="{{ search_query }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="institution" class="form-control">
+                                    <option value="">All Institutions</option>
+                                    {% for inst in institutions %}
+                                        <option value="{{ inst }}" {% if inst == current_institution %}selected{% endif %}>
+                                            {{ inst }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="degree_level" class="form-control">
+                                    <option value="">All Degrees</option>
+                                    <option value="bachelors" {% if current_degree == 'bachelors' %}selected{% endif %}>Bachelor's</option>
+                                    <option value="masters" {% if current_degree == 'masters' %}selected{% endif %}>Master's</option>
+                                    <option value="phd" {% if current_degree == 'phd' %}selected{% endif %}>PhD</option>
+                                    <option value="postdoc" {% if current_degree == 'postdoc' %}selected{% endif %}>Postdoctoral</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="sort" class="form-control">
+                                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Recent</option>
+                                    <option value="user__first_name" {% if current_sort == 'user__first_name' %}selected{% endif %}>Name A-Z</option>
+                                    <option value="-publication_count" {% if current_sort == '-publication_count' %}selected{% endif %}>Most Publications</option>
+                                    <option value="-citation_count" {% if current_sort == '-citation_count' %}selected{% endif %}>Most Cited</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div class="row g-4">
+            {% if members %}
+                {% for member in members %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card-government h-100">
+                        <div class="card-body text-center">
+                            <!-- Profile Picture -->
+                            <div class="mb-3">
+                                {% if member.user.profile_picture %}
+                                    <img src="{{ member.user.profile_picture.url }}" alt="{{ member.user.get_full_name }}" 
+                                         style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold-color);">
+                                {% else %}
+                                    <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--gold-color); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 2.5rem; font-weight: 900;">
+                                        {{ member.user.get_full_name|slice:":1"|upper }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Name -->
+                            <h5 class="mb-1">{{ member.user.get_full_name }}</h5>
+                            <p class="small text-muted mb-2">
+                                <i class="fas fa-university me-1"></i> {{ member.user.institution|default:"N/A" }}
+                            </p>
+                            <p class="small text-muted mb-2">
+                                <i class="fas fa-graduation-cap me-1"></i> 
+                                {{ member.user.get_degree_level_display|default:"N/A" }}
+                            </p>
+                            <p class="small text-muted mb-3">
+                                <i class="fas fa-file-alt me-1"></i> 
+                                {{ member.publication_count }} Publications
+                            </p>
+                            
+                            <!-- Research Interests -->
+                            {% if member.user.research_interests %}
+                                <div class="mb-3">
+                                    {% for interest in member.user.research_interests|slice:":3" %}
+                                        <span class="badge" style="background: var(--cream-color); color: var(--dark-blue); border: 1px solid var(--gold-color); margin: 2px;">
+                                            {{ interest|truncatechars:15 }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Action Button -->
+                            <a href="{% url 'members:detail' member_id=member.id %}" class="btn-outline-gold btn-sm w-100">
+                                <i class="fas fa-eye me-1"></i> View Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                        <h3>No members found</h3>
+                        <p class="text-muted">Try adjusting your search filters</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if members.has_other_pages %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if members.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ members.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_institution %}&institution={{ current_institution }}{% endif %}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in members.paginator.page_range %}
+                            {% if members.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                        {{ num }}
+                                    </span>
+                                </li>
+                            {% elif num > members.number|add:'-3' and num < members.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_institution %}&institution={{ current_institution }}{% endif %}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if members.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ members.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_institution %}&institution={{ current_institution }}{% endif %}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

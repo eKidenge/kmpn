@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analytics Dashboard - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="section-title">
+                    <i class="fas fa-chart-pie text-gold me-2"></i> Analytics Dashboard
+                </h1>
+                <p class="text-muted">Monitor platform performance and user engagement</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <form method="get" class="d-inline">
+                    <select name="date_range" class="form-control d-inline-block" style="width: auto; display: inline-block;">
+                        <option value="7" {% if date_range == '7' %}selected{% endif %}>Last 7 Days</option>
+                        <option value="30" {% if date_range == '30' %}selected{% endif %}>Last 30 Days</option>
+                        <option value="90" {% if date_range == '90' %}selected{% endif %}>Last 90 Days</option>
+                        <option value="180" {% if date_range == '180' %}selected{% endif %}>Last 6 Months</option>
+                        <option value="365" {% if date_range == '365' %}selected{% endif %}>Last Year</option>
+                    </select>
+                    <button type="submit" class="btn-gold">
+                        <i class="fas fa-sync me-1"></i> Update
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card-government">
+                    <div class="card-body text-center">
+                        <div class="text-gold display-4"><i class="fas fa-users"></i></div>
+                        <h6 class="text-muted">Total Users</h6>
+                        <p class="display-6 fw-bold mb-0">{{ analytics.users.total }}</p>
+                        <small class="text-success">
+                            <i class="fas fa-arrow-up me-1"></i> +{{ analytics.users.new }} new
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card-government">
+                    <div class="card-body text-center">
+                        <div class="text-gold display-4"><i class="fas fa-user-check"></i></div>
+                        <h6 class="text-muted">Verified Members</h6>
+                        <p class="display-6 fw-bold mb-0">{{ analytics.members.verified }}</p>
+                        <small class="text-muted">Total: {{ analytics.members.total }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card-government">
+                    <div class="card-body text-center">
+                        <div class="text-gold display-4"><i class="fas fa-users"></i></div>
+                        <h6 class="text-muted">Communities</h6>
+                        <p class="display-6 fw-bold mb-0">{{ analytics.communities.total }}</p>
+                        <small class="text-muted">{{ analytics.communities.posts }} new posts</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card-government">
+                    <div class="card-body text-center">
+                        <div class="text-gold display-4"><i class="fas fa-eye"></i></div>
+                        <h6 class="text-muted">Page Views</h6>
+                        <p class="display-6 fw-bold mb-0">{{ analytics.page_views|default:"0" }}</p>
+                        <small class="text-muted">{{ analytics.unique_visitors|default:"0" }} unique visitors</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card-government">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i> User Growth</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="userGrowthChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card-government">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i> Content Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="contentActivityChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-2">
+            <div class="col-lg-6">
+                <div class="card-government">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-pie-chart me-2"></i> User Types</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="userTypesChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card-government">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i> Engagement Score</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="engagementChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // User Growth Chart
+        const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+        new Chart(userGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Users',
+                    data: [12, 19, 3, 5, 2, 3, 20, 30, 45, 60, 80, 100],
+                    borderColor: '#c9a84c',
+                    backgroundColor: 'rgba(201, 168, 76, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Content Activity Chart
+        const contentCtx = document.getElementById('contentActivityChart').getContext('2d');
+        new Chart(contentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Posts', 'Comments', 'Likes', 'Shares'],
+                datasets: [{
+                    label: 'Activity',
+                    data: [65, 59, 80, 45],
+                    backgroundColor: ['#c9a84c', '#1a5276', '#0a2a4a', '#1a7a4a'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // User Types Chart
+        const userTypesCtx = document.getElementById('userTypesChart').getContext('2d');
+        new Chart(userTypesCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Members', 'Moderators', 'Executives', 'Admins'],
+                datasets: [{
+                    data: [70, 15, 10, 5],
+                    backgroundColor: ['#c9a84c', '#1a5276', '#0a2a4a', '#1a7a4a']
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        // Engagement Chart
+        const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+        new Chart(engagementCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['High', 'Medium', 'Low'],
+                datasets: [{
+                    data: [40, 35, 25],
+                    backgroundColor: ['#1a7a4a', '#c9a84c', '#8a1a1a']
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    });
+</script>
+{% endblock %}

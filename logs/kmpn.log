@@ -1,0 +1,249 @@
+WARNING 2026-07-22 14:19:39,743 log 5616 8112 Not Found: /favicon.ico
+WARNING 2026-07-22 14:19:39,782 log 5616 8112 "GET /favicon.ico HTTP/1.1" 404 5148
+ERROR 2026-07-22 14:21:26,570 log 5616 8112 Internal Server Error: /forums/
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\CS\OneDrive\Desktop\PROJECTS\kmpn\forums\views.py", line 46, in forum_list
+    threads = threads.order_by(sort_by)
+  File "C:\Users\CS\venv\Lib\site-packages\django\db\models\query.py", line 1772, in order_by
+    obj.query.add_ordering(*field_names)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\db\models\sql\query.py", line 2343, in add_ordering
+    self.names_to_path(item.split(LOOKUP_SEP), self.model._meta)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\db\models\sql\query.py", line 1842, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword '' into field. Choices are: author, author_id, category, category_id, content, created_at, id, is_locked, is_sticky, last_activity, like_count, likes, replies, reply_count, reports, status, tags, title, updated_at, view_count
+ERROR 2026-07-22 14:21:26,582 log 5616 8112 "GET /forums/ HTTP/1.1" 500 100102
+ERROR 2026-07-22 14:35:51,906 log 7444 8604 Internal Server Error: /accounts/register/
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\CS\OneDrive\Desktop\PROJECTS\kmpn\accounts\views.py", line 69, in register
+    return render(request, 'accounts/register.html', context)
+  File "C:\Users\CS\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 174, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\library.py", line 325, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "C:\Users\CS\venv\Lib\site-packages\allauth\socialaccount\templatetags\socialaccount.py", line 25, in provider_login_url
+    provider = adapter.get_provider(request, provider)
+  File "C:\Users\CS\venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 234, in get_provider
+    app = self.get_app(request, provider=provider, client_id=client_id)
+  File "C:\Users\CS\venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 326, in get_app
+    raise SocialApp.DoesNotExist()
+allauth.socialaccount.models.SocialApp.DoesNotExist
+ERROR 2026-07-22 14:35:51,940 log 7444 8604 "GET /accounts/register/ HTTP/1.1" 500 194215
+ERROR 2026-07-22 14:45:35,113 log 5408 812 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\base.py", line 221, in _get_response
+    response = response.render()
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 174, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\defaulttags.py", line 333, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\defaulttags.py", line 511, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\CS\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\CS\venv\Lib\site-packages\django\urls\resolvers.py", line 842, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'my_events' not found. 'my_events' is not a valid view function or pattern name.
+ERROR 2026-07-22 14:45:35,205 log 5408 812 "GET / HTTP/1.1" 500 171202
+ERROR 2026-07-22 14:45:40,443 log 5408 1108 Internal Server Error: /admin/accounts/user/
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\db\models\options.py", line 684, in get_field
+    return self.fields_map[field_name]
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+KeyError: 'member_status_badge'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\admin\utils.py", line 293, in lookup_field
+    f = _get_non_gfk_field(opts, name)
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\admin\utils.py", line 333, in _get_non_gfk_field
+    field = opts.get_field(name)
+  File "C:\Users\CS\venv\Lib\site-packages\django\db\models\options.py", line 686, in get_field
+    raise FieldDoesNotExist(
+        "%s has no field named '%s'" % (self.object_name, field_name)
+    )
+django.core.exceptions.FieldDoesNotExist: User has no field named 'member_status_badge'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\base.py", line 221, in _get_response
+    response = response.render()
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 174, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\admin\templatetags\base.py", line 47, in render
+    return super().render(context)
+           ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\library.py", line 363, in render
+    _dict = self.func(*resolved_args, **resolved_kwargs)
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\admin\templatetags\admin_list.py", line 357, in result_list
+    "results": list(results(cl)),
+               ~~~~^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\admin\templatetags\admin_list.py", line 333, in results
+    yield ResultList(None, items_for_result(cl, res, None))
+          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\admin\templatetags\admin_list.py", line 324, in __init__
+    super().__init__(*items)
+    ~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\admin\templatetags\admin_list.py", line 221, in items_for_result
+    f, attr, value = lookup_field(field_name, result, cl.model_admin)
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\admin\utils.py", line 302, in lookup_field
+    value = attr(obj)
+  File "C:\Users\CS\OneDrive\Desktop\PROJECTS\kmpn\accounts\admin.py", line 62, in member_status_badge
+    return format_html('<span style="color: gray;">Inactive</span>')
+  File "C:\Users\CS\venv\Lib\site-packages\django\utils\html.py", line 137, in format_html
+    raise TypeError("args or kwargs must be provided.")
+TypeError: args or kwargs must be provided.
+ERROR 2026-07-22 14:45:40,471 log 5408 1108 "GET /admin/accounts/user/ HTTP/1.1" 500 417102

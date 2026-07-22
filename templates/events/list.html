@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Events - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="section-title">
+                    <i class="fas fa-calendar-alt text-gold me-2"></i> Events
+                </h1>
+                <p class="text-muted">Discover conferences, webinars, workshops, and networking opportunities</p>
+            </div>
+            {% if user.is_authenticated and user.user_type in 'admin,moderator' %}
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'events:create' %}" class="btn-gold">
+                    <i class="fas fa-plus-circle me-2"></i> Create Event
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background: var(--cream-color);">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="Search events..." value="{{ search_query }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="type" class="form-control">
+                                    <option value="">All Types</option>
+                                    {% for type_value, type_label in event_types %}
+                                        <option value="{{ type_value }}" {% if type_value == current_type %}selected{% endif %}>
+                                            {{ type_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="is_virtual" class="form-control">
+                                    <option value="">All Events</option>
+                                    <option value="true" {% if is_virtual == 'true' %}selected{% endif %}>Virtual</option>
+                                    <option value="false" {% if is_virtual == 'false' %}selected{% endif %}>In-Person</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="time" class="form-control">
+                                    <option value="">All Events</option>
+                                    <option value="upcoming" {% if time_filter == 'upcoming' %}selected{% endif %}>Upcoming</option>
+                                    <option value="ongoing" {% if time_filter == 'ongoing' %}selected{% endif %}>Ongoing</option>
+                                    <option value="past" {% if time_filter == 'past' %}selected{% endif %}>Past</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="sort" class="form-control">
+                                    <option value="start_date" {% if current_sort == 'start_date' %}selected{% endif %}>Soonest</option>
+                                    <option value="-start_date" {% if current_sort == '-start_date' %}selected{% endif %}>Latest</option>
+                                    <option value="-view_count" {% if current_sort == '-view_count' %}selected{% endif %}>Popular</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Events -->
+        <div class="row g-4">
+            {% if events %}
+                {% for event in events %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card-government h-100">
+                        {% if event.banner_image %}
+                            <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" 
+                                 style="height: 180px; width: 100%; object-fit: cover;">
+                        {% else %}
+                            <div style="height: 180px; background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                                <i class="fas fa-calendar-alt" style="font-size: 4rem; opacity: 0.5;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <!-- Date Badge -->
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge" style="background: var(--gold-color); color: white; padding: 6px 12px;">
+                                    <i class="far fa-calendar-alt me-1"></i>
+                                    {{ event.start_date|date:"M d, Y" }}
+                                </span>
+                                <span class="badge" style="background: var(--secondary-color); color: white;">
+                                    {{ event.get_event_type_display }}
+                                </span>
+                            </div>
+                            
+                            <!-- Title -->
+                            <h5 class="mb-2">{{ event.title|truncatechars:50 }}</h5>
+                            
+                            <!-- Location -->
+                            <p class="small text-muted mb-2">
+                                <i class="fas fa-{% if event.is_virtual %}wifi{% else %}map-marker-alt{% endif %} me-1"></i>
+                                {% if event.is_virtual %}Virtual{% else %}{{ event.venue|default:"TBD" }}{% endif %}
+                            </p>
+                            
+                            <!-- Time -->
+                            <p class="small text-muted mb-3">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ event.start_date|date:"g:i A" }} - {{ event.end_date|date:"g:i A" }}
+                            </p>
+                            
+                            <!-- Stats -->
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="small text-muted">
+                                    <i class="fas fa-users me-1"></i> {{ event.registration_count }} registered
+                                </span>
+                                {% if event.has_capacity %}
+                                    <span class="small text-success">
+                                        <i class="fas fa-check-circle me-1"></i> Open
+                                    </span>
+                                {% else %}
+                                    <span class="small text-danger">
+                                        <i class="fas fa-times-circle me-1"></i> Full
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Action -->
+                            <a href="{% url 'events:detail' slug=event.slug %}" class="btn-outline-gold w-100">
+                                <i class="fas fa-info-circle me-1"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                        <h3>No events found</h3>
+                        <p class="text-muted">Check back later for upcoming events</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if events.has_other_pages %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if events.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ events.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for num in events.paginator.page_range %}
+                            {% if events.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                        {{ num }}
+                                    </span>
+                                </li>
+                            {% elif num > events.number|add:'-3' and num < events.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if events.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ events.next_page_number }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Resources - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="section-title">
+                    <i class="fas fa-book text-gold me-2"></i> Resources
+                </h1>
+                <p class="text-muted">Access guides, templates, tools, and materials for your research</p>
+            </div>
+            {% if user.is_authenticated and user.user_type in 'admin,moderator' %}
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'resources:create' %}" class="btn-gold">
+                    <i class="fas fa-plus-circle me-2"></i> Add Resource
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background: var(--cream-color);">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="Search resources..." value="{{ search_query }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="type" class="form-control">
+                                    <option value="">All Types</option>
+                                    {% for type_value, type_label in resource_types %}
+                                        <option value="{{ type_value }}" {% if type_value == current_type %}selected{% endif %}>
+                                            {{ type_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="access" class="form-control">
+                                    <option value="">All Access</option>
+                                    {% for access_value, access_label in access_types %}
+                                        <option value="{{ access_value }}" {% if access_value == current_access %}selected{% endif %}>
+                                            {{ access_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="category" class="form-control">
+                                    <option value="">All Categories</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.slug }}" {% if category.slug == current_category %}selected{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="sort" class="form-control">
+                                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Newest</option>
+                                    <option value="-download_count" {% if current_sort == '-download_count' %}selected{% endif %}>Most Downloaded</option>
+                                    <option value="-average_rating" {% if current_sort == '-average_rating' %}selected{% endif %}>Highest Rated</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Featured Resources -->
+        {% if featured_resources %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4 class="text-gold mb-3"><i class="fas fa-star me-2"></i> Featured Resources</h4>
+            </div>
+            {% for resource in featured_resources %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card-government h-100" style="border-left: 4px solid var(--gold-color);">
+                    <div class="card-body">
+                        <span class="badge" style="background: var(--gold-color); color: white; padding: 4px 10px; margin-bottom: 8px;">
+                            <i class="fas fa-star me-1"></i> Featured
+                        </span>
+                        <h5 class="mb-2">{{ resource.title|truncatechars:40 }}</h5>
+                        <p class="text-muted small">{{ resource.description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge" style="background: var(--secondary-color); color: white;">
+                                {{ resource.get_resource_type_display }}
+                            </span>
+                            <a href="{% url 'resources:detail' slug=resource.slug %}" class="btn-outline-gold btn-sm">
+                                View <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Resources -->
+        <div class="row g-4">
+            {% if resources %}
+                {% for resource in resources %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card-government h-100">
+                        <div class="card-body">
+                            {% if resource.cover_image %}
+                                <img src="{{ resource.cover_image.url }}" alt="{{ resource.title }}" 
+                                     style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 12px;">
+                            {% else %}
+                                <div style="width: 100%; height: 150px; background: var(--cream-color); border-radius: 4px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: var(--secondary-color);">
+                                    <i class="fas fa-file-alt" style="font-size: 3rem;"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <h6 class="mb-2">{{ resource.title|truncatechars:35 }}</h6>
+                            
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge" style="background: var(--secondary-color); color: white; font-size: 0.6rem;">
+                                    {{ resource.get_resource_type_display }}
+                                </span>
+                                <span class="badge" style="background: var(--navy-blue); color: white; font-size: 0.6rem;">
+                                    {{ resource.get_access_type_display }}
+                                </span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between text-center mb-2">
+                                <div>
+                                    <i class="fas fa-eye text-gold"></i>
+                                    <div class="fw-bold small">{{ resource.view_count }}</div>
+                                </div>
+                                <div>
+                                    <i class="fas fa-download text-gold"></i>
+                                    <div class="fw-bold small">{{ resource.download_count }}</div>
+                                </div>
+                                <div>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <div class="fw-bold small">{{ resource.average_rating|floatformat:1 }}</div>
+                                </div>
+                            </div>
+                            
+                            <a href="{% url 'resources:detail' slug=resource.slug %}" class="btn-outline-gold btn-sm w-100">
+                                <i class="fas fa-eye me-1"></i> View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-book fa-4x text-muted mb-3"></i>
+                        <h3>No resources found</h3>
+                        <p class="text-muted">Check back later for new resources</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if resources.has_other_pages %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if resources.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ resources.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for num in resources.paginator.page_range %}
+                            {% if resources.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                        {{ num }}
+                                    </span>
+                                </li>
+                            {% elif num > resources.number|add:'-3' and num < resources.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if resources.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ resources.next_page_number }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
