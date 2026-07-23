@@ -262,7 +262,9 @@ class RegistrationApplicationAdmin(admin.ModelAdmin):
     ]
     
     def approve_applications(self, request, queryset):
-        from .utils import send_approval_email, generate_membership_number
+        #from .utils import send_approval_email, generate_membership_number
+        from .utils import send_approval_email
+from .views import generate_membership_number
         count = 0
         for application in queryset:
             if application.status in ['pending', 'needs_info']:
