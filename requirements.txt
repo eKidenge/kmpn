@@ -28,7 +28,8 @@ psycopg2-binary==2.9.9
 
 # Celery
 celery==5.3.4
-cloudinary-storage
+#cloudinary-storage
+django-cloudinary-storage==0.3.0
 #django-celery-beat==2.5.0
 django-celery-beat==2.7.0
 django-celery-results==2.5.0
