@@ -7,6 +7,7 @@ django-cors-headers==4.3.1
 #django-allauth==0.60.1
 django-allauth>=0.63.0
 cryptography==45.0.5
+PyJWT>=2.8.0
 
 # Forms
 django-crispy-forms==2.1
