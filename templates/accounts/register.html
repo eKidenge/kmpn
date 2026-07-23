@@ -1,12 +1,739 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
-{% block title %}Register - KMPN{% endblock %}
+{% block title %}Register - KPSN{% endblock %}
 
 {% block extra_css %}
-<!-- Same CSS as before -->
 <style>
-    /* ... all your existing CSS ... */
+    /* ============================================================
+       REGISTER PAGE - GOVERNMENT STYLE
+       ============================================================ */
+    
+    /* Fonts - Government Style */
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+Pro:wght@400;600;700;900&display=swap');
+    
+    :root {
+        --gold-color: #c9a84c;
+        --gold-dark: #a8893a;
+        --gold-light: #e6d4a0;
+        --dark-blue: #0a1a2a;
+        --primary-color: #0a2a4a;
+        --navy-blue: #1a3a5a;
+        --cream-color: #faf8f0;
+        --white: #ffffff;
+        --gray-600: #808080;
+        --gray-700: #606060;
+        --gray-800: #404040;
+        --gray-900: #202020;
+        --success-color: #1a7a4a;
+        --danger-color: #8a1a1a;
+        --warning-color: #b8860b;
+        --font-heading: 'Playfair Display', 'Georgia', serif;
+        --font-primary: 'Merriweather', 'Times New Roman', serif;
+        --font-secondary: 'Inter', 'Arial', sans-serif;
+        --font-serif-pro: 'Source Serif Pro', 'Georgia', serif;
+        --shadow-md: 0 4px 15px rgba(0,0,0,0.10);
+        --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+        --radius-md: 8px;
+        --radius-sm: 4px;
+        --radius-full: 9999px;
+        --transition-normal: 0.3s ease;
+    }
+    
+    /* Section Background */
+    .register-wrapper {
+        padding: 60px 0 80px;
+        background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d0 50%, #f0ece0 100%);
+        min-height: 100vh;
+        position: relative;
+    }
+    
+    .register-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--gold-color), var(--gold-dark), var(--gold-color));
+    }
+    
+    /* Register Card */
+    .register-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        overflow: hidden;
+        position: relative;
+        transition: var(--transition-normal);
+    }
+    
+    .register-card:hover {
+        box-shadow: 0 15px 50px rgba(0,0,0,0.12);
+    }
+    
+    /* Card Header - Government Style */
+    .register-card .card-header {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
+        padding: 30px 35px 25px;
+        border-bottom: 4px solid var(--gold-color);
+        text-align: center;
+        position: relative;
+    }
+    
+    .register-card .card-header .register-icon {
+        font-size: 2.8rem;
+        color: var(--gold-color);
+        display: block;
+        margin-bottom: 8px;
+        opacity: 0.8;
+    }
+    
+    .register-card .card-header h3 {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--white);
+        margin-bottom: 6px;
+        letter-spacing: 1px;
+    }
+    
+    .register-card .card-header .gold-text {
+        color: var(--gold-color);
+        position: relative;
+    }
+    
+    .register-card .card-header .decorative-line {
+        width: 80px;
+        height: 3px;
+        background: var(--gold-color);
+        margin: 12px auto 10px;
+        border-radius: var(--radius-full);
+    }
+    
+    .register-card .card-header .register-subtitle {
+        font-family: var(--font-secondary);
+        color: rgba(255,255,255,0.7);
+        font-size: 0.95rem;
+        font-weight: 300;
+        letter-spacing: 0.5px;
+        margin-bottom: 0;
+    }
+    
+    /* Card Body */
+    .register-card .card-body {
+        padding: 35px 40px 40px;
+    }
+    
+    /* ============================================================
+       PROGRESS STEPS
+       ============================================================ */
+    .register-progress {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 0 10px;
+        position: relative;
+    }
+    
+    .register-progress::before {
+        content: '';
+        position: absolute;
+        top: 18px;
+        left: 30px;
+        right: 30px;
+        height: 2px;
+        background: #e0d8c8;
+        z-index: 0;
+    }
+    
+    .register-progress .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+        flex: 1;
+    }
+    
+    .register-progress .step-number {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        background: #e0d8c8;
+        color: var(--gray-700);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: var(--transition-normal);
+        border: 2px solid transparent;
+    }
+    
+    .register-progress .step.active .step-number {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-dark);
+        box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.2);
+    }
+    
+    .register-progress .step .step-label {
+        font-family: var(--font-secondary);
+        font-size: 0.7rem;
+        color: var(--gray-600);
+        margin-top: 6px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .register-progress .step.active .step-label {
+        color: var(--gold-color);
+        font-weight: 600;
+    }
+    
+    /* ============================================================
+       FORM ELEMENTS - GOVERNMENT STYLE
+       ============================================================ */
+    
+    /* Section Headers */
+    .register-card .card-body h6 {
+        font-family: var(--font-heading);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        margin-top: 8px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(201, 168, 76, 0.3);
+        display: flex;
+        align-items: center;
+    }
+    
+    .register-card .card-body h6 .text-gold {
+        color: var(--gold-color);
+    }
+    
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 18px;
+        position: relative;
+    }
+    
+    .form-label {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--gray-800);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .form-label .field-icon {
+        color: var(--gold-color);
+        font-size: 0.8rem;
+        width: 16px;
+    }
+    
+    .form-label .required-star {
+        color: var(--danger-color);
+        margin-left: 2px;
+        font-size: 1rem;
+    }
+    
+    .form-control, .form-select {
+        border: 2px solid #d4c8b0;
+        border-radius: var(--radius-sm);
+        padding: 10px 15px;
+        font-family: var(--font-secondary);
+        font-size: 0.95rem;
+        transition: var(--transition-normal);
+        background: var(--white);
+        width: 100%;
+        color: var(--gray-800);
+        line-height: 1.5;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+        outline: none;
+    }
+    
+    .form-control.is-invalid, .form-select.is-invalid {
+        border-color: var(--danger-color);
+    }
+    
+    .form-control.is-invalid:focus, .form-select.is-invalid:focus {
+        box-shadow: 0 0 0 3px rgba(138, 26, 26, 0.15);
+    }
+    
+    .form-control.is-valid {
+        border-color: var(--success-color);
+    }
+    
+    .form-control.is-valid:focus {
+        box-shadow: 0 0 0 3px rgba(26, 122, 74, 0.15);
+    }
+    
+    .form-text {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        margin-top: 4px;
+    }
+    
+    .invalid-feedback {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--danger-color);
+        margin-top: 4px;
+    }
+    
+    /* Password Field Wrapper */
+    .password-field-wrapper {
+        position: relative;
+    }
+    
+    .password-field-wrapper .form-control {
+        padding-right: 45px;
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--gray-500);
+        padding: 4px 8px;
+        cursor: pointer;
+        transition: var(--transition-normal);
+        z-index: 2;
+    }
+    
+    .password-toggle:hover {
+        color: var(--gold-color);
+    }
+    
+    /* Password Strength */
+    .password-strength {
+        height: 4px;
+        background: #e0d8c8;
+        border-radius: var(--radius-full);
+        margin-top: 6px;
+        overflow: hidden;
+    }
+    
+    .password-strength .strength-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: var(--radius-full);
+        transition: width 0.3s ease;
+    }
+    
+    .password-strength .strength-bar.weak {
+        width: 25%;
+        background: var(--danger-color);
+    }
+    
+    .password-strength .strength-bar.fair {
+        width: 50%;
+        background: var(--warning-color);
+    }
+    
+    .password-strength .strength-bar.good {
+        width: 75%;
+        background: #4a9a4a;
+    }
+    
+    .password-strength .strength-bar.strong {
+        width: 100%;
+        background: var(--success-color);
+    }
+    
+    .password-strength-text {
+        font-family: var(--font-secondary);
+        font-size: 0.75rem;
+        margin-top: 3px;
+    }
+    
+    .password-strength-text.weak { color: var(--danger-color); }
+    .password-strength-text.fair { color: var(--warning-color); }
+    .password-strength-text.good { color: #4a9a4a; }
+    .password-strength-text.strong { color: var(--success-color); }
+    
+    /* ============================================================
+       ROLE SELECTION - CARDS
+       ============================================================ */
+    .role-selection {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .role-option {
+        position: relative;
+    }
+    
+    .role-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .role-option .role-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 18px 12px;
+        border: 2px solid #e0d8c8;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: var(--transition-normal);
+        background: var(--white);
+        text-align: center;
+        min-height: 100px;
+        height: 100%;
+    }
+    
+    .role-option .role-card:hover {
+        border-color: var(--gold-light);
+        background: #faf8f0;
+    }
+    
+    .role-option input[type="radio"]:checked + .role-card {
+        border-color: var(--gold-color);
+        background: rgba(201, 168, 76, 0.08);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+    }
+    
+    .role-option .role-card .role-icon {
+        font-size: 1.8rem;
+        color: var(--gold-color);
+        margin-bottom: 6px;
+    }
+    
+    .role-option .role-card .role-name {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: var(--gray-800);
+    }
+    
+    .role-option .role-card .role-desc {
+        font-family: var(--font-secondary);
+        font-size: 0.65rem;
+        color: var(--gray-600);
+        margin-top: 2px;
+    }
+    
+    .role-option input[type="radio"]:checked + .role-card .role-name {
+        color: var(--gold-dark);
+    }
+    
+    /* ============================================================
+       TERMS CHECKBOX
+       ============================================================ */
+    .form-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin: 16px 0 8px;
+        padding: 0;
+    }
+    
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        flex-shrink: 0;
+        border: 2px solid #d4c8b0;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: var(--transition-normal);
+        appearance: none;
+        -webkit-appearance: none;
+        position: relative;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--gold-color);
+        border-color: var(--gold-color);
+    }
+    
+    .form-check-input:checked::after {
+        content: '\f00c';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        font-size: 0.7rem;
+        color: var(--white);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .form-check-input:focus {
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+        border-color: var(--gold-color);
+    }
+    
+    .form-check-input.is-invalid {
+        border-color: var(--danger-color);
+    }
+    
+    .form-check-input.is-invalid:focus {
+        box-shadow: 0 0 0 3px rgba(138, 26, 26, 0.15);
+    }
+    
+    .form-check-label {
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+        color: var(--gray-700);
+        cursor: pointer;
+    }
+    
+    .form-check-label a {
+        color: var(--gold-color);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .form-check-label a:hover {
+        text-decoration: underline;
+    }
+    
+    /* ============================================================
+       REGISTER BUTTON
+       ============================================================ */
+    .btn-register {
+        background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
+        color: var(--white);
+        border: none;
+        padding: 14px 30px;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.05rem;
+        border-radius: var(--radius-sm);
+        transition: var(--transition-normal);
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(201, 168, 76, 0.35);
+        color: var(--white);
+    }
+    
+    .btn-register:active {
+        transform: translateY(0);
+    }
+    
+    .btn-register:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    /* ============================================================
+       DIVIDER
+       ============================================================ */
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 20px 0 16px;
+    }
+    
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 2px solid #e0d8c8;
+    }
+    
+    .divider::before {
+        margin-right: 15px;
+    }
+    
+    .divider::after {
+        margin-left: 15px;
+    }
+    
+    .divider span {
+        font-family: var(--font-secondary);
+        color: var(--gray-600);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+    
+    /* ============================================================
+       SOCIAL BUTTONS
+       ============================================================ */
+    .btn-google {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 25px;
+        background: var(--white);
+        border: 2px solid #e0d8c8;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--gray-700);
+        transition: var(--transition-normal);
+        cursor: pointer;
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .btn-google i {
+        font-size: 1.2rem;
+        color: #ea4335;
+    }
+    
+    .btn-google:hover {
+        border-color: var(--gold-color);
+        background: #faf8f0;
+    }
+    
+    .btn-google:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    /* ============================================================
+       ALERT
+       ============================================================ */
+    .alert {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        border-radius: var(--radius-sm);
+        background: #fbe9e7;
+        border-left: 4px solid var(--danger-color);
+        margin-bottom: 18px;
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+        color: var(--danger-color);
+    }
+    
+    .alert i {
+        font-size: 1.1rem;
+    }
+    
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 992px) {
+        .register-card .card-body {
+            padding: 25px 25px 30px;
+        }
+        
+        .register-card .card-header {
+            padding: 25px 20px 20px;
+        }
+        
+        .register-card .card-header h3 {
+            font-size: 1.6rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .register-wrapper {
+            padding: 30px 0 50px;
+        }
+        
+        .register-card .card-body {
+            padding: 20px 18px 25px;
+        }
+        
+        .register-card .card-header {
+            padding: 20px 15px 18px;
+        }
+        
+        .register-card .card-header h3 {
+            font-size: 1.3rem;
+        }
+        
+        .register-card .card-header .register-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .role-selection {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+        }
+        
+        .role-option .role-card {
+            min-height: 80px;
+            padding: 14px 10px;
+        }
+        
+        .role-option .role-card .role-icon {
+            font-size: 1.4rem;
+        }
+        
+        .register-progress {
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        
+        .register-progress::before {
+            left: 15px;
+            right: 15px;
+        }
+        
+        .register-progress .step-number {
+            width: 30px;
+            height: 30px;
+            font-size: 0.75rem;
+        }
+        
+        .register-progress .step .step-label {
+            font-size: 0.6rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .role-selection {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+        }
+        
+        .btn-register {
+            font-size: 0.9rem;
+            padding: 12px 20px;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -14,28 +741,33 @@
 <section class="register-wrapper">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8 col-md-10">
-                <div class="register-card card-government" data-aos="fade-up" data-aos-duration="800">
+            <div class="col-lg-10 col-md-11">
+                <div class="register-card" data-aos="fade-up" data-aos-duration="800">
                     
-                    <!-- Card Header -->
+                    <!-- ============================================
+                    CARD HEADER
+                    ============================================ -->
                     <div class="card-header">
                         <i class="fas fa-user-graduate register-icon"></i>
                         <h3>
-                            <i class="fas fa-user-plus me-2" style="font-size: 1.2rem;"></i>
-                            Join <span class="gold-text">KMPN</span>
+                            Join <span class="gold-text">KPSN</span>
                         </h3>
                         <div class="decorative-line"></div>
-                        <p class="register-subtitle">Become part of Kenya's largest postgraduate network</p>
+                        <p class="register-subtitle">
+                            Kenya's Premier Postgraduate Scholars Network
+                        </p>
                     </div>
                     
-                    <!-- Card Body -->
+                    <!-- ============================================
+                    CARD BODY
+                    ============================================ -->
                     <div class="card-body">
                         
                         <!-- Progress Steps -->
                         <div class="register-progress">
                             <div class="step active">
                                 <div class="step-number">1</div>
-                                <span class="step-label">Personal Info</span>
+                                <span class="step-label">Personal</span>
                             </div>
                             <div class="step">
                                 <div class="step-number">2</div>
@@ -47,7 +779,7 @@
                             </div>
                             <div class="step">
                                 <div class="step-number">4</div>
-                                <span class="step-label">Complete</span>
+                                <span class="step-label">Role</span>
                             </div>
                         </div>
                         
@@ -59,13 +791,18 @@
                             </div>
                         {% endif %}
                         
-                        <!-- Registration Form -->
-                        <form method="post" novalidate>
+                        <!-- ============================================
+                        REGISTRATION FORM
+                        ============================================ -->
+                        <form method="post" novalidate enctype="multipart/form-data">
                             {% csrf_token %}
                             
-                            <!-- Personal Information Section -->
-                            <h6 class="mb-3" style="font-family: var(--font-heading); color: var(--dark-blue);">
-                                <i class="fas fa-user text-gold me-2"></i> Personal Information
+                            <!-- ==========================================
+                            SECTION 1: PERSONAL INFORMATION
+                            ========================================== -->
+                            <h6>
+                                <i class="fas fa-user text-gold me-2"></i> 
+                                Personal Information
                             </h6>
                             
                             <div class="row">
@@ -73,8 +810,7 @@
                                     <div class="form-group">
                                         <label for="{{ form.first_name.id_for_label }}" class="form-label">
                                             <i class="fas fa-user field-icon"></i>
-                                            First Name
-                                            <span class="required-star">*</span>
+                                            First Name <span class="required-star">*</span>
                                         </label>
                                         <input type="text" name="{{ form.first_name.name }}" 
                                                id="{{ form.first_name.id_for_label }}" 
@@ -93,8 +829,7 @@
                                     <div class="form-group">
                                         <label for="{{ form.last_name.id_for_label }}" class="form-label">
                                             <i class="fas fa-user field-icon"></i>
-                                            Last Name
-                                            <span class="required-star">*</span>
+                                            Last Name <span class="required-star">*</span>
                                         </label>
                                         <input type="text" name="{{ form.last_name.name }}" 
                                                id="{{ form.last_name.id_for_label }}" 
@@ -112,10 +847,27 @@
                             </div>
                             
                             <div class="form-group">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">
+                                    <i class="fas fa-id-badge field-icon"></i>
+                                    Title
+                                </label>
+                                <select name="{{ form.title.name }}" 
+                                        id="{{ form.title.id_for_label }}" 
+                                        class="form-select">
+                                    <option value="">Select Title</option>
+                                    <option value="Dr." {% if form.title.value == 'Dr.' %}selected{% endif %}>Dr.</option>
+                                    <option value="Prof." {% if form.title.value == 'Prof.' %}selected{% endif %}>Prof.</option>
+                                    <option value="Mr." {% if form.title.value == 'Mr.' %}selected{% endif %}>Mr.</option>
+                                    <option value="Ms." {% if form.title.value == 'Ms.' %}selected{% endif %}>Ms.</option>
+                                    <option value="Mrs." {% if form.title.value == 'Mrs.' %}selected{% endif %}>Mrs.</option>
+                                    <option value="Mx." {% if form.title.value == 'Mx.' %}selected{% endif %}>Mx.</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
                                 <label for="{{ form.email.id_for_label }}" class="form-label">
                                     <i class="fas fa-envelope field-icon"></i>
-                                    Email Address
-                                    <span class="required-star">*</span>
+                                    Email Address <span class="required-star">*</span>
                                 </label>
                                 <input type="email" name="{{ form.email.name }}" 
                                        id="{{ form.email.id_for_label }}" 
@@ -135,10 +887,30 @@
                             </div>
                             
                             <div class="form-group">
+                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">
+                                    <i class="fas fa-phone field-icon"></i>
+                                    Phone Number
+                                </label>
+                                <input type="tel" name="{{ form.phone_number.name }}" 
+                                       id="{{ form.phone_number.id_for_label }}" 
+                                       class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}"
+                                       placeholder="+254 700 000 000" 
+                                       value="{{ form.phone_number.value|default:'' }}">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Format: +254 700 000 000 (optional)
+                                </div>
+                                {% if form.phone_number.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.phone_number.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
                                 <label for="{{ form.username.id_for_label }}" class="form-label">
                                     <i class="fas fa-user-tag field-icon"></i>
-                                    Username
-                                    <span class="required-star">*</span>
+                                    Username <span class="required-star">*</span>
                                 </label>
                                 <input type="text" name="{{ form.username.name }}" 
                                        id="{{ form.username.id_for_label }}" 
@@ -159,9 +931,12 @@
                             
                             <hr class="my-4">
                             
-                            <!-- Credentials Section -->
-                            <h6 class="mb-3" style="font-family: var(--font-heading); color: var(--dark-blue);">
-                                <i class="fas fa-lock text-gold me-2"></i> Password
+                            <!-- ==========================================
+                            SECTION 2: PASSWORD
+                            ========================================== -->
+                            <h6>
+                                <i class="fas fa-lock text-gold me-2"></i> 
+                                Password
                             </h6>
                             
                             <div class="row">
@@ -169,16 +944,20 @@
                                     <div class="form-group">
                                         <label for="{{ form.password1.id_for_label }}" class="form-label">
                                             <i class="fas fa-key field-icon"></i>
-                                            Password
-                                            <span class="required-star">*</span>
+                                            Password <span class="required-star">*</span>
                                         </label>
-                                        <input type="password" name="{{ form.password1.name }}" 
-                                               id="{{ form.password1.id_for_label }}" 
-                                               class="form-control password-field {% if form.password1.errors %}is-invalid{% endif %}"
-                                               placeholder="Create a strong password"
-                                               required>
+                                        <div class="password-field-wrapper">
+                                            <input type="password" name="{{ form.password1.name }}" 
+                                                   id="{{ form.password1.id_for_label }}" 
+                                                   class="form-control password-field {% if form.password1.errors %}is-invalid{% endif %}"
+                                                   placeholder="Create a strong password"
+                                                   required>
+                                            <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
                                         
-                                        <!-- Password Strength Indicator -->
+                                        <!-- Password Strength -->
                                         <div class="password-strength" id="password-strength">
                                             <div class="strength-bar" id="strength-bar"></div>
                                         </div>
@@ -199,14 +978,18 @@
                                     <div class="form-group">
                                         <label for="{{ form.password2.id_for_label }}" class="form-label">
                                             <i class="fas fa-check-circle field-icon"></i>
-                                            Confirm Password
-                                            <span class="required-star">*</span>
+                                            Confirm Password <span class="required-star">*</span>
                                         </label>
-                                        <input type="password" name="{{ form.password2.name }}" 
-                                               id="{{ form.password2.id_for_label }}" 
-                                               class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
-                                               placeholder="Confirm your password"
-                                               required>
+                                        <div class="password-field-wrapper">
+                                            <input type="password" name="{{ form.password2.name }}" 
+                                                   id="{{ form.password2.id_for_label }}" 
+                                                   class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+                                                   placeholder="Confirm your password"
+                                                   required>
+                                            <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
                                         {% if form.password2.errors %}
                                             <div class="invalid-feedback">
                                                 {{ form.password2.errors|join:", " }}
@@ -218,10 +1001,32 @@
                             
                             <hr class="my-4">
                             
-                            <!-- Academic Information -->
-                            <h6 class="mb-3" style="font-family: var(--font-heading); color: var(--dark-blue);">
-                                <i class="fas fa-graduation-cap text-gold me-2"></i> Academic Information
+                            <!-- ==========================================
+                            SECTION 3: ACADEMIC INFORMATION
+                            ========================================== -->
+                            <h6>
+                                <i class="fas fa-graduation-cap text-gold me-2"></i> 
+                                Academic Information
                             </h6>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.academic_level.id_for_label }}" class="form-label">
+                                    <i class="fas fa-certificate field-icon"></i>
+                                    Academic Level
+                                </label>
+                                <select name="{{ form.academic_level.name }}" 
+                                        id="{{ form.academic_level.id_for_label }}" 
+                                        class="form-select">
+                                    <option value="">Select Academic Level</option>
+                                    <option value="masters" {% if form.academic_level.value == 'masters' %}selected{% endif %}>Master's Student</option>
+                                    <option value="phd" {% if form.academic_level.value == 'phd' %}selected{% endif %}>PhD Candidate</option>
+                                    <option value="postdoc" {% if form.academic_level.value == 'postdoc' %}selected{% endif %}>Postdoctoral Researcher</option>
+                                    <option value="early_career" {% if form.academic_level.value == 'early_career' %}selected{% endif %}>Early Career Researcher</option>
+                                    <option value="senior_researcher" {% if form.academic_level.value == 'senior_researcher' %}selected{% endif %}>Senior Researcher</option>
+                                    <option value="professor" {% if form.academic_level.value == 'professor' %}selected{% endif %}>Professor</option>
+                                    <option value="other" {% if form.academic_level.value == 'other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
                             
                             <div class="form-group">
                                 <label for="{{ form.institution.id_for_label }}" class="form-label">
@@ -236,19 +1041,15 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="{{ form.degree_level.id_for_label }}" class="form-label">
-                                    <i class="fas fa-certificate field-icon"></i>
-                                    Degree Level
+                                <label for="{{ form.department.id_for_label }}" class="form-label">
+                                    <i class="fas fa-building field-icon"></i>
+                                    Department
                                 </label>
-                                <select name="{{ form.degree_level.name }}" 
-                                        id="{{ form.degree_level.id_for_label }}" 
-                                        class="form-select">
-                                    <option value="">Select your degree level</option>
-                                    <option value="bachelors" {% if form.degree_level.value == 'bachelors' %}selected{% endif %}>Bachelor's</option>
-                                    <option value="masters" {% if form.degree_level.value == 'masters' %}selected{% endif %}>Master's</option>
-                                    <option value="phd" {% if form.degree_level.value == 'phd' %}selected{% endif %}>PhD</option>
-                                    <option value="postdoc" {% if form.degree_level.value == 'postdoc' %}selected{% endif %}>Postdoctoral</option>
-                                </select>
+                                <input type="text" name="{{ form.department.name }}" 
+                                       id="{{ form.department.id_for_label }}" 
+                                       class="form-control"
+                                       placeholder="Enter your department" 
+                                       value="{{ form.department.value|default:'' }}">
                             </div>
                             
                             <div class="form-group">
@@ -260,16 +1061,221 @@
                                           id="{{ form.research_interests.id_for_label }}" 
                                           class="form-control"
                                           rows="3"
-                                          placeholder="Enter your research interests (e.g., Machine Learning, Public Health, Climate Change)">{{ form.research_interests.value|default:'' }}</textarea>
+                                          placeholder="Enter your research interests">{{ form.research_interests.value|default:'' }}</textarea>
                                 <div class="form-text">
                                     <i class="fas fa-info-circle me-1"></i>
                                     Separate multiple interests with commas
                                 </div>
                             </div>
                             
+                            <div class="form-group">
+                                <label for="{{ form.research_keywords.id_for_label }}" class="form-label">
+                                    <i class="fas fa-tags field-icon"></i>
+                                    Research Keywords
+                                </label>
+                                <input type="text" name="{{ form.research_keywords.name }}" 
+                                       id="{{ form.research_keywords.id_for_label }}" 
+                                       class="form-control"
+                                       placeholder="e.g., machine learning, public health, climate change" 
+                                       value="{{ form.research_keywords.value|default:'' }}">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Keywords for research matching (comma separated)
+                                </div>
+                            </div>
+                            
                             <hr class="my-4">
                             
-                            <!-- Terms and Conditions -->
+                            <!-- ==========================================
+                            SECTION 4: ROLE SELECTION
+                            ========================================== -->
+                            <h6>
+                                <i class="fas fa-users-cog text-gold me-2"></i> 
+                                Select Your Role
+                            </h6>
+                            
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user-tie field-icon"></i>
+                                    Choose the role that best describes you
+                                    <span class="required-star">*</span>
+                                </label>
+                                
+                                <div class="role-selection" id="role-selection">
+                                    <!-- Super Admin -->
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="super_admin" 
+                                               {% if form.role.value == 'super_admin' %}checked{% endif %}>
+                                        <div class="role-card">
+                                            <i class="fas fa-crown role-icon"></i>
+                                            <span class="role-name">Super Admin</span>
+                                            <span class="role-desc">Full system control</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Admin -->
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="admin" 
+                                               {% if form.role.value == 'admin' %}checked{% endif %}>
+                                        <div class="role-card">
+                                            <i class="fas fa-user-shield role-icon"></i>
+                                            <span class="role-name">Administrator</span>
+                                            <span class="role-desc">Manage members & content</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Executive -->
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="executive" 
+                                               {% if form.role.value == 'executive' %}checked{% endif %}>
+                                        <div class="role-card">
+                                            <i class="fas fa-user-tie role-icon"></i>
+                                            <span class="role-name">Executive</span>
+                                            <span class="role-desc">Committee member</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Moderator -->
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="moderator" 
+                                               {% if form.role.value == 'moderator' %}checked{% endif %}>
+                                        <div class="role-card">
+                                            <i class="fas fa-gavel role-icon"></i>
+                                            <span class="role-name">Moderator</span>
+                                            <span class="role-desc">Forum & content mod</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Verified Member -->
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="verified_member" 
+                                               {% if form.role.value == 'verified_member' %}checked{% endif %}>
+                                        <div class="role-card">
+                                            <i class="fas fa-user-check role-icon"></i>
+                                            <span class="role-name">Verified Member</span>
+                                            <span class="role-desc">Full member access</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Basic Member -->
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="basic_member" 
+                                               {% if form.role.value == 'basic_member' %}checked{% endif %}>
+                                        <div class="role-card">
+                                            <i class="fas fa-user role-icon"></i>
+                                            <span class="role-name">Basic Member</span>
+                                            <span class="role-desc">Standard member</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Researcher -->
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="researcher" 
+                                               {% if form.role.value == 'researcher' %}checked{% endif %}>
+                                        <div class="role-card">
+                                            <i class="fas fa-microscope role-icon"></i>
+                                            <span class="role-name">Researcher</span>
+                                            <span class="role-desc">Research-focused</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Alumni -->
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="alumni" 
+                                               {% if form.role.value == 'alumni' %}checked{% endif %}>
+                                        <div class="role-card">
+                                            <i class="fas fa-user-graduate role-icon"></i>
+                                            <span class="role-name">Alumni</span>
+                                            <span class="role-desc">Former member</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Partner -->
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="partner" 
+                                               {% if form.role.value == 'partner' %}checked{% endif %}>
+                                        <div class="role-card">
+                                            <i class="fas fa-handshake role-icon"></i>
+                                            <span class="role-name">Partner</span>
+                                            <span class="role-desc">Institutional partner</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Your role determines what features you can access
+                                </div>
+                                {% if form.role.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.role.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <hr class="my-4">
+                            
+                            <!-- ==========================================
+                            SECTION 5: MOTIVATION & DOCUMENTS
+                            ========================================== -->
+                            <h6>
+                                <i class="fas fa-file-alt text-gold me-2"></i> 
+                                Application Details
+                            </h6>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.motivation.id_for_label }}" class="form-label">
+                                    <i class="fas fa-pen-field-icon"></i>
+                                    Motivation <span class="required-star">*</span>
+                                </label>
+                                <textarea name="{{ form.motivation.name }}" 
+                                          id="{{ form.motivation.id_for_label }}" 
+                                          class="form-control {% if form.motivation.errors %}is-invalid{% endif %}"
+                                          rows="4"
+                                          placeholder="Why do you want to join KPSN?">{{ form.motivation.value|default:'' }}</textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Explain your motivation and how you plan to contribute
+                                </div>
+                                {% if form.motivation.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.motivation.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.experience.id_for_label }}" class="form-label">
+                                    <i class="fas fa-briefcase field-icon"></i>
+                                    Experience
+                                </label>
+                                <textarea name="{{ form.experience.name }}" 
+                                          id="{{ form.experience.id_for_label }}" 
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="List your relevant academic and professional experience">{{ form.experience.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.cv.id_for_label }}" class="form-label">
+                                    <i class="fas fa-file-pdf field-icon"></i>
+                                    CV / Resume
+                                </label>
+                                <input type="file" name="{{ form.cv.name }}" 
+                                       id="{{ form.cv.id_for_label }}" 
+                                       class="form-control"
+                                       accept=".pdf,.doc,.docx">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Upload your CV (PDF, DOC, or DOCX)
+                                </div>
+                            </div>
+                            
+                            <hr class="my-4">
+                            
+                            <!-- ==========================================
+                            SECTION 6: TERMS
+                            ========================================== -->
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="agreeTerms" name="agree_terms" required>
                                 <label class="form-check-label" for="agreeTerms">
@@ -281,10 +1287,20 @@
                                 </label>
                             </div>
                             
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="agreePrivacy" name="agree_privacy" required>
+                                <label class="form-check-label" for="agreePrivacy">
+                                    <i class="fas fa-shield-alt me-1" style="color: var(--gold-color);"></i>
+                                    I consent to the collection and processing of my data
+                                    <span class="required-star">*</span>
+                                </label>
+                            </div>
+                            
                             <!-- Register Button -->
                             <div class="d-grid gap-2 mt-4">
                                 <button type="submit" class="btn-register" id="registerBtn">
-                                    <i class="fas fa-user-plus me-2"></i> Create Account
+                                    <i class="fas fa-user-plus me-2"></i> 
+                                    Create Account
                                 </button>
                             </div>
                             
@@ -303,7 +1319,7 @@
                                 <span>or</span>
                             </div>
                             
-                            <!-- Social Registration - DISABLED (Google not configured) -->
+                            <!-- Social Registration -->
                             <div class="text-center">
                                 <p class="text-muted small" style="font-size: 0.85rem;">Sign up using</p>
                                 <button class="btn-google" disabled style="opacity: 0.6; cursor: not-allowed;">
@@ -332,7 +1348,6 @@
         </div>
     </div>
 </section>
-
 {% endblock %}
 
 {% block extra_js %}
@@ -351,11 +1366,15 @@
                 const strength = checkPasswordStrength(password);
                 
                 strengthBar.className = 'strength-bar';
-                strengthBar.classList.add(strength.className);
+                if (strength.className) {
+                    strengthBar.classList.add(strength.className);
+                }
                 
                 strengthText.textContent = strength.text;
                 strengthText.className = 'password-strength-text';
-                strengthText.classList.add(strength.className);
+                if (strength.className) {
+                    strengthText.classList.add(strength.className);
+                }
             });
         }
         
@@ -406,23 +1425,23 @@
                     this.classList.add('is-invalid');
                     this.classList.remove('is-valid');
                     
-                    let feedback = this.parentElement.querySelector('.invalid-feedback');
+                    let feedback = this.parentElement.parentElement.querySelector('.invalid-feedback');
                     if (!feedback) {
                         feedback = document.createElement('div');
                         feedback.className = 'invalid-feedback';
                         feedback.textContent = 'Passwords do not match';
-                        this.parentElement.appendChild(feedback);
+                        this.parentElement.parentElement.appendChild(feedback);
                     }
                 } else if (this.value.length > 0) {
                     this.classList.remove('is-invalid');
                     this.classList.add('is-valid');
                     
-                    const feedback = this.parentElement.querySelector('.invalid-feedback');
+                    const feedback = this.parentElement.parentElement.querySelector('.invalid-feedback');
                     if (feedback) feedback.remove();
                 } else {
                     this.classList.remove('is-invalid', 'is-valid');
                     
-                    const feedback = this.parentElement.querySelector('.invalid-feedback');
+                    const feedback = this.parentElement.parentElement.querySelector('.invalid-feedback');
                     if (feedback) feedback.remove();
                 }
             });
@@ -433,21 +1452,11 @@
     // SHOW/HIDE PASSWORD
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-        const passwordFields = document.querySelectorAll('.password-field');
+        const toggleButtons = document.querySelectorAll('.password-toggle');
         
-        passwordFields.forEach(function(field) {
-            const wrapper = field.parentElement;
-            const toggleBtn = document.createElement('button');
-            toggleBtn.type = 'button';
-            toggleBtn.className = 'btn btn-sm';
-            toggleBtn.style.cssText = 'position:absolute;right:12px;top:55%;transform:translateY(-50%);background:transparent;border:none;color:var(--gray-500);padding:4px 8px;z-index:10;';
-            toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
-            toggleBtn.setAttribute('aria-label', 'Toggle password visibility');
-            
-            wrapper.style.position = 'relative';
-            wrapper.appendChild(toggleBtn);
-            
-            toggleBtn.addEventListener('click', function() {
+        toggleButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const field = this.parentElement.querySelector('.form-control');
                 const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
                 field.setAttribute('type', type);
                 this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
@@ -461,13 +1470,17 @@
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
         const termsCheckbox = document.getElementById('agreeTerms');
+        const privacyCheckbox = document.getElementById('agreePrivacy');
         const registerBtn = document.getElementById('registerBtn');
         
-        if (form && termsCheckbox && registerBtn) {
+        if (form && termsCheckbox && privacyCheckbox && registerBtn) {
             form.addEventListener('submit', function(e) {
+                let hasError = false;
+                
                 if (!termsCheckbox.checked) {
                     e.preventDefault();
                     termsCheckbox.classList.add('is-invalid');
+                    hasError = true;
                     
                     let feedback = termsCheckbox.parentElement.querySelector('.invalid-feedback');
                     if (!feedback) {
@@ -477,9 +1490,31 @@
                         termsCheckbox.parentElement.appendChild(feedback);
                     }
                 }
+                
+                if (!privacyCheckbox.checked) {
+                    e.preventDefault();
+                    privacyCheckbox.classList.add('is-invalid');
+                    hasError = true;
+                    
+                    let feedback = privacyCheckbox.parentElement.querySelector('.invalid-feedback');
+                    if (!feedback) {
+                        feedback = document.createElement('div');
+                        feedback.className = 'invalid-feedback';
+                        feedback.textContent = 'You must agree to the privacy policy';
+                        privacyCheckbox.parentElement.appendChild(feedback);
+                    }
+                }
             });
             
             termsCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    this.classList.remove('is-invalid');
+                    const feedback = this.parentElement.querySelector('.invalid-feedback');
+                    if (feedback) feedback.remove();
+                }
+            });
+            
+            privacyCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     this.classList.remove('is-invalid');
                     const feedback = this.parentElement.querySelector('.invalid-feedback');
