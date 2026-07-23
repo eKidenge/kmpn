@@ -1,3 +1,5 @@
+# accounts/forms.py
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django.core.exceptions import ValidationError
@@ -102,10 +104,26 @@ class RoleBasedRegistrationForm(UserCreationForm):
         help_text="Enter research keywords separated by commas"
     )
     
-    # Role Selection
+    # Role Selection - PUBLIC ROLES ONLY (No admin/super_admin)
+    PUBLIC_ROLE_CHOICES = [
+        ('', '-- Select Your Role --'),
+        # Member Roles
+        ('verified_member', 'Verified Member - Full member access'),
+        ('basic_member', 'Basic Member - Standard member'),
+        # Academic & Research Roles
+        ('researcher', 'Researcher - Research-focused'),
+        ('alumni', 'Alumni - Former member'),
+        # Institutional & Partner Roles
+        ('partner', 'Partner - Institutional partner'),
+        # Leadership & Support Roles
+        ('executive', 'Executive - Committee member'),
+        ('moderator', 'Moderator - Forum & content moderator'),
+    ]
+    
     role = forms.ChoiceField(
-        choices=User.Roles.choices,
-        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
+        choices=PUBLIC_ROLE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        required=True,
         help_text="Select the role that best describes your current status"
     )
     
@@ -115,7 +133,7 @@ class RoleBasedRegistrationForm(UserCreationForm):
         widget=forms.Textarea(attrs={
             'class': 'form-control',
             'placeholder': 'Why do you want to join the Kenya Postgraduate Scholars Network?',
-            'rows': 5
+            'rows': 4
         }),
         help_text="Please explain your motivation for joining KPSN and how you plan to contribute"
     )
@@ -128,31 +146,12 @@ class RoleBasedRegistrationForm(UserCreationForm):
         }),
         help_text="Include any research, teaching, or professional experience"
     )
-    publications = forms.CharField(
-        required=False,
-        widget=forms.Textarea(attrs={
-            'class': 'form-control',
-            'placeholder': 'List your publications (if any)',
-            'rows': 3
-        }),
-        help_text="Include journal articles, conference papers, books, etc."
-    )
     
     # Documents
     cv = forms.FileField(
         required=False,
         widget=forms.FileInput(attrs={'class': 'form-control'}),
         help_text="Upload your CV (PDF, DOC, or DOCX)"
-    )
-    recommendation_letter = forms.FileField(
-        required=False,
-        widget=forms.FileInput(attrs={'class': 'form-control'}),
-        help_text="Upload a recommendation letter (optional)"
-    )
-    id_document = forms.FileField(
-        required=False,
-        widget=forms.FileInput(attrs={'class': 'form-control'}),
-        help_text="Upload your national ID or passport (for verification)"
     )
     
     # Terms & Conditions
@@ -235,6 +234,7 @@ class RoleBasedRegistrationForm(UserCreationForm):
         user.research_interests = self.cleaned_data.get('research_interests')
         user.research_keywords = self.cleaned_data.get('research_keywords', [])
         
+        # Set role to prospective_member (will be approved by admin)
         user.role = 'prospective_member'
         user.registration_status = 'pending'
         user.is_active = False
@@ -251,15 +251,13 @@ class RoleBasedRegistrationForm(UserCreationForm):
         if commit:
             user.save()
             
+            # Create registration application with requested role
             RegistrationApplication.objects.create(
                 user=user,
                 requested_role=self.cleaned_data['role'],
-                motivation=self.cleaned_data['motivation'],
+                motivation=self.cleaned_data.get('motivation', ''),
                 experience=self.cleaned_data.get('experience', ''),
-                publications=self.cleaned_data.get('publications', ''),
                 cv=self.cleaned_data.get('cv'),
-                recommendation_letter=self.cleaned_data.get('recommendation_letter'),
-                additional_documents=self.cleaned_data.get('id_document'),
                 status=RegistrationApplication.ApplicationStatus.PENDING
             )
         
@@ -388,7 +386,7 @@ class AdminUserEditForm(forms.ModelForm):
 
 
 # ============================================================
-# USER LOGIN FORM (FIXED)
+# USER LOGIN FORM
 # ============================================================
 
 class UserLoginForm(AuthenticationForm):
@@ -438,7 +436,7 @@ class UserLoginForm(AuthenticationForm):
 
 
 # ============================================================
-# USER UPDATE FORM (FIXED)
+# USER UPDATE FORM
 # ============================================================
 
 class UserUpdateForm(forms.ModelForm):

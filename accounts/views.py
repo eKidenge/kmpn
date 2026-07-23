@@ -87,7 +87,7 @@ def home(request):
 
 
 # ============================================================
-# REGISTRATION (ROLE-BASED)
+# REGISTRATION (ROLE-BASED) - WITH DEBUG
 # ============================================================
 
 def register(request):
@@ -97,6 +97,27 @@ def register(request):
     
     if request.method == 'POST':
         form = RoleBasedRegistrationForm(request.POST, request.FILES)
+        
+        # Debug: Print form errors to console
+        print("=" * 60)
+        print("REGISTRATION FORM SUBMITTED")
+        print("=" * 60)
+        
+        # Check if form is valid
+        if not form.is_valid():
+            print("FORM ERRORS:")
+            for field, errors in form.errors.items():
+                print(f"  {field}: {', '.join(errors)}")
+            print("=" * 60)
+            
+            # Add errors to messages for user
+            for field, errors in form.errors.items():
+                for error in errors:
+                    if field == '__all__':
+                        messages.error(request, error)
+                    else:
+                        messages.error(request, f"{field.replace('_', ' ').title()}: {error}")
+        
         if form.is_valid():
             try:
                 user = form.save()
@@ -127,7 +148,7 @@ def register(request):
             
             except Exception as e:
                 logger.error(f"Registration error: {str(e)}")
-                messages.error(request, 'An error occurred during registration. Please try again.')
+                messages.error(request, f'An error occurred during registration: {str(e)}')
     else:
         form = RoleBasedRegistrationForm()
     
