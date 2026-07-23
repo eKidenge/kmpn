@@ -320,7 +320,7 @@ def super_admin_dashboard(request):
         'recent_applications': recent_applications,
         'recent_activity': recent_activity,
     }
-    return render(request, 'dashboards/super_admin.html', context)
+    return render(request, 'dashboard/super_admin.html', context)
 
 
 @login_required
@@ -347,8 +347,9 @@ def admin_dashboard(request):
         'recent_verifications': recent_verifications,
         'role_counts': role_counts,
         'recent_members': recent_members,
+        'active_members': User.objects.filter(is_active=True).count(),
     }
-    return render(request, 'dashboards/admin.html', context)
+    return render(request, 'dashboard/admin.html', context)
 
 
 @login_required
@@ -359,7 +360,7 @@ def executive_dashboard(request):
     context = {
         'page_title': 'Executive Dashboard - KPSN',
     }
-    return render(request, 'dashboards/executive.html', context)
+    return render(request, 'dashboard/executive.html', context)
 
 
 @login_required
@@ -370,15 +371,17 @@ def moderator_dashboard(request):
     context = {
         'page_title': 'Moderator Dashboard - KPSN',
     }
-    return render(request, 'dashboards/moderator.html', context)
+    return render(request, 'dashboard/moderator.html', context)
 
 
 @login_required
 def member_dashboard(request):
     """Member Dashboard - Full member features"""
     
-    # Only verified and basic members can access
-    if request.user.role not in ['verified_member', 'basic_member']:
+    # Only verified members can access this specific dashboard
+    if request.user.role != 'verified_member':
+        if request.user.role == 'basic_member':
+            return redirect('basic_member_dashboard')
         messages.error(request, 'Access Denied')
         return redirect('home')
     
@@ -387,7 +390,23 @@ def member_dashboard(request):
         'user': request.user,
         'membership_status': request.user.get_membership_status(),
     }
-    return render(request, 'dashboards/member.html', context)
+    return render(request, 'dashboard/member.html', context)
+
+
+@login_required
+def basic_member_dashboard(request):
+    """Basic Member Dashboard - Limited member features"""
+    
+    if request.user.role != 'basic_member':
+        messages.error(request, 'Access Denied')
+        return redirect('home')
+    
+    context = {
+        'page_title': 'Basic Member Dashboard - KPSN',
+        'user': request.user,
+        'membership_status': request.user.get_membership_status(),
+    }
+    return render(request, 'dashboard/basic_member.html', context)
 
 
 @login_required
@@ -400,8 +419,9 @@ def alumni_dashboard(request):
     
     context = {
         'page_title': 'Alumni Dashboard - KPSN',
+        'user': request.user,
     }
-    return render(request, 'dashboards/alumni.html', context)
+    return render(request, 'dashboard/alumni.html', context)
 
 
 @login_required
@@ -414,8 +434,9 @@ def researcher_dashboard(request):
     
     context = {
         'page_title': 'Researcher Dashboard - KPSN',
+        'user': request.user,
     }
-    return render(request, 'dashboards/researcher.html', context)
+    return render(request, 'dashboard/researcher.html', context)
 
 
 @login_required
@@ -428,8 +449,9 @@ def partner_dashboard(request):
     
     context = {
         'page_title': 'Partner Dashboard - KPSN',
+        'user': request.user,
     }
-    return render(request, 'dashboards/partner.html', context)
+    return render(request, 'dashboard/partner.html', context)
 
 
 @login_required
@@ -453,7 +475,7 @@ def prospective_member_dashboard(request):
             'application': None,
         }
     
-    return render(request, 'dashboards/prospective_member.html', context)
+    return render(request, 'dashboard/prospective_member.html', context)
 
 
 @login_required
@@ -467,7 +489,7 @@ def guest_dashboard(request):
     context = {
         'page_title': 'Guest Dashboard - KPSN',
     }
-    return render(request, 'dashboards/guest.html', context)
+    return render(request, 'dashboard/guest.html', context)
 
 
 # ============================================================
@@ -587,7 +609,7 @@ def request_role_change(request):
     """Request to change user role"""
     
     if request.method == 'POST':
-        form = RoleChangeRequestForm(request.POST, request.FILES)
+        form = RoleChangeRequestForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             role_change = form.save(commit=False)
             role_change.user = request.user
@@ -605,7 +627,7 @@ def request_role_change(request):
             messages.success(request, 'Your role change request has been submitted for review.')
             return redirect('dashboard_redirect')
     else:
-        form = RoleChangeRequestForm()
+        form = RoleChangeRequestForm(user=request.user)
     
     context = {
         'form': form,

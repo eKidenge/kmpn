@@ -1,0 +1,100 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Researcher Dashboard - KPSN{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Researcher</span> Dashboard
+{% endblock %}
+
+{% block breadcrumb %}Researcher Dashboard{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+            <span class="stat-number">{{ user.publication_count|default:0 }}</span>
+            <div class="stat-label">Publications</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon"><i class="fas fa-quote-right"></i></div>
+            <span class="stat-number">{{ user.citation_count|default:0 }}</span>
+            <div class="stat-label">Citations</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            <span class="stat-number">{{ user.h_index|default:0 }}</span>
+            <div class="stat-label">H-Index</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+            <div class="stat-icon"><i class="fas fa-handshake"></i></div>
+            <span class="stat-number">0</span>
+            <div class="stat-label">Collaborations</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-bolt header-icon"></i>
+                Research Actions
+            </div>
+            <div class="card-body">
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-search"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Find Collaborators</div>
+                        <div class="action-desc">Search for researchers in your field</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-file-upload"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Add Publication</div>
+                        <div class="action-desc">Update your publication list</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-flask"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Research Resources</div>
+                        <div class="action-desc">Access research tools and databases</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-users header-icon"></i>
+                Research Interests
+            </div>
+            <div class="card-body">
+                {% if user.research_interests %}
+                    <p style="font-family:var(--font-secondary);color:var(--gray-700);font-size:0.95rem;">
+                        {{ user.research_interests }}
+                    </p>
+                {% else %}
+                    <p class="text-muted text-center py-3">No research interests listed</p>
+                    <a href="{% url 'profile_update' %}" class="btn-gold btn-sm w-100">Add Research Interests</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

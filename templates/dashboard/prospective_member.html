@@ -1,0 +1,108 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Application Status - KPSN{% endblock %}
+
+{% block dashboard_title %}
+    Application <span class="gold-text">Status</span>
+{% endblock %}
+
+{% block breadcrumb %}Application Status{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-duration="800">
+            <div class="card-body text-center py-5">
+                
+                <!-- Status Icon -->
+                {% if application %}
+                    {% if application.status == 'pending' %}
+                        <i class="fas fa-clock" style="font-size:4rem;color:var(--warning-color);margin-bottom:20px;"></i>
+                        <h4 style="font-family:var(--font-heading);color:var(--warning-color);">Application Pending</h4>
+                        <p style="font-family:var(--font-secondary);color:var(--gray-600);max-width:500px;margin:10px auto;">
+                            Your application for <strong class="text-gold">{{ application.requested_role|title }}</strong> 
+                            is currently under review. You will receive an email once a decision is made.
+                        </p>
+                    {% elif application.status == 'approved' %}
+                        <i class="fas fa-check-circle" style="font-size:4rem;color:var(--success-color);margin-bottom:20px;"></i>
+                        <h4 style="font-family:var(--font-heading);color:var(--success-color);">Application Approved!</h4>
+                        <p style="font-family:var(--font-secondary);color:var(--gray-600);max-width:500px;margin:10px auto;">
+                            Congratulations! Your application for <strong class="text-gold">{{ application.requested_role|title }}</strong> 
+                            has been approved. You can now login to access all features.
+                        </p>
+                        <a href="{% url 'accounts:login' %}" class="btn-gold mt-3">Login Now</a>
+                    {% elif application.status == 'rejected' %}
+                        <i class="fas fa-times-circle" style="font-size:4rem;color:var(--danger-color);margin-bottom:20px;"></i>
+                        <h4 style="font-family:var(--font-heading);color:var(--danger-color);">Application Rejected</h4>
+                        <p style="font-family:var(--font-secondary);color:var(--gray-600);max-width:500px;margin:10px auto;">
+                            We regret to inform you that your application for 
+                            <strong class="text-gold">{{ application.requested_role|title }}</strong> was not approved.
+                        </p>
+                        {% if application.review_notes %}
+                            <div class="alert alert-info mt-3" style="text-align:left;">
+                                <strong>Feedback:</strong> {{ application.review_notes }}
+                            </div>
+                        {% endif %}
+                        <a href="{% url 'home' %}" class="btn-gold mt-3">Return Home</a>
+                    {% elif application.status == 'needs_info' %}
+                        <i class="fas fa-info-circle" style="font-size:4rem;color:var(--info-color);margin-bottom:20px;"></i>
+                        <h4 style="font-family:var(--font-heading);color:var(--info-color);">More Information Needed</h4>
+                        <p style="font-family:var(--font-secondary);color:var(--gray-600);max-width:500px;margin:10px auto;">
+                            Your application for <strong class="text-gold">{{ application.requested_role|title }}</strong> 
+                            requires additional information.
+                        </p>
+                        {% if application.review_notes %}
+                            <div class="alert alert-info mt-3" style="text-align:left;">
+                                <strong>Please provide:</strong> {{ application.review_notes }}
+                            </div>
+                        {% endif %}
+                        <a href="mailto:support@kpsn.or.ke" class="btn-gold mt-3">Contact Support</a>
+                    {% endif %}
+                {% else %}
+                    <i class="fas fa-file-alt" style="font-size:4rem;color:var(--gold-color);margin-bottom:20px;opacity:0.3;"></i>
+                    <h4 style="font-family:var(--font-heading);color:var(--dark-blue);">No Application Found</h4>
+                    <p style="font-family:var(--font-secondary);color:var(--gray-600);max-width:500px;margin:10px auto;">
+                        You haven't submitted a registration application yet.
+                    </p>
+                    <a href="{% url 'accounts:register' %}" class="btn-gold mt-3">Register Now</a>
+                {% endif %}
+                
+                <!-- Application Details -->
+                {% if application %}
+                    <hr class="my-4">
+                    <div class="row text-start">
+                        <div class="col-md-6">
+                            <p style="font-family:var(--font-secondary);font-size:0.9rem;color:var(--gray-600);">
+                                <strong>Requested Role:</strong>
+                                <span class="text-gold">{{ application.requested_role|title }}</span>
+                            </p>
+                            <p style="font-family:var(--font-secondary);font-size:0.9rem;color:var(--gray-600);">
+                                <strong>Submitted:</strong>
+                                {{ application.created_at|date:"F d, Y" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p style="font-family:var(--font-secondary);font-size:0.9rem;color:var(--gray-600);">
+                                <strong>Status:</strong>
+                                <span class="badge {% if application.status == 'pending' %}badge-warning{% elif application.status == 'approved' %}badge-success{% elif application.status == 'rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                                    {{ application.status|title }}
+                                </span>
+                            </p>
+                            {% if application.reviewed_at %}
+                                <p style="font-family:var(--font-secondary);font-size:0.9rem;color:var(--gray-600);">
+                                    <strong>Reviewed:</strong>
+                                    {{ application.reviewed_at|date:"F d, Y" }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

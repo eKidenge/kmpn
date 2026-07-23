@@ -1,0 +1,114 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - KPSN{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Admin</span> Dashboard
+{% endblock %}
+
+{% block breadcrumb %}Admin Dashboard{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- Statistics -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <span class="stat-number">{{ total_members|default:0 }}</span>
+            <div class="stat-label">Total Members</div>
+            <span class="stat-change neutral">All time</span>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon"><i class="fas fa-user-clock"></i></div>
+            <span class="stat-number">{{ pending_applications|default:0 }}</span>
+            <div class="stat-label">Pending Applications</div>
+            <span class="stat-change up">Needs review</span>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-icon"><i class="fas fa-info-circle"></i></div>
+            <span class="stat-number">{{ pending_reviews|default:0 }}</span>
+            <div class="stat-label">Needs Info</div>
+            <span class="stat-change neutral">Awaiting response</span>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+            <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+            <span class="stat-number">{{ active_members|default:0 }}</span>
+            <div class="stat-label">Active Members</div>
+            <span class="stat-change up">Active</span>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions and Recent -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-bolt header-icon"></i>
+                Quick Actions
+            </div>
+            <div class="card-body">
+                <a href="{% url 'manage_applications' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-user-plus"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Review Applications</div>
+                        <div class="action-desc">Approve or reject pending registrations</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'manage_users' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-users-cog"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Manage Users</div>
+                        <div class="action-desc">View, edit, or suspend user accounts</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'manage_role_requests' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Role Change Requests</div>
+                        <div class="action-desc">Review and approve role changes</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-check-circle header-icon"></i>
+                Recent Verifications
+            </div>
+            <div class="card-body" style="max-height:300px;overflow-y:auto;">
+                {% for verification in recent_verifications %}
+                    <div class="activity-item">
+                        <div class="activity-icon icon-profile">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text">
+                                <strong>{{ verification.user.get_full_name|default:verification.user.username }}</strong>
+                                verified as <span class="text-gold">{{ verification.requested_role|title }}</span>
+                            </div>
+                            <div class="activity-time">{{ verification.reviewed_at|timesince }} ago</div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted text-center py-3">No recent verifications</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

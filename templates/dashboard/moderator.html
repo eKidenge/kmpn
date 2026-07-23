@@ -1,0 +1,94 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Moderator Dashboard - KPSN{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Moderator</span> Dashboard
+{% endblock %}
+
+{% block breadcrumb %}Moderator Dashboard{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon"><i class="fas fa-flag"></i></div>
+            <span class="stat-number">0</span>
+            <div class="stat-label">Reports</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon"><i class="fas fa-comments"></i></div>
+            <span class="stat-number">0</span>
+            <div class="stat-label">Forum Posts</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-icon"><i class="fas fa-user-slash"></i></div>
+            <span class="stat-number">0</span>
+            <div class="stat-label">Suspended Users</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <span class="stat-number">0</span>
+            <div class="stat-label">Flagged Content</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-bolt header-icon"></i>
+                Moderation Actions
+            </div>
+            <div class="card-body">
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-flag"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Review Reports</div>
+                        <div class="action-desc">Check reported content</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-comment-slash"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Moderate Forums</div>
+                        <div class="action-desc">Review forum posts</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-user-slash"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Manage Bans</div>
+                        <div class="action-desc">View and manage banned users</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-clock header-icon"></i>
+                Recent Activity
+            </div>
+            <div class="card-body text-center py-4">
+                <i class="fas fa-inbox" style="font-size:3rem;color:var(--gold-color);opacity:0.3;"></i>
+                <p class="text-muted mt-2">No recent moderation activity</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

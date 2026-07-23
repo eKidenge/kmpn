@@ -10,7 +10,6 @@
        REGISTER PAGE - GOVERNMENT STYLE
        ============================================================ */
     
-    /* Fonts - Government Style */
     @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+Pro:wght@400;600;700;900&display=swap');
     
     :root {
@@ -77,46 +76,45 @@
     /* Card Header - Government Style */
     .register-card .card-header {
         background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
-        padding: 30px 35px 25px;
+        padding: 25px 35px 20px;
         border-bottom: 4px solid var(--gold-color);
         text-align: center;
         position: relative;
     }
     
     .register-card .card-header .register-icon {
-        font-size: 2.8rem;
+        font-size: 2.5rem;
         color: var(--gold-color);
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         opacity: 0.8;
     }
     
     .register-card .card-header h3 {
         font-family: var(--font-heading);
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 900;
         color: var(--white);
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         letter-spacing: 1px;
     }
     
     .register-card .card-header .gold-text {
         color: var(--gold-color);
-        position: relative;
     }
     
     .register-card .card-header .decorative-line {
-        width: 80px;
+        width: 60px;
         height: 3px;
         background: var(--gold-color);
-        margin: 12px auto 10px;
+        margin: 8px auto 8px;
         border-radius: var(--radius-full);
     }
     
     .register-card .card-header .register-subtitle {
         font-family: var(--font-secondary);
         color: rgba(255,255,255,0.7);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 300;
         letter-spacing: 0.5px;
         margin-bottom: 0;
@@ -124,77 +122,7 @@
     
     /* Card Body */
     .register-card .card-body {
-        padding: 35px 40px 40px;
-    }
-    
-    /* ============================================================
-       PROGRESS STEPS
-       ============================================================ */
-    .register-progress {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding: 0 10px;
-        position: relative;
-    }
-    
-    .register-progress::before {
-        content: '';
-        position: absolute;
-        top: 18px;
-        left: 30px;
-        right: 30px;
-        height: 2px;
-        background: #e0d8c8;
-        z-index: 0;
-    }
-    
-    .register-progress .step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 1;
-        flex: 1;
-    }
-    
-    .register-progress .step-number {
-        width: 36px;
-        height: 36px;
-        border-radius: var(--radius-full);
-        background: #e0d8c8;
-        color: var(--gray-700);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: var(--font-heading);
-        font-weight: 700;
-        font-size: 0.9rem;
-        transition: var(--transition-normal);
-        border: 2px solid transparent;
-    }
-    
-    .register-progress .step.active .step-number {
-        background: var(--gold-color);
-        color: var(--white);
-        border-color: var(--gold-dark);
-        box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.2);
-    }
-    
-    .register-progress .step .step-label {
-        font-family: var(--font-secondary);
-        font-size: 0.7rem;
-        color: var(--gray-600);
-        margin-top: 6px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .register-progress .step.active .step-label {
-        color: var(--gold-color);
-        font-weight: 600;
+        padding: 30px 40px 35px;
     }
     
     /* ============================================================
@@ -202,35 +130,37 @@
        ============================================================ */
     
     /* Section Headers */
-    .register-card .card-body h6 {
+    .register-card .card-body .section-header {
         font-family: var(--font-heading);
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 700;
         color: var(--dark-blue);
-        margin-top: 8px;
-        margin-bottom: 16px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid rgba(201, 168, 76, 0.3);
+        margin-top: 4px;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid rgba(201, 168, 76, 0.25);
         display: flex;
         align-items: center;
+        gap: 8px;
     }
     
-    .register-card .card-body h6 .text-gold {
+    .register-card .card-body .section-header .section-icon {
         color: var(--gold-color);
+        font-size: 1rem;
     }
     
     /* Form Groups */
     .form-group {
-        margin-bottom: 18px;
+        margin-bottom: 16px;
         position: relative;
     }
     
     .form-label {
         font-family: var(--font-secondary);
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         color: var(--gray-800);
-        margin-bottom: 5px;
+        margin-bottom: 4px;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -251,9 +181,9 @@
     .form-control, .form-select {
         border: 2px solid #d4c8b0;
         border-radius: var(--radius-sm);
-        padding: 10px 15px;
+        padding: 9px 14px;
         font-family: var(--font-secondary);
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         transition: var(--transition-normal);
         background: var(--white);
         width: 100%;
@@ -263,7 +193,7 @@
     
     .form-control:focus, .form-select:focus {
         border-color: var(--gold-color);
-        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
         outline: none;
     }
     
@@ -272,7 +202,7 @@
     }
     
     .form-control.is-invalid:focus, .form-select.is-invalid:focus {
-        box-shadow: 0 0 0 3px rgba(138, 26, 26, 0.15);
+        box-shadow: 0 0 0 3px rgba(138, 26, 26, 0.12);
     }
     
     .form-control.is-valid {
@@ -280,21 +210,21 @@
     }
     
     .form-control.is-valid:focus {
-        box-shadow: 0 0 0 3px rgba(26, 122, 74, 0.15);
+        box-shadow: 0 0 0 3px rgba(26, 122, 74, 0.12);
     }
     
     .form-text {
         font-family: var(--font-secondary);
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: var(--gray-600);
-        margin-top: 4px;
+        margin-top: 3px;
     }
     
     .invalid-feedback {
         font-family: var(--font-secondary);
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         color: var(--danger-color);
-        margin-top: 4px;
+        margin-top: 3px;
     }
     
     /* Password Field Wrapper */
@@ -303,21 +233,22 @@
     }
     
     .password-field-wrapper .form-control {
-        padding-right: 45px;
+        padding-right: 42px;
     }
     
     .password-toggle {
         position: absolute;
-        right: 12px;
+        right: 10px;
         top: 50%;
         transform: translateY(-50%);
         background: none;
         border: none;
         color: var(--gray-500);
-        padding: 4px 8px;
+        padding: 4px 6px;
         cursor: pointer;
         transition: var(--transition-normal);
         z-index: 2;
+        font-size: 0.9rem;
     }
     
     .password-toggle:hover {
@@ -326,10 +257,10 @@
     
     /* Password Strength */
     .password-strength {
-        height: 4px;
+        height: 3px;
         background: #e0d8c8;
         border-radius: var(--radius-full);
-        margin-top: 6px;
+        margin-top: 5px;
         overflow: hidden;
     }
     
@@ -362,8 +293,8 @@
     
     .password-strength-text {
         font-family: var(--font-secondary);
-        font-size: 0.75rem;
-        margin-top: 3px;
+        font-size: 0.7rem;
+        margin-top: 2px;
     }
     
     .password-strength-text.weak { color: var(--danger-color); }
@@ -372,91 +303,19 @@
     .password-strength-text.strong { color: var(--success-color); }
     
     /* ============================================================
-       ROLE SELECTION - CARDS
-       ============================================================ */
-    .role-selection {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-    
-    .role-option {
-        position: relative;
-    }
-    
-    .role-option input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-    
-    .role-option .role-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 18px 12px;
-        border: 2px solid #e0d8c8;
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        transition: var(--transition-normal);
-        background: var(--white);
-        text-align: center;
-        min-height: 100px;
-        height: 100%;
-    }
-    
-    .role-option .role-card:hover {
-        border-color: var(--gold-light);
-        background: #faf8f0;
-    }
-    
-    .role-option input[type="radio"]:checked + .role-card {
-        border-color: var(--gold-color);
-        background: rgba(201, 168, 76, 0.08);
-        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
-    }
-    
-    .role-option .role-card .role-icon {
-        font-size: 1.8rem;
-        color: var(--gold-color);
-        margin-bottom: 6px;
-    }
-    
-    .role-option .role-card .role-name {
-        font-family: var(--font-secondary);
-        font-weight: 600;
-        font-size: 0.8rem;
-        color: var(--gray-800);
-    }
-    
-    .role-option .role-card .role-desc {
-        font-family: var(--font-secondary);
-        font-size: 0.65rem;
-        color: var(--gray-600);
-        margin-top: 2px;
-    }
-    
-    .role-option input[type="radio"]:checked + .role-card .role-name {
-        color: var(--gold-dark);
-    }
-    
-    /* ============================================================
        TERMS CHECKBOX
        ============================================================ */
     .form-check {
         display: flex;
         align-items: flex-start;
         gap: 10px;
-        margin: 16px 0 8px;
+        margin: 12px 0 6px;
         padding: 0;
     }
     
     .form-check-input {
-        width: 18px;
-        height: 18px;
+        width: 17px;
+        height: 17px;
         margin-top: 2px;
         flex-shrink: 0;
         border: 2px solid #d4c8b0;
@@ -466,6 +325,7 @@
         appearance: none;
         -webkit-appearance: none;
         position: relative;
+        background: var(--white);
     }
     
     .form-check-input:checked {
@@ -477,7 +337,7 @@
         content: '\f00c';
         font-family: 'Font Awesome 6 Free';
         font-weight: 900;
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         color: var(--white);
         position: absolute;
         top: 50%;
@@ -486,7 +346,7 @@
     }
     
     .form-check-input:focus {
-        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
         border-color: var(--gold-color);
     }
     
@@ -495,12 +355,12 @@
     }
     
     .form-check-input.is-invalid:focus {
-        box-shadow: 0 0 0 3px rgba(138, 26, 26, 0.15);
+        box-shadow: 0 0 0 3px rgba(138, 26, 26, 0.12);
     }
     
     .form-check-label {
         font-family: var(--font-secondary);
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: var(--gray-700);
         cursor: pointer;
     }
@@ -522,10 +382,10 @@
         background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
         color: var(--white);
         border: none;
-        padding: 14px 30px;
+        padding: 12px 28px;
         font-family: var(--font-heading);
         font-weight: 700;
-        font-size: 1.05rem;
+        font-size: 1rem;
         border-radius: var(--radius-sm);
         transition: var(--transition-normal);
         cursor: pointer;
@@ -540,7 +400,7 @@
     
     .btn-register:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(201, 168, 76, 0.35);
+        box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
         color: var(--white);
     }
     
@@ -561,7 +421,7 @@
         display: flex;
         align-items: center;
         text-align: center;
-        margin: 20px 0 16px;
+        margin: 18px 0 14px;
     }
     
     .divider::before,
@@ -582,7 +442,7 @@
     .divider span {
         font-family: var(--font-secondary);
         color: var(--gray-600);
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         font-weight: 600;
@@ -596,13 +456,13 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        padding: 10px 25px;
+        padding: 9px 22px;
         background: var(--white);
         border: 2px solid #e0d8c8;
         border-radius: var(--radius-sm);
         font-family: var(--font-secondary);
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: var(--gray-700);
         transition: var(--transition-normal);
         cursor: pointer;
@@ -611,7 +471,7 @@
     }
     
     .btn-google i {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: #ea4335;
     }
     
@@ -632,19 +492,69 @@
     .alert {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 18px;
+        gap: 10px;
+        padding: 10px 16px;
         border-radius: var(--radius-sm);
         background: #fbe9e7;
         border-left: 4px solid var(--danger-color);
-        margin-bottom: 18px;
+        margin-bottom: 16px;
         font-family: var(--font-secondary);
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: var(--danger-color);
     }
     
     .alert i {
-        font-size: 1.1rem;
+        font-size: 1rem;
+    }
+    
+    .alert-success {
+        background: #e8f5e9;
+        border-left-color: var(--success-color);
+        color: var(--success-color);
+    }
+    
+    /* ============================================================
+       ROLE DROPDOWN - PROFESSIONAL STYLE
+       ============================================================ */
+    .role-dropdown-wrapper {
+        position: relative;
+    }
+    
+    .role-dropdown-wrapper .form-select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23808080' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 12px 8px;
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 40px;
+    }
+    
+    .role-dropdown-wrapper .form-select option {
+        padding: 8px 12px;
+        font-family: var(--font-secondary);
+    }
+    
+    .role-dropdown-wrapper .form-select optgroup {
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-family: var(--font-heading);
+    }
+    
+    .role-hint {
+        font-family: var(--font-secondary);
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .role-hint i {
+        color: var(--gold-color);
+        font-size: 0.7rem;
     }
     
     /* ============================================================
@@ -656,17 +566,17 @@
         }
         
         .register-card .card-header {
-            padding: 25px 20px 20px;
+            padding: 20px 20px 18px;
         }
         
         .register-card .card-header h3 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
         }
     }
     
     @media (max-width: 768px) {
         .register-wrapper {
-            padding: 30px 0 50px;
+            padding: 25px 0 40px;
         }
         
         .register-card .card-body {
@@ -674,64 +584,47 @@
         }
         
         .register-card .card-header {
-            padding: 20px 15px 18px;
+            padding: 18px 15px 16px;
         }
         
         .register-card .card-header h3 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
         
         .register-card .card-header .register-subtitle {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
         }
         
-        .role-selection {
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 8px;
-        }
-        
-        .role-option .role-card {
-            min-height: 80px;
-            padding: 14px 10px;
-        }
-        
-        .role-option .role-card .role-icon {
-            font-size: 1.4rem;
-        }
-        
-        .register-progress {
-            padding: 0;
-            margin-bottom: 20px;
-        }
-        
-        .register-progress::before {
-            left: 15px;
-            right: 15px;
-        }
-        
-        .register-progress .step-number {
-            width: 30px;
-            height: 30px;
-            font-size: 0.75rem;
-        }
-        
-        .register-progress .step .step-label {
-            font-size: 0.6rem;
-        }
-    }
-    
-    @media (max-width: 576px) {
-        .role-selection {
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        .register-card .card-header .register-icon {
+            font-size: 2rem;
         }
         
         .form-label {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
+        }
+        
+        .form-control, .form-select {
+            font-size: 0.88rem;
+            padding: 8px 12px;
         }
         
         .btn-register {
             font-size: 0.9rem;
-            padding: 12px 20px;
+            padding: 11px 20px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .register-card .card-body {
+            padding: 16px 14px 20px;
+        }
+        
+        .register-card .card-header h3 {
+            font-size: 1.1rem;
+        }
+        
+        .register-card .card-body .section-header {
+            font-size: 0.9rem;
         }
     }
 </style>
@@ -741,7 +634,7 @@
 <section class="register-wrapper">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-10 col-md-11">
+            <div class="col-lg-8 col-md-10">
                 <div class="register-card" data-aos="fade-up" data-aos-duration="800">
                     
                     <!-- ============================================
@@ -763,32 +656,21 @@
                     ============================================ -->
                     <div class="card-body">
                         
-                        <!-- Progress Steps -->
-                        <div class="register-progress">
-                            <div class="step active">
-                                <div class="step-number">1</div>
-                                <span class="step-label">Personal</span>
-                            </div>
-                            <div class="step">
-                                <div class="step-number">2</div>
-                                <span class="step-label">Credentials</span>
-                            </div>
-                            <div class="step">
-                                <div class="step-number">3</div>
-                                <span class="step-label">Academic</span>
-                            </div>
-                            <div class="step">
-                                <div class="step-number">4</div>
-                                <span class="step-label">Role</span>
-                            </div>
-                        </div>
-                        
                         <!-- Error Messages -->
                         {% if form.non_field_errors %}
                             <div class="alert" role="alert">
                                 <i class="fas fa-exclamation-circle"></i>
                                 <span>{{ form.non_field_errors|join:", " }}</span>
                             </div>
+                        {% endif %}
+                        
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% endif %}" role="alert">
+                                    <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% endfor %}
                         {% endif %}
                         
                         <!-- ============================================
@@ -800,10 +682,10 @@
                             <!-- ==========================================
                             SECTION 1: PERSONAL INFORMATION
                             ========================================== -->
-                            <h6>
-                                <i class="fas fa-user text-gold me-2"></i> 
+                            <div class="section-header">
+                                <i class="fas fa-user section-icon"></i>
                                 Personal Information
-                            </h6>
+                            </div>
                             
                             <div class="row">
                                 <div class="col-md-6">
@@ -929,15 +811,15 @@
                                 {% endif %}
                             </div>
                             
-                            <hr class="my-4">
+                            <hr class="my-3">
                             
                             <!-- ==========================================
                             SECTION 2: PASSWORD
                             ========================================== -->
-                            <h6>
-                                <i class="fas fa-lock text-gold me-2"></i> 
+                            <div class="section-header">
+                                <i class="fas fa-lock section-icon"></i>
                                 Password
-                            </h6>
+                            </div>
                             
                             <div class="row">
                                 <div class="col-md-6">
@@ -999,15 +881,15 @@
                                 </div>
                             </div>
                             
-                            <hr class="my-4">
+                            <hr class="my-3">
                             
                             <!-- ==========================================
                             SECTION 3: ACADEMIC INFORMATION
                             ========================================== -->
-                            <h6>
-                                <i class="fas fa-graduation-cap text-gold me-2"></i> 
+                            <div class="section-header">
+                                <i class="fas fa-graduation-cap section-icon"></i>
                                 Academic Information
-                            </h6>
+                            </div>
                             
                             <div class="form-group">
                                 <label for="{{ form.academic_level.id_for_label }}" class="form-label">
@@ -1060,7 +942,7 @@
                                 <textarea name="{{ form.research_interests.name }}" 
                                           id="{{ form.research_interests.id_for_label }}" 
                                           class="form-control"
-                                          rows="3"
+                                          rows="2"
                                           placeholder="Enter your research interests">{{ form.research_interests.value|default:'' }}</textarea>
                                 <div class="form-text">
                                     <i class="fas fa-info-circle me-1"></i>
@@ -1084,127 +966,45 @@
                                 </div>
                             </div>
                             
-                            <hr class="my-4">
+                            <hr class="my-3">
                             
                             <!-- ==========================================
-                            SECTION 4: ROLE SELECTION
+                            SECTION 4: ROLE SELECTION (DROPDOWN)
                             ========================================== -->
-                            <h6>
-                                <i class="fas fa-users-cog text-gold me-2"></i> 
+                            <div class="section-header">
+                                <i class="fas fa-users-cog section-icon"></i>
                                 Select Your Role
-                            </h6>
+                            </div>
                             
                             <div class="form-group">
-                                <label class="form-label">
+                                <label for="{{ form.role.id_for_label }}" class="form-label">
                                     <i class="fas fa-user-tie field-icon"></i>
                                     Choose the role that best describes you
                                     <span class="required-star">*</span>
                                 </label>
-                                
-                                <div class="role-selection" id="role-selection">
-                                    <!-- Super Admin -->
-                                    <label class="role-option">
-                                        <input type="radio" name="role" value="super_admin" 
-                                               {% if form.role.value == 'super_admin' %}checked{% endif %}>
-                                        <div class="role-card">
-                                            <i class="fas fa-crown role-icon"></i>
-                                            <span class="role-name">Super Admin</span>
-                                            <span class="role-desc">Full system control</span>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Admin -->
-                                    <label class="role-option">
-                                        <input type="radio" name="role" value="admin" 
-                                               {% if form.role.value == 'admin' %}checked{% endif %}>
-                                        <div class="role-card">
-                                            <i class="fas fa-user-shield role-icon"></i>
-                                            <span class="role-name">Administrator</span>
-                                            <span class="role-desc">Manage members & content</span>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Executive -->
-                                    <label class="role-option">
-                                        <input type="radio" name="role" value="executive" 
-                                               {% if form.role.value == 'executive' %}checked{% endif %}>
-                                        <div class="role-card">
-                                            <i class="fas fa-user-tie role-icon"></i>
-                                            <span class="role-name">Executive</span>
-                                            <span class="role-desc">Committee member</span>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Moderator -->
-                                    <label class="role-option">
-                                        <input type="radio" name="role" value="moderator" 
-                                               {% if form.role.value == 'moderator' %}checked{% endif %}>
-                                        <div class="role-card">
-                                            <i class="fas fa-gavel role-icon"></i>
-                                            <span class="role-name">Moderator</span>
-                                            <span class="role-desc">Forum & content mod</span>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Verified Member -->
-                                    <label class="role-option">
-                                        <input type="radio" name="role" value="verified_member" 
-                                               {% if form.role.value == 'verified_member' %}checked{% endif %}>
-                                        <div class="role-card">
-                                            <i class="fas fa-user-check role-icon"></i>
-                                            <span class="role-name">Verified Member</span>
-                                            <span class="role-desc">Full member access</span>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Basic Member -->
-                                    <label class="role-option">
-                                        <input type="radio" name="role" value="basic_member" 
-                                               {% if form.role.value == 'basic_member' %}checked{% endif %}>
-                                        <div class="role-card">
-                                            <i class="fas fa-user role-icon"></i>
-                                            <span class="role-name">Basic Member</span>
-                                            <span class="role-desc">Standard member</span>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Researcher -->
-                                    <label class="role-option">
-                                        <input type="radio" name="role" value="researcher" 
-                                               {% if form.role.value == 'researcher' %}checked{% endif %}>
-                                        <div class="role-card">
-                                            <i class="fas fa-microscope role-icon"></i>
-                                            <span class="role-name">Researcher</span>
-                                            <span class="role-desc">Research-focused</span>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Alumni -->
-                                    <label class="role-option">
-                                        <input type="radio" name="role" value="alumni" 
-                                               {% if form.role.value == 'alumni' %}checked{% endif %}>
-                                        <div class="role-card">
-                                            <i class="fas fa-user-graduate role-icon"></i>
-                                            <span class="role-name">Alumni</span>
-                                            <span class="role-desc">Former member</span>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Partner -->
-                                    <label class="role-option">
-                                        <input type="radio" name="role" value="partner" 
-                                               {% if form.role.value == 'partner' %}checked{% endif %}>
-                                        <div class="role-card">
-                                            <i class="fas fa-handshake role-icon"></i>
-                                            <span class="role-name">Partner</span>
-                                            <span class="role-desc">Institutional partner</span>
-                                        </div>
-                                    </label>
+                                <div class="role-dropdown-wrapper">
+                                    <select name="role" id="id_role" class="form-select {% if form.role.errors %}is-invalid{% endif %}" required>
+                                        <option value="">-- Select Your Role --</option>
+                                        <optgroup label="Member Roles">
+                                            <option value="verified_member" {% if form.role.value == 'verified_member' %}selected{% endif %}>Verified Member - Full member access</option>
+                                            <option value="basic_member" {% if form.role.value == 'basic_member' %}selected{% endif %}>Basic Member - Standard member</option>
+                                        </optgroup>
+                                        <optgroup label="Academic & Research Roles">
+                                            <option value="researcher" {% if form.role.value == 'researcher' %}selected{% endif %}>Researcher - Research-focused</option>
+                                            <option value="alumni" {% if form.role.value == 'alumni' %}selected{% endif %}>Alumni - Former member</option>
+                                        </optgroup>
+                                        <optgroup label="Institutional & Partner Roles">
+                                            <option value="partner" {% if form.role.value == 'partner' %}selected{% endif %}>Partner - Institutional partner</option>
+                                        </optgroup>
+                                        <optgroup label="Leadership & Support Roles">
+                                            <option value="executive" {% if form.role.value == 'executive' %}selected{% endif %}>Executive - Committee member</option>
+                                            <option value="moderator" {% if form.role.value == 'moderator' %}selected{% endif %}>Moderator - Forum & content moderator</option>
+                                        </optgroup>
+                                    </select>
                                 </div>
-                                
-                                <div class="form-text">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Your role determines what features you can access
+                                <div class="role-hint">
+                                    <i class="fas fa-info-circle"></i>
+                                    Your role determines what features you can access. Admin and Super Admin roles are assigned by the system.
                                 </div>
                                 {% if form.role.errors %}
                                     <div class="invalid-feedback">
@@ -1213,15 +1013,15 @@
                                 {% endif %}
                             </div>
                             
-                            <hr class="my-4">
+                            <hr class="my-3">
                             
                             <!-- ==========================================
-                            SECTION 5: MOTIVATION & DOCUMENTS
+                            SECTION 5: MOTIVATION
                             ========================================== -->
-                            <h6>
-                                <i class="fas fa-file-alt text-gold me-2"></i> 
+                            <div class="section-header">
+                                <i class="fas fa-file-alt section-icon"></i>
                                 Application Details
-                            </h6>
+                            </div>
                             
                             <div class="form-group">
                                 <label for="{{ form.motivation.id_for_label }}" class="form-label">
@@ -1231,7 +1031,7 @@
                                 <textarea name="{{ form.motivation.name }}" 
                                           id="{{ form.motivation.id_for_label }}" 
                                           class="form-control {% if form.motivation.errors %}is-invalid{% endif %}"
-                                          rows="4"
+                                          rows="3"
                                           placeholder="Why do you want to join KPSN?">{{ form.motivation.value|default:'' }}</textarea>
                                 <div class="form-text">
                                     <i class="fas fa-info-circle me-1"></i>
@@ -1245,18 +1045,6 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="{{ form.experience.id_for_label }}" class="form-label">
-                                    <i class="fas fa-briefcase field-icon"></i>
-                                    Experience
-                                </label>
-                                <textarea name="{{ form.experience.name }}" 
-                                          id="{{ form.experience.id_for_label }}" 
-                                          class="form-control"
-                                          rows="3"
-                                          placeholder="List your relevant academic and professional experience">{{ form.experience.value|default:'' }}</textarea>
-                            </div>
-                            
-                            <div class="form-group">
                                 <label for="{{ form.cv.id_for_label }}" class="form-label">
                                     <i class="fas fa-file-pdf field-icon"></i>
                                     CV / Resume
@@ -1267,11 +1055,11 @@
                                        accept=".pdf,.doc,.docx">
                                 <div class="form-text">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    Upload your CV (PDF, DOC, or DOCX)
+                                    Upload your CV (PDF, DOC, or DOCX) - Optional
                                 </div>
                             </div>
                             
-                            <hr class="my-4">
+                            <hr class="my-3">
                             
                             <!-- ==========================================
                             SECTION 6: TERMS
@@ -1279,7 +1067,6 @@
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="agreeTerms" name="agree_terms" required>
                                 <label class="form-check-label" for="agreeTerms">
-                                    <i class="fas fa-check-circle me-1" style="color: var(--gold-color);"></i>
                                     I agree to the 
                                     <a href="#" class="text-gold">Terms and Conditions</a> and 
                                     <a href="#" class="text-gold">Privacy Policy</a>
@@ -1290,7 +1077,6 @@
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="agreePrivacy" name="agree_privacy" required>
                                 <label class="form-check-label" for="agreePrivacy">
-                                    <i class="fas fa-shield-alt me-1" style="color: var(--gold-color);"></i>
                                     I consent to the collection and processing of my data
                                     <span class="required-star">*</span>
                                 </label>
@@ -1306,7 +1092,7 @@
                             
                             <!-- Login Link -->
                             <div class="text-center mt-3">
-                                <p class="text-muted" style="font-family: var(--font-secondary); font-size: 0.95rem;">
+                                <p class="text-muted" style="font-family: var(--font-secondary); font-size: 0.9rem;">
                                     Already have an account? 
                                     <a href="{% url 'accounts:login' %}" class="text-gold fw-bold" style="text-decoration: none;">
                                         Login here <i class="fas fa-arrow-right ms-1"></i>
@@ -1321,8 +1107,8 @@
                             
                             <!-- Social Registration -->
                             <div class="text-center">
-                                <p class="text-muted small" style="font-size: 0.85rem;">Sign up using</p>
-                                <button class="btn-google" disabled style="opacity: 0.6; cursor: not-allowed;">
+                                <p class="text-muted small" style="font-size: 0.8rem;">Sign up using</p>
+                                <button class="btn-google" disabled style="opacity: 0.5; cursor: not-allowed;">
                                     <i class="fab fa-google"></i>
                                     <span>Google Sign Up (Coming Soon)</span>
                                 </button>
@@ -1330,7 +1116,7 @@
                             
                             <!-- Security Badge -->
                             <div class="text-center mt-3">
-                                <p class="text-muted small" style="font-size: 0.75rem;">
+                                <p class="text-muted small" style="font-size: 0.7rem;">
                                     <i class="fas fa-shield-alt me-1" style="color: var(--gold-color);"></i>
                                     Your information is secure and encrypted
                                 </p>
@@ -1395,16 +1181,16 @@
             if (/[^a-zA-Z0-9]/.test(password)) score += 1;
             
             if (score <= 2) {
-                text = 'Weak password - add more characters and variety';
+                text = 'Weak - add more characters and variety';
                 className = 'weak';
             } else if (score <= 3) {
-                text = 'Fair password - consider adding more variety';
+                text = 'Fair - consider adding more variety';
                 className = 'fair';
             } else if (score <= 4) {
-                text = 'Good password - almost there!';
+                text = 'Good - almost there!';
                 className = 'good';
             } else {
-                text = 'Strong password - excellent!';
+                text = 'Strong - excellent!';
                 className = 'strong';
             }
             

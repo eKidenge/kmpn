@@ -1,0 +1,97 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Executive Dashboard - KPSN{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Executive</span> Dashboard
+{% endblock %}
+
+{% block breadcrumb %}Executive Dashboard{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+            <span class="stat-number">0</span>
+            <div class="stat-label">Upcoming Events</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+            <span class="stat-number">0</span>
+            <div class="stat-label">Newsletter Subscribers</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-icon"><i class="fas fa-handshake"></i></div>
+            <span class="stat-number">0</span>
+            <div class="stat-label">Mentorship Pairs</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-bolt header-icon"></i>
+                Quick Actions
+            </div>
+            <div class="card-body">
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-calendar-plus"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Create Event</div>
+                        <div class="action-desc">Schedule a new event</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Send Newsletter</div>
+                        <div class="action-desc">Send updates to members</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-handshake"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Manage Mentorship</div>
+                        <div class="action-desc">Review mentorship applications</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-chart-line header-icon"></i>
+                Quick Stats
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="font-family:var(--font-secondary);color:var(--gray-700);">Total Members</span>
+                    <span style="font-family:var(--font-heading);font-weight:700;color:var(--dark-blue);">0</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="font-family:var(--font-secondary);color:var(--gray-700);">Active Communities</span>
+                    <span style="font-family:var(--font-heading);font-weight:700;color:var(--dark-blue);">0</span>
+                </div>
+                <div class="d-flex justify-content-between py-2">
+                    <span style="font-family:var(--font-secondary);color:var(--gray-700);">Total Resources</span>
+                    <span style="font-family:var(--font-heading);font-weight:700;color:var(--dark-blue);">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

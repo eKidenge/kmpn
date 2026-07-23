@@ -1,20 +1,58 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
-{% block title %}Login - KMPN{% endblock %}
+{% block title %}Login - KPSN{% endblock %}
 
 {% block extra_css %}
 <style>
     /* ============================================================
-       LOGIN PAGE SPECIFIC STYLES
+       LOGIN PAGE - GOVERNMENT STYLE
        ============================================================ */
     
+    /* Fonts - Government Style */
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+Pro:wght@400;600;700;900&display=swap');
+    
+    :root {
+        --gold-color: #c9a84c;
+        --gold-dark: #a8893a;
+        --gold-light: #e6d4a0;
+        --dark-blue: #0a1a2a;
+        --primary-color: #0a2a4a;
+        --navy-blue: #1a3a5a;
+        --cream-color: #faf8f0;
+        --cream-dark: #f0ece0;
+        --white: #ffffff;
+        --gray-500: #a0a0a0;
+        --gray-600: #808080;
+        --gray-700: #606060;
+        --gray-800: #404040;
+        --gray-900: #202020;
+        --success-color: #1a7a4a;
+        --danger-color: #8a1a1a;
+        --warning-color: #b8860b;
+        --font-heading: 'Playfair Display', 'Georgia', serif;
+        --font-primary: 'Merriweather', 'Times New Roman', serif;
+        --font-secondary: 'Inter', 'Arial', sans-serif;
+        --font-serif-pro: 'Source Serif Pro', 'Georgia', serif;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 15px rgba(0,0,0,0.10);
+        --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+        --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-full: 9999px;
+        --transition-normal: 0.3s ease;
+    }
+    
+    /* Section Background */
     .login-wrapper {
         min-height: 80vh;
         display: flex;
         align-items: center;
-        background: linear-gradient(135deg, var(--cream-color) 0%, var(--cream-dark) 100%);
-        padding: 40px 0;
+        background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d0 50%, #f0ece0 100%);
+        padding: 60px 0;
         position: relative;
         overflow: hidden;
     }
@@ -27,7 +65,7 @@
         width: 500px;
         height: 500px;
         border-radius: 50%;
-        background: rgba(212, 168, 67, 0.05);
+        background: rgba(201, 168, 76, 0.05);
         pointer-events: none;
     }
     
@@ -39,25 +77,45 @@
         width: 400px;
         height: 400px;
         border-radius: 50%;
-        background: rgba(26, 82, 118, 0.03);
+        background: rgba(10, 42, 74, 0.03);
         pointer-events: none;
     }
     
+    /* Login Card */
     .login-card {
-        border: none;
-        border-radius: var(--radius-lg);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        border-radius: var(--radius-md);
         box-shadow: var(--shadow-xl);
         overflow: hidden;
         background: var(--white);
         position: relative;
         z-index: 1;
+        transition: var(--transition-normal);
     }
     
+    .login-card:hover {
+        box-shadow: 0 25px 70px rgba(0,0,0,0.12);
+    }
+    
+    /* Card Header - Government Style */
     .login-card .card-header {
         background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
-        padding: 30px 35px;
+        padding: 35px 40px 30px;
         border-bottom: 4px solid var(--gold-color);
         text-align: center;
+        position: relative;
+    }
+    
+    .login-card .card-header::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 4px;
+        background: var(--gold-color);
+        border-radius: var(--radius-full);
     }
     
     .login-card .card-header .login-icon {
@@ -66,41 +124,53 @@
         margin-bottom: 10px;
         display: block;
         opacity: 0.9;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
     }
     
     .login-card .card-header h3 {
         font-family: var(--font-heading);
-        font-weight: 700;
+        font-weight: 900;
         color: var(--white);
-        margin-bottom: 0;
-        font-size: 1.8rem;
-        letter-spacing: 1px;
+        margin-bottom: 4px;
+        font-size: 2rem;
+        letter-spacing: 1.5px;
     }
     
     .login-card .card-header h3 .gold-text {
         color: var(--gold-color);
-    }
-    
-    .login-card .card-header .login-subtitle {
-        color: rgba(255,255,255,0.7);
-        font-size: 0.95rem;
-        margin-top: 5px;
-        font-weight: 300;
+        position: relative;
     }
     
     .login-card .card-header .decorative-line {
         width: 60px;
         height: 3px;
         background: var(--gold-color);
-        margin: 8px auto 0;
+        margin: 10px auto 8px;
         border-radius: var(--radius-full);
     }
     
-    .login-card .card-body {
-        padding: 35px 40px;
+    .login-card .card-header .login-subtitle {
+        color: rgba(255,255,255,0.7);
+        font-family: var(--font-secondary);
+        font-size: 0.95rem;
+        font-weight: 300;
+        letter-spacing: 0.5px;
+        margin-bottom: 0;
     }
     
-    /* Form Styling */
+    /* Card Body */
+    .login-card .card-body {
+        padding: 35px 40px 40px;
+    }
+    
+    /* ============================================================
+       FORM ELEMENTS
+       ============================================================ */
     .login-card .form-group {
         margin-bottom: 20px;
     }
@@ -108,15 +178,23 @@
     .login-card .form-label {
         font-family: var(--font-secondary);
         font-weight: 600;
-        color: var(--dark-blue);
-        font-size: 0.9rem;
+        color: var(--gray-800);
+        font-size: 0.85rem;
         margin-bottom: 5px;
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .login-card .form-label .field-icon {
+        color: var(--gold-color);
+        font-size: 0.85rem;
     }
     
     .login-card .form-label .required-star {
         color: var(--danger-color);
-        margin-left: 3px;
+        margin-left: 2px;
+        font-size: 1rem;
     }
     
     .login-card .form-control {
@@ -129,12 +207,18 @@
         background: var(--white);
         width: 100%;
         color: var(--gray-800);
+        line-height: 1.5;
     }
     
     .login-card .form-control:focus {
         border-color: var(--gold-color);
-        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.12);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
         outline: none;
+    }
+    
+    .login-card .form-control::placeholder {
+        color: var(--gray-500);
+        font-weight: 300;
     }
     
     .login-card .form-control.is-invalid {
@@ -146,16 +230,46 @@
     }
     
     .login-card .invalid-feedback {
-        font-size: 0.85rem;
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
         color: var(--danger-color);
         margin-top: 4px;
     }
     
+    /* Password Field Wrapper */
+    .password-field-wrapper {
+        position: relative;
+    }
+    
+    .password-field-wrapper .form-control {
+        padding-right: 45px;
+    }
+    
+    .login-card .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--gray-500);
+        padding: 4px 8px;
+        cursor: pointer;
+        transition: var(--transition-normal);
+        z-index: 2;
+        font-size: 1rem;
+    }
+    
+    .login-card .password-toggle:hover {
+        color: var(--gold-color);
+    }
+    
+    /* Remember Me Checkbox */
     .login-card .form-check {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-top: 10px;
+        margin-top: 12px;
         padding-left: 0;
     }
     
@@ -169,6 +283,9 @@
         flex-shrink: 0;
         margin-top: 0;
         background: var(--white);
+        appearance: none;
+        -webkit-appearance: none;
+        position: relative;
     }
     
     .login-card .form-check-input:checked {
@@ -176,24 +293,43 @@
         border-color: var(--gold-color);
     }
     
+    .login-card .form-check-input:checked::after {
+        content: '\f00c';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        font-size: 0.7rem;
+        color: var(--white);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
     .login-card .form-check-input:focus {
-        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
         border-color: var(--gold-color);
     }
     
     .login-card .form-check-label {
+        font-family: var(--font-secondary);
         font-weight: 400;
         color: var(--gray-700);
         font-size: 0.9rem;
         cursor: pointer;
     }
     
-    /* Buttons */
+    .login-card .form-check-label i {
+        color: var(--gold-color);
+    }
+    
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
     .login-card .btn-login {
         background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
         color: var(--white);
         border: none;
-        font-family: var(--font-secondary);
+        font-family: var(--font-heading);
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1.5px;
@@ -204,6 +340,10 @@
         width: 100%;
         font-size: 1rem;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
     }
     
     .login-card .btn-login:hover {
@@ -223,6 +363,74 @@
         transform: none;
     }
     
+    .login-card .btn-login i {
+        font-size: 1.1rem;
+    }
+    
+    /* ============================================================
+       LINKS
+       ============================================================ */
+    .login-card .auth-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+        padding: 0 2px;
+    }
+    
+    .login-card .auth-links a {
+        font-family: var(--font-secondary);
+        font-weight: 500;
+        font-size: 0.85rem;
+        color: var(--gray-700);
+        transition: var(--transition-normal);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .login-card .auth-links a:hover {
+        color: var(--gold-color);
+        text-decoration: underline;
+    }
+    
+    .login-card .auth-links a i {
+        color: var(--gold-color);
+        font-size: 0.85rem;
+    }
+    
+    /* ============================================================
+       DIVIDER
+       ============================================================ */
+    .login-card .divider {
+        display: flex;
+        align-items: center;
+        margin: 25px 0 20px;
+    }
+    
+    .login-card .divider::before,
+    .login-card .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 2px solid #e8e0d0;
+    }
+    
+    .login-card .divider span {
+        padding: 0 18px;
+        color: var(--gray-500);
+        font-family: var(--font-secondary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+    
+    /* ============================================================
+       SOCIAL BUTTON
+       ============================================================ */
     .login-card .btn-google {
         background: var(--white);
         color: var(--gray-700);
@@ -236,13 +444,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        font-size: 0.95rem;
+        gap: 12px;
+        font-size: 0.9rem;
         cursor: pointer;
         text-decoration: none;
     }
     
-    .login-card .btn-google:hover {
+    .login-card .btn-google:hover:not(:disabled) {
         border-color: var(--gold-color);
         background: var(--cream-color);
         transform: translateY(-2px);
@@ -250,71 +458,19 @@
     }
     
     .login-card .btn-google i {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         color: #ea4335;
     }
     
-    .login-card .btn-google.disabled {
+    .login-card .btn-google:disabled {
         opacity: 0.5;
         cursor: not-allowed;
         pointer-events: none;
     }
     
-    /* Links */
-    .login-card .auth-links {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 15px;
-    }
-    
-    .login-card .auth-links a {
-        font-family: var(--font-secondary);
-        font-weight: 500;
-        font-size: 0.9rem;
-        color: var(--secondary-color);
-        transition: var(--transition-normal);
-        text-decoration: none;
-    }
-    
-    .login-card .auth-links a:hover {
-        color: var(--gold-color);
-        text-decoration: underline;
-    }
-    
-    .login-card .auth-links a i {
-        margin-right: 5px;
-        color: var(--gold-color);
-        font-size: 0.85rem;
-    }
-    
-    /* Divider */
-    .login-card .divider {
-        display: flex;
-        align-items: center;
-        margin: 25px 0;
-    }
-    
-    .login-card .divider::before,
-    .login-card .divider::after {
-        content: '';
-        flex: 1;
-        border-bottom: 2px solid #e8e0d0;
-    }
-    
-    .login-card .divider span {
-        padding: 0 15px;
-        color: var(--gray-500);
-        font-family: var(--font-secondary);
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    /* Alert Styling */
+    /* ============================================================
+       ALERTS
+       ============================================================ */
     .login-card .alert {
         border-radius: var(--radius-sm);
         border-left: 4px solid var(--danger-color);
@@ -330,7 +486,7 @@
     }
     
     .login-card .alert i {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         flex-shrink: 0;
     }
     
@@ -340,15 +496,94 @@
         color: var(--success-color);
     }
     
-    /* Responsive */
+    .login-card .alert.alert-warning {
+        border-left-color: var(--warning-color);
+        background: #fff8e1;
+        color: var(--warning-color);
+    }
+    
+    .login-card .alert.alert-info {
+        border-left-color: var(--navy-blue);
+        background: #e3f2fd;
+        color: var(--navy-blue);
+    }
+    
+    /* ============================================================
+       REGISTRATION PROMPT
+       ============================================================ */
+    .registration-prompt {
+        margin-top: 20px;
+        text-align: center;
+    }
+    
+    .registration-prompt p {
+        font-family: var(--font-secondary);
+        color: var(--gray-600);
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+    
+    .registration-prompt a {
+        color: var(--gold-color);
+        font-weight: 700;
+        text-decoration: none;
+        transition: var(--transition-normal);
+    }
+    
+    .registration-prompt a:hover {
+        text-decoration: underline;
+        color: var(--gold-dark);
+    }
+    
+    .registration-prompt a i {
+        transition: var(--transition-normal);
+    }
+    
+    .registration-prompt a:hover i {
+        transform: translateX(4px);
+    }
+    
+    /* ============================================================
+       SECURITY BADGE
+       ============================================================ */
+    .security-badge {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    .security-badge p {
+        font-family: var(--font-secondary);
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        margin-bottom: 0;
+    }
+    
+    .security-badge i {
+        color: var(--gold-color);
+        margin-right: 4px;
+    }
+    
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 991.98px) {
+        .login-card .card-header {
+            padding: 30px 25px;
+        }
+        
+        .login-card .card-body {
+            padding: 30px 25px 35px;
+        }
+    }
+    
     @media (max-width: 767.98px) {
         .login-wrapper {
             min-height: auto;
-            padding: 30px 0;
+            padding: 40px 0;
         }
         
         .login-card .card-header {
-            padding: 25px 20px;
+            padding: 25px 20px 22px;
         }
         
         .login-card .card-header .login-icon {
@@ -356,17 +591,21 @@
         }
         
         .login-card .card-header h3 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+        }
+        
+        .login-card .card-header .login-subtitle {
+            font-size: 0.85rem;
         }
         
         .login-card .card-body {
-            padding: 25px 20px;
+            padding: 25px 20px 30px;
         }
         
         .login-card .auth-links {
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .login-card .auth-links .text-end {
@@ -375,8 +614,12 @@
     }
     
     @media (max-width: 575.98px) {
+        .login-wrapper {
+            padding: 30px 0;
+        }
+        
         .login-card .card-header {
-            padding: 20px 15px;
+            padding: 20px 15px 18px;
         }
         
         .login-card .card-header .login-icon {
@@ -388,11 +631,11 @@
         }
         
         .login-card .card-header .login-subtitle {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
         
         .login-card .card-body {
-            padding: 20px 15px;
+            padding: 20px 15px 25px;
         }
         
         .login-card .btn-login {
@@ -403,6 +646,15 @@
         .login-card .btn-google {
             padding: 10px 16px;
             font-size: 0.85rem;
+        }
+        
+        .login-card .form-control {
+            padding: 10px 14px;
+            font-size: 0.9rem;
+        }
+        
+        .login-card .form-label {
+            font-size: 0.8rem;
         }
     }
 </style>
@@ -416,47 +668,54 @@
             <div class="col-lg-6 col-md-8">
                 
                 <!-- Login Card -->
-                <div class="login-card card-government" data-aos="fade-up" data-aos-duration="800">
+                <div class="login-card" data-aos="fade-up" data-aos-duration="800">
                     
-                    <!-- Card Header -->
+                    <!-- ============================================
+                    CARD HEADER
+                    ============================================ -->
                     <div class="card-header">
                         <i class="fas fa-university login-icon"></i>
                         <h3>
-                            <i class="fas fa-sign-in-alt me-2" style="font-size: 1.2rem;"></i>
-                            Login to <span class="gold-text">KMPN</span>
+                            Login to <span class="gold-text">KPSN</span>
                         </h3>
                         <div class="decorative-line"></div>
-                        <p class="login-subtitle">Access your postgraduate network</p>
+                        <p class="login-subtitle">
+                            Kenya's Premier Postgraduate Scholars Network
+                        </p>
                     </div>
                     
-                    <!-- Card Body -->
+                    <!-- ============================================
+                    CARD BODY
+                    ============================================ -->
                     <div class="card-body">
                         
                         <!-- Error Messages -->
                         {% if form.errors %}
                             <div class="alert" role="alert">
                                 <i class="fas fa-exclamation-circle"></i>
-                                <span>Your username and password didn't match. Please try again.</span>
+                                <span>Your email and password didn't match. Please try again.</span>
                             </div>
                         {% endif %}
                         
                         {% if messages %}
                             {% for message in messages %}
-                                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}" role="alert">
-                                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                                <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% elif message.tags == 'success' %}success{% else %}info{% endif %}" role="alert">
+                                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
                                     <span>{{ message }}</span>
                                 </div>
                             {% endfor %}
                         {% endif %}
                         
-                        <!-- Login Form -->
+                        <!-- ============================================
+                        LOGIN FORM
+                        ============================================ -->
                         <form method="post" novalidate>
                             {% csrf_token %}
                             
-                            <!-- Username Field -->
+                            <!-- Username/Email Field -->
                             <div class="form-group">
                                 <label for="{{ form.username.id_for_label }}" class="form-label">
-                                    <i class="fas fa-envelope me-1" style="color: var(--gold-color);"></i>
+                                    <i class="fas fa-envelope field-icon"></i>
                                     Email Address
                                     <span class="required-star">*</span>
                                 </label>
@@ -474,22 +733,22 @@
                             </div>
                             
                             <!-- Password Field -->
-                            <div class="form-group" style="position: relative;">
+                            <div class="form-group">
                                 <label for="{{ form.password.id_for_label }}" class="form-label">
-                                    <i class="fas fa-lock me-1" style="color: var(--gold-color);"></i>
+                                    <i class="fas fa-lock field-icon"></i>
                                     Password
                                     <span class="required-star">*</span>
                                 </label>
-                                <input type="password" name="{{ form.password.name }}" 
-                                       id="{{ form.password.id_for_label }}" 
-                                       class="form-control {% if form.password.errors %}is-invalid{% endif %}"
-                                       placeholder="Enter your password"
-                                       required>
-                                <button type="button" class="btn btn-sm password-toggle" 
-                                        style="position:absolute;right:12px;top:54%;transform:translateY(-50%);background:transparent;border:none;color:var(--gray-500);padding:4px 8px;z-index:10;"
-                                        aria-label="Toggle password visibility">
-                                    <i class="fas fa-eye"></i>
-                                </button>
+                                <div class="password-field-wrapper">
+                                    <input type="password" name="{{ form.password.name }}" 
+                                           id="{{ form.password.id_for_label }}" 
+                                           class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                                           placeholder="Enter your password"
+                                           required>
+                                    <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
                                 {% if form.password.errors %}
                                     <div class="invalid-feedback">
                                         {{ form.password.errors|join:", " }}
@@ -501,15 +760,16 @@
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
                                 <label class="form-check-label" for="remember_me">
-                                    <i class="fas fa-check-circle me-1" style="color: var(--gold-color);"></i>
+                                    <i class="fas fa-check-circle me-1"></i>
                                     Remember me
                                 </label>
                             </div>
                             
                             <!-- Login Button -->
                             <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn-login">
-                                    <i class="fas fa-sign-in-alt me-2"></i> Login to KMPN
+                                <button type="submit" class="btn-login" id="loginBtn">
+                                    <i class="fas fa-sign-in-alt me-2"></i> 
+                                    Login to KPSN
                                 </button>
                             </div>
                             
@@ -528,18 +788,18 @@
                                 <span>or continue with</span>
                             </div>
                             
-                            <!-- Social Login - DISABLED (Google not configured) -->
+                            <!-- Social Login - DISABLED -->
                             <div class="text-center">
-                                <button class="btn-google disabled" disabled style="opacity: 0.6; cursor: not-allowed;">
+                                <button class="btn-google" disabled style="opacity: 0.5; cursor: not-allowed;">
                                     <i class="fab fa-google"></i>
                                     <span>Sign in with Google (Coming Soon)</span>
                                 </button>
                             </div>
                             
-                            <!-- Additional Info -->
-                            <div class="text-center mt-3">
-                                <p class="text-muted small" style="font-size: 0.8rem;">
-                                    <i class="fas fa-shield-alt me-1" style="color: var(--gold-color);"></i>
+                            <!-- Security Badge -->
+                            <div class="security-badge">
+                                <p>
+                                    <i class="fas fa-shield-alt"></i>
                                     Your information is secure and encrypted
                                 </p>
                             </div>
@@ -553,10 +813,10 @@
                 <!-- End Login Card -->
                 
                 <!-- Registration Prompt -->
-                <div class="text-center mt-4" data-aos="fade-up" data-aos-delay="200">
-                    <p class="text-muted" style="font-family: var(--font-secondary); font-size: 0.95rem;">
-                        New to KMPN? 
-                        <a href="{% url 'accounts:register' %}" class="text-gold fw-bold" style="text-decoration: none;">
+                <div class="registration-prompt" data-aos="fade-up" data-aos-delay="200">
+                    <p>
+                        New to KPSN? 
+                        <a href="{% url 'accounts:register' %}">
                             Create an account <i class="fas fa-arrow-right ms-1"></i>
                         </a>
                     </p>
@@ -575,16 +835,18 @@
     // PASSWORD VISIBILITY TOGGLE
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-        const passwordField = document.querySelector('#{{ form.password.id_for_label }}');
-        const toggleBtn = document.querySelector('.password-toggle');
+        const toggleBtns = document.querySelectorAll('.password-toggle');
         
-        if (passwordField && toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordField.setAttribute('type', type);
-                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        toggleBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const field = this.parentElement.querySelector('.form-control');
+                if (field) {
+                    const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+                    field.setAttribute('type', type);
+                    this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                }
             });
-        }
+        });
     });
     
     // ============================================================
@@ -595,21 +857,37 @@
         if (emailField) {
             setTimeout(function() {
                 emailField.focus();
-            }, 300);
+            }, 400);
         }
     });
     
     // ============================================================
-    // FORM SUBMISSION
+    // FORM SUBMISSION - DISABLE BUTTON
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        if (form && loginBtn) {
+            form.addEventListener('submit', function() {
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Logging in...';
+            });
+        }
+    });
+    
+    // ============================================================
+    // ENTER KEY TO SUBMIT (Browser default, but ensure it works)
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
         if (form) {
-            form.addEventListener('submit', function() {
-                const submitBtn = this.querySelector('.btn-login');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Logging in...';
+            form.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    const submitBtn = this.querySelector('.btn-login');
+                    if (submitBtn && !submitBtn.disabled) {
+                        submitBtn.click();
+                    }
                 }
             });
         }

@@ -1,0 +1,314 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Basic Member Dashboard - KPSN{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Basic Member</span> Dashboard
+{% endblock %}
+
+{% block breadcrumb %}Basic Member Dashboard{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- ============================================
+WELCOME & STATUS
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="dashboard-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="flex-shrink-0">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" 
+                                 style="width:70px;height:70px;border-radius:var(--radius-full);border:3px solid var(--gold-color);object-fit:cover;">
+                        {% else %}
+                            <div style="width:70px;height:70px;border-radius:var(--radius-full);border:3px solid var(--gold-color);
+                                       background:linear-gradient(135deg,var(--gold-color),var(--gold-dark));
+                                       display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:var(--white);">
+                                {{ user.get_full_name|first|default:user.username|first|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h4 style="font-family:var(--font-heading);color:var(--dark-blue);margin-bottom:4px;">
+                            Welcome back, <span class="text-gold">{{ user.get_full_name|default:user.username }}</span>!
+                        </h4>
+                        <p style="font-family:var(--font-secondary);color:var(--gray-600);margin-bottom:4px;">
+                            <i class="fas fa-user-tag me-1" style="color:var(--gold-color);"></i>
+                            Role: <span class="fw-bold">{{ user.get_role_display }}</span>
+                        </p>
+                        <p style="font-family:var(--font-secondary);color:var(--gray-600);margin-bottom:0;">
+                            <i class="fas fa-id-card me-1" style="color:var(--gold-color);"></i>
+                            Membership Status: 
+                            <span class="badge {% if membership_status == 'active' %}badge-success{% elif membership_status == 'expired' %}badge-danger{% else %}badge-warning{% endif %}" 
+                                  style="font-size:0.8rem;padding:4px 12px;">
+                                {{ membership_status|default:"Pending"|title }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="dashboard-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="card-body">
+                <div class="text-center">
+                    <div style="font-size:2.5rem;color:var(--gold-color);opacity:0.5;margin-bottom:4px;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div style="font-family:var(--font-secondary);color:var(--gray-600);font-size:0.85rem;">
+                        Member Since
+                    </div>
+                    <div style="font-family:var(--font-heading);font-weight:700;color:var(--dark-blue);font-size:1.1rem;">
+                        {{ user.membership_start_date|date:"F d, Y"|default:"Pending Approval" }}
+                    </div>
+                    {% if user.membership_number %}
+                        <div style="font-family:var(--font-secondary);color:var(--gray-600);font-size:0.8rem;margin-top:4px;">
+                            <i class="fas fa-id-card me-1" style="color:var(--gold-color);"></i>
+                            ID: <strong style="color:var(--dark-blue);">{{ user.membership_number }}</strong>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+UPGRADE NOTICE
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="150" 
+             style="border-left:4px solid var(--gold-color);">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div style="font-size:2rem;color:var(--gold-color);">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div style="flex:1;">
+                        <h5 style="font-family:var(--font-heading);color:var(--dark-blue);margin-bottom:2px;">
+                            <span class="text-gold">Upgrade</span> to Verified Member
+                        </h5>
+                        <p style="font-family:var(--font-secondary);color:var(--gray-600);margin-bottom:0;font-size:0.95rem;">
+                            Unlock full features including mentorship, research collaboration, and exclusive opportunities.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'request_role_change' %}" class="btn-gold" style="padding:10px 25px;font-size:0.9rem;white-space:nowrap;">
+                            <i class="fas fa-arrow-up me-1"></i> Upgrade Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+QUICK ACTIONS
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-6">
+        <a href="{% url 'profile_view' username=user.username %}" 
+           class="quick-action" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 15px;border-radius:var(--radius-md);border:1px solid var(--gray-200);text-decoration:none;background:var(--white);transition:var(--transition-normal);height:100%;">
+            <div style="font-size:2rem;color:var(--gold-color);margin-bottom:8px;">
+                <i class="fas fa-user"></i>
+            </div>
+            <div style="font-family:var(--font-secondary);font-weight:600;color:var(--gray-800);font-size:0.9rem;">
+                My Profile
+            </div>
+            <div style="font-family:var(--font-secondary);font-size:0.75rem;color:var(--gray-500);">
+                View & update
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-6">
+        <a href="{% url 'profile_update' %}" 
+           class="quick-action" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 15px;border-radius:var(--radius-md);border:1px solid var(--gray-200);text-decoration:none;background:var(--white);transition:var(--transition-normal);height:100%;">
+            <div style="font-size:2rem;color:var(--gold-color);margin-bottom:8px;">
+                <i class="fas fa-edit"></i>
+            </div>
+            <div style="font-family:var(--font-secondary);font-weight:600;color:var(--gray-800);font-size:0.9rem;">
+                Edit Profile
+            </div>
+            <div style="font-family:var(--font-secondary);font-size:0.75rem;color:var(--gray-500);">
+                Update information
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-6">
+        <a href="{% url 'change_password' %}" 
+           class="quick-action" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 15px;border-radius:var(--radius-md);border:1px solid var(--gray-200);text-decoration:none;background:var(--white);transition:var(--transition-normal);height:100%;">
+            <div style="font-size:2rem;color:var(--gold-color);margin-bottom:8px;">
+                <i class="fas fa-key"></i>
+            </div>
+            <div style="font-family:var(--font-secondary);font-weight:600;color:var(--gray-800);font-size:0.9rem;">
+                Change Password
+            </div>
+            <div style="font-family:var(--font-secondary);font-size:0.75rem;color:var(--gray-500);">
+                Security settings
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-6">
+        <a href="{% url 'request_role_change' %}" 
+           class="quick-action" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 15px;border-radius:var(--radius-md);border:1px solid var(--gray-200);text-decoration:none;background:var(--white);transition:var(--transition-normal);height:100%;">
+            <div style="font-size:2rem;color:var(--gold-color);margin-bottom:8px;">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <div style="font-family:var(--font-secondary);font-weight:600;color:var(--gray-800);font-size:0.9rem;">
+                Request Upgrade
+            </div>
+            <div style="font-family:var(--font-secondary);font-size:0.75rem;color:var(--gray-500);">
+                Become verified
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- ============================================
+FEATURES SECTION
+============================================ -->
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="dashboard-card" data-aos="fade-right" data-aos-delay="200">
+            <div class="card-header">
+                <i class="fas fa-lock header-icon"></i>
+                <span style="font-size:0.9rem;">Available Features</span>
+                <span class="badge" style="background:var(--success-color);color:var(--white);font-size:0.7rem;float:right;">
+                    <i class="fas fa-check me-1"></i> Active
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                    <i class="fas fa-check-circle" style="color:var(--success-color);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-700);">View your profile</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                    <i class="fas fa-check-circle" style="color:var(--success-color);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-700);">Update personal information</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                    <i class="fas fa-check-circle" style="color:var(--success-color);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-700);">Browse public resources</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                    <i class="fas fa-check-circle" style="color:var(--success-color);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-700);">View upcoming events</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2">
+                    <i class="fas fa-check-circle" style="color:var(--success-color);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-700);">Request role upgrade</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="dashboard-card" data-aos="fade-left" data-aos-delay="200">
+            <div class="card-header">
+                <i class="fas fa-star header-icon"></i>
+                <span style="font-size:0.9rem;">Premium Features</span>
+                <span class="badge" style="background:var(--gold-color);color:var(--white);font-size:0.7rem;float:right;">
+                    <i class="fas fa-crown me-1"></i> Upgrade Required
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                    <i class="fas fa-times-circle" style="color:var(--gray-400);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-500);">Mentorship program</span>
+                    <span class="badge" style="background:var(--gray-200);color:var(--gray-600);font-size:0.6rem;margin-left:auto;">
+                        Locked
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                    <i class="fas fa-times-circle" style="color:var(--gray-400);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-500);">Research collaboration</span>
+                    <span class="badge" style="background:var(--gray-200);color:var(--gray-600);font-size:0.6rem;margin-left:auto;">
+                        Locked
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                    <i class="fas fa-times-circle" style="color:var(--gray-400);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-500);">Exclusive opportunities</span>
+                    <span class="badge" style="background:var(--gray-200);color:var(--gray-600);font-size:0.6rem;margin-left:auto;">
+                        Locked
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                    <i class="fas fa-times-circle" style="color:var(--gray-400);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-500);">Community forums</span>
+                    <span class="badge" style="background:var(--gray-200);color:var(--gray-600);font-size:0.6rem;margin-left:auto;">
+                        Locked
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2">
+                    <i class="fas fa-times-circle" style="color:var(--gray-400);"></i>
+                    <span style="font-family:var(--font-secondary);color:var(--gray-500);">Advanced resources</span>
+                    <span class="badge" style="background:var(--gray-200);color:var(--gray-600);font-size:0.6rem;margin-left:auto;">
+                        Locked
+                    </span>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'request_role_change' %}" class="btn-gold" style="padding:8px 20px;font-size:0.85rem;width:100%;">
+                        <i class="fas fa-arrow-up me-1"></i> Upgrade to Verified Member
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+RECENT ACTIVITY
+============================================ -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="card-header">
+                <i class="fas fa-clock header-icon"></i>
+                Recent Activity
+            </div>
+            <div class="card-body">
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox" style="font-size:3rem;color:var(--gold-color);opacity:0.2;margin-bottom:10px;"></i>
+                    <p style="font-family:var(--font-secondary);color:var(--gray-500);font-size:0.95rem;margin-bottom:0;">
+                        No recent activity to display
+                    </p>
+                    <p style="font-family:var(--font-secondary);color:var(--gray-400);font-size:0.8rem;">
+                        Activities will appear here as you interact with the network
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+FOOTER NOTE
+============================================ -->
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <p style="font-family:var(--font-secondary);font-size:0.8rem;color:var(--gray-500);">
+            <i class="fas fa-info-circle me-1" style="color:var(--gold-color);"></i>
+            Your basic membership gives you access to essential features. 
+            <a href="{% url 'request_role_change' %}" class="text-gold fw-bold" style="text-decoration:none;">
+                Upgrade to Verified <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block dashboard_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Any basic member dashboard specific JavaScript
+        console.log('Basic Member Dashboard loaded');
+    });
+</script>
+{% endblock %}
