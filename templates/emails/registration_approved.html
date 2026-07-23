@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Approved - KPSN</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f0e8;
+            color: #404040;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 1px solid rgba(201, 168, 76, 0.2);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #0a1a2a 0%, #0a2a4a 50%, #1a3a5a 100%);
+            padding: 30px 35px 25px;
+            text-align: center;
+            border-bottom: 4px solid #c9a84c;
+        }
+        .email-header h1 {
+            font-family: 'Georgia', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        .email-header h1 span {
+            color: #c9a84c;
+        }
+        .email-header .subtitle {
+            font-family: 'Arial', sans-serif;
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+        .email-body {
+            padding: 35px 40px;
+        }
+        .email-body .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0a1a2a;
+            margin-bottom: 16px;
+        }
+        .email-body p {
+            font-family: 'Arial', sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #404040;
+            margin-bottom: 16px;
+        }
+        .email-body .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #1a7a4a;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+        .email-body .success-box p {
+            margin: 0;
+            color: #1a4a2a;
+        }
+        .email-body .success-box strong {
+            color: #1a7a4a;
+        }
+        .email-body .membership-details {
+            background: #f5f0e8;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+        .email-body .membership-details p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+        .email-body .dashboard-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #c9a84c 0%, #a8893a 100%);
+            color: #ffffff;
+            padding: 14px 40px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            margin: 16px 0 8px;
+        }
+        .email-body .dashboard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+        }
+        .email-body .features-list {
+            background: #f5f0e8;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+        .email-body .features-list ul {
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            color: #404040;
+            line-height: 1.8;
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        .email-footer {
+            padding: 20px 40px;
+            border-top: 1px solid #e8e0d0;
+            text-align: center;
+            background: #faf8f0;
+        }
+        .email-footer p {
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            color: #808080;
+            margin: 4px 0;
+        }
+        .email-footer .footer-links a {
+            color: #c9a84c;
+            text-decoration: none;
+            margin: 0 8px;
+            font-size: 12px;
+        }
+        .email-footer .footer-links a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 480px) {
+            .email-container {
+                margin: 20px 10px;
+            }
+            .email-header {
+                padding: 20px;
+            }
+            .email-header h1 {
+                font-size: 22px;
+            }
+            .email-body {
+                padding: 25px 20px;
+            }
+            .email-footer {
+                padding: 15px 20px;
+            }
+            .email-body .dashboard-btn {
+                display: block;
+                text-align: center;
+                padding: 12px 30px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Kenya <span>Postgraduate</span> Scholars Network</h1>
+            <div class="subtitle">Kenya's Premier Postgraduate Network</div>
+        </div>
+        
+        <div class="email-body">
+            <div class="greeting">Dear {{ user.get_full_name|default:user.username }},</div>
+            
+            <div class="success-box">
+                <p>
+                    <strong>Congratulations!</strong> Your registration has been <strong>APPROVED</strong>!
+                </p>
+            </div>
+            
+            <p>Welcome to the <strong>Kenya Postgraduate Scholars Network (KPSN)</strong>. You are now a verified member of Kenya's premier postgraduate community.</p>
+            
+            <div class="membership-details">
+                <p><strong>Membership Details:</strong></p>
+                <p><strong>Membership ID:</strong> {{ user.membership_number }}</p>
+                <p><strong>Role:</strong> {{ user.get_role_display }}</p>
+                <p><strong>Valid Until:</strong> {{ user.membership_expiry_date|date:"F d, Y" }}</p>
+            </div>
+            
+            <p><strong>You now have access to:</strong></p>
+            <div class="features-list">
+                <ul>
+                    <li>Community forums and discussions</li>
+                    <li>Research collaboration opportunities</li>
+                    <li>Exclusive events and webinars</li>
+                    <li>Mentorship programs</li>
+                    <li>Resource library access</li>
+                    <li>Funding and opportunity alerts</li>
+                </ul>
+            </div>
+            
+            <div style="text-align:center;">
+                <a href="https://{{ domain }}{% url 'dashboard_redirect' %}" class="dashboard-btn">
+                    <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                </a>
+            </div>
+            
+            <p style="font-family:'Arial',sans-serif;font-size:14px;color:#0a1a2a;margin-top:20px;">
+                We look forward to your active participation in the network!
+            </p>
+            <p style="font-family:'Arial',sans-serif;font-size:14px;color:#0a1a2a;font-weight:600;">
+                The KPSN Team
+            </p>
+        </div>
+        
+        <div class="email-footer">
+            <p><strong>Kenya Postgraduate Scholars Network</strong></p>
+            <p style="font-size:11px;">Nairobi, Kenya | info@kpsn.or.ke | +254 700 000 000</p>
+            <div class="footer-links">
+                <a href="https://{{ domain }}">Home</a>
+                <a href="https://{{ domain }}/about/">About</a>
+                <a href="https://{{ domain }}/contact/">Contact</a>
+                <a href="https://{{ domain }}/privacy/">Privacy Policy</a>
+            </div>
+            <p style="margin-top:8px;font-size:10px;color:#a0a0a0;">
+                &copy; 2026 Kenya Postgraduate Scholars Network. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

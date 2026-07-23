@@ -533,7 +533,7 @@ def has_any_role(user, roles):
     """Template filter to check if user has any of the given roles"""
     if not user or not user.is_authenticated:
         return False
-    roles_list = roles.split(',')
+    roles_list = [r.strip() for r in roles.split(',')]
     return user.role in roles_list
 
 

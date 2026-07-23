@@ -1,226 +1,771 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}Communities - KMPN{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* ============================================================
+       COMMUNITIES LIST PAGE - GOVERNMENT STYLE
+       ============================================================ */
+    
+    .communities-header {
+        margin-bottom: 30px;
+    }
+    
+    .communities-header .header-title {
+        font-family: var(--font-heading);
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--dark-blue);
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .communities-header .header-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: var(--gold-color);
+        border-radius: var(--radius-full);
+    }
+    
+    .communities-header .header-title .gold-text {
+        color: var(--gold-color);
+    }
+    
+    .communities-header .header-subtitle {
+        color: var(--gray-600);
+        font-size: 1.05rem;
+        margin-top: 8px;
+    }
+    
+    .communities-header .header-action {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        height: 100%;
+    }
+    
+    /* Filter Card */
+    .filter-card {
+        background: var(--white);
+        border: 1px solid #e8e0d0;
+        border-radius: var(--radius-md);
+        padding: 20px 25px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 30px;
+        transition: var(--transition-normal);
+    }
+    
+    .filter-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+    
+    .filter-card .form-control,
+    .filter-card .form-select {
+        border: 2px solid #d4c8b0;
+        border-radius: var(--radius-sm);
+        padding: 10px 15px;
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+        transition: var(--transition-normal);
+        background: var(--white);
+        color: var(--gray-800);
+        height: 48px;
+    }
+    
+    .filter-card .form-control:focus,
+    .filter-card .form-select:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.12);
+        outline: none;
+    }
+    
+    .filter-card .input-group-text {
+        background: var(--cream-color);
+        border: 2px solid #d4c8b0;
+        border-right: none;
+        border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+        color: var(--gray-600);
+        height: 48px;
+    }
+    
+    .filter-card .input-group .form-control {
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        height: 48px;
+    }
+    
+    .filter-card .btn-filter-submit {
+        height: 48px;
+        padding: 0 20px;
+        background: linear-gradient(135deg, var(--gold-color), var(--gold-dark));
+        color: var(--white);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        transition: var(--transition-normal);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    
+    .filter-card .btn-filter-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        background: linear-gradient(135deg, var(--gold-dark), #8a6a2a);
+    }
+    
+    /* Community Cards */
+    .community-card {
+        background: var(--white);
+        border: 1px solid #e8e0d0;
+        border-radius: var(--radius-md);
+        padding: 25px 20px;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-normal);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .community-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--gold-color);
+    }
+    
+    .community-card .community-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        border: 3px solid var(--gold-color);
+        margin: 0 auto 12px;
+        display: block;
+    }
+    
+    .community-card .community-logo-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: var(--radius-full);
+        background: linear-gradient(135deg, var(--gold-color), var(--gold-dark));
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        font-family: var(--font-heading);
+        font-size: 2.2rem;
+        font-weight: 900;
+        border: 3px solid var(--gold-light);
+    }
+    
+    .community-card .community-name {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: var(--dark-blue);
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    
+    .community-card .community-badges {
+        text-align: center;
+        margin-bottom: 12px;
+    }
+    
+    .community-card .community-badges .badge {
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 2px;
+        display: inline-block;
+    }
+    
+    .community-card .community-badges .badge-type {
+        background: var(--secondary-color);
+        color: var(--white);
+    }
+    
+    .community-card .community-badges .badge-access {
+        background: var(--navy-blue);
+        color: var(--white);
+    }
+    
+    .community-card .community-description {
+        color: var(--gray-700);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        flex: 1;
+        margin-bottom: 12px;
+    }
+    
+    .community-card .community-stats {
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+        padding: 10px 0;
+        border-top: 1px solid #f0ece0;
+        border-bottom: 1px solid #f0ece0;
+        margin-bottom: 12px;
+    }
+    
+    .community-card .community-stats .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .community-card .community-stats .stat-item i {
+        color: var(--gold-color);
+        font-size: 1rem;
+    }
+    
+    .community-card .community-stats .stat-item .stat-number {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--dark-blue);
+    }
+    
+    .community-card .community-stats .stat-item .stat-label {
+        font-size: 0.65rem;
+        color: var(--gray-600);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .community-card .community-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 12px;
+        justify-content: center;
+    }
+    
+    .community-card .community-tags .tag {
+        padding: 2px 10px;
+        border-radius: var(--radius-full);
+        font-size: 0.65rem;
+        font-weight: 500;
+        background: var(--cream-color);
+        color: var(--dark-blue);
+        border: 1px solid var(--gold-color);
+    }
+    
+    .community-card .community-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: auto;
+    }
+    
+    .community-card .community-actions .btn {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: var(--transition-normal);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    
+    .btn-view {
+        background: transparent;
+        color: var(--gold-color);
+        border: 2px solid var(--gold-color);
+    }
+    
+    .btn-view:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .btn-join {
+        background: var(--navy-blue);
+        color: var(--white);
+        border: none;
+    }
+    
+    .btn-join:hover {
+        background: var(--dark-blue);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        color: var(--white);
+    }
+    
+    .btn-leave {
+        background: transparent;
+        color: var(--danger-color);
+        border: 2px solid var(--danger-color);
+    }
+    
+    .btn-leave:hover {
+        background: var(--danger-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    /* No Communities */
+    .no-communities {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid #e8e0d0;
+    }
+    
+    .no-communities .no-icon {
+        font-size: 4rem;
+        color: var(--gray-300);
+        margin-bottom: 20px;
+    }
+    
+    .no-communities .no-title {
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        margin-bottom: 10px;
+    }
+    
+    .no-communities .no-text {
+        color: var(--gray-600);
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+    
+    /* Pagination */
+    .pagination-government {
+        margin-top: 30px;
+    }
+    
+    .pagination-government .page-link {
+        color: var(--secondary-color);
+        border: 1px solid #e8e0d0;
+        padding: 8px 16px;
+        font-family: var(--font-secondary);
+        font-weight: 500;
+        transition: var(--transition-normal);
+        background: var(--white);
+    }
+    
+    .pagination-government .page-link:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+    }
+    
+    .pagination-government .page-item.active .page-link {
+        background: var(--gold-color);
+        border-color: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .pagination-government .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    
+    .pagination-government .page-item:first-child .page-link {
+        border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    }
+    
+    .pagination-government .page-item:last-child .page-link {
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 991.98px) {
+        .communities-header .header-action {
+            justify-content: flex-start;
+            margin-top: 15px;
+        }
+        
+        .communities-header .header-action .btn {
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        .communities-header .header-title {
+            font-size: 1.8rem;
+        }
+        
+        .filter-card {
+            padding: 15px;
+        }
+        
+        .filter-card .btn-filter-submit {
+            height: 44px;
+        }
+        
+        .community-card {
+            padding: 18px 15px;
+        }
+        
+        .community-card .community-logo,
+        .community-card .community-logo-placeholder {
+            width: 60px;
+            height: 60px;
+            font-size: 1.6rem;
+        }
+        
+        .community-card .community-name {
+            font-size: 1rem;
+        }
+    }
+    
+    @media (max-width: 575.98px) {
+        .communities-header .header-title {
+            font-size: 1.5rem;
+        }
+        
+        .communities-header .header-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .filter-card .input-group,
+        .filter-card .form-select {
+            margin-bottom: 10px;
+        }
+        
+        .filter-card .btn-filter-submit {
+            height: 42px;
+        }
+        
+        .community-card .community-stats .stat-item .stat-number {
+            font-size: 0.95rem;
+        }
+        
+        .community-card .community-actions .btn {
+            font-size: 0.75rem;
+            padding: 6px 12px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
+
 <section class="section-padding">
     <div class="container">
-        <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <h1 class="section-title">
-                    <i class="fas fa-users text-gold me-2"></i> Communities
-                </h1>
-                <p class="text-muted">Join discipline-based communities to connect with fellow researchers</p>
-            </div>
-            <div class="col-md-4 text-md-end">
-                <a href="{% url 'communities:create' %}" class="btn-gold">
-                    <i class="fas fa-plus-circle me-2"></i> Create Community
-                </a>
-            </div>
-        </div>
         
-        <!-- Filters -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card-government">
-                    <div class="card-body">
-                        <form method="get" class="row g-3">
-                            <div class="col-md-4">
-                                <div class="input-group">
-                                    <span class="input-group-text" style="background: var(--cream-color);">
-                                        <i class="fas fa-search"></i>
-                                    </span>
-                                    <input type="text" name="search" class="form-control" 
-                                           placeholder="Search communities..." value="{{ search_query }}">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <select name="type" class="form-control">
-                                    <option value="">All Types</option>
-                                    {% for type_value, type_label in community_types %}
-                                        <option value="{{ type_value }}" {% if type_value == current_type %}selected{% endif %}>
-                                            {{ type_label }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <select name="access" class="form-control">
-                                    <option value="">All Access</option>
-                                    {% for access_value, access_label in access_types %}
-                                        <option value="{{ access_value }}" {% if access_value == current_access %}selected{% endif %}>
-                                            {{ access_label }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <select name="sort" class="form-control">
-                                    <option value="-member_count" {% if current_sort == '-member_count' %}selected{% endif %}>Most Members</option>
-                                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Newest</option>
-                                    <option value="-post_count" {% if current_sort == '-post_count' %}selected{% endif %}>Most Active</option>
-                                </select>
-                            </div>
-                            <div class="col-md-1">
-                                <button type="submit" class="btn-gold w-100">
-                                    <i class="fas fa-filter"></i>
-                                </button>
-                            </div>
-                        </form>
+        <!-- ============================================================
+        HEADER
+        ============================================================ -->
+        <div class="communities-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="header-title">
+                        <i class="fas fa-users text-gold me-2" aria-hidden="true"></i>
+                        <span class="gold-text">Communities</span>
+                    </h1>
+                    <p class="header-subtitle">
+                        Join discipline-based communities to connect with fellow researchers and scholars
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <div class="header-action">
+                        <a href="{% url 'communities:create' %}" class="btn-gold" style="padding: 12px 28px;">
+                            <i class="fas fa-plus-circle me-2" aria-hidden="true"></i> Create Community
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Community Cards -->
+        <!-- ============================================================
+        FILTERS
+        ============================================================ -->
+        <div class="filter-card" data-aos="fade-up" data-aos-duration="600">
+            <form method="get" class="row g-3 align-items-end">
+                <!-- Search -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text" aria-hidden="true">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Search communities..." value="{{ search_query|default:'' }}">
+                    </div>
+                </div>
+                
+                <!-- Type Filter -->
+                <div class="col-md-3">
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        {% for type_value, type_label in community_types %}
+                            <option value="{{ type_value }}" {% if type_value == current_type %}selected{% endif %}>
+                                {{ type_label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Access Filter -->
+                <div class="col-md-3">
+                    <select name="access" class="form-select">
+                        <option value="">All Access</option>
+                        {% for access_value, access_label in access_types %}
+                            <option value="{{ access_value }}" {% if access_value == current_access %}selected{% endif %}>
+                                {{ access_label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Sort -->
+                <div class="col-md-2">
+                    <select name="sort" class="form-select">
+                        <option value="-member_count" {% if current_sort == '-member_count' %}selected{% endif %}>
+                            <i class="fas fa-users"></i> Most Members
+                        </option>
+                        <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>
+                            <i class="fas fa-clock"></i> Newest
+                        </option>
+                        <option value="-post_count" {% if current_sort == '-post_count' %}selected{% endif %}>
+                            <i class="fas fa-comments"></i> Most Active
+                        </option>
+                    </select>
+                </div>
+                
+                <!-- Submit -->
+                <div class="col-md-1">
+                    <button type="submit" class="btn-filter-submit" aria-label="Apply filters">
+                        <i class="fas fa-filter me-1" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- ============================================================
+        COMMUNITY CARDS
+        ============================================================ -->
         <div class="row g-4">
             {% if communities %}
                 {% for community in communities %}
-                <div class="col-lg-4 col-md-6">
-                    <div class="card-government h-100">
-                        <div class="card-body">
-                            <!-- Logo/Banner -->
-                            <div class="text-center mb-3">
-                                {% if community.logo %}
-                                    <img src="{{ community.logo.url }}" alt="{{ community.name }}" 
-                                         style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold-color);">
-                                {% else %}
-                                    <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--gold-color); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 2rem; font-weight: 900;">
-                                        {{ community.name|slice:":1"|upper }}
-                                    </div>
-                                {% endif %}
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                    <div class="community-card">
+                        
+                        <!-- Logo -->
+                        {% if community.logo %}
+                            <img src="{{ community.logo.url }}" alt="{{ community.name }}" class="community-logo">
+                        {% else %}
+                            <div class="community-logo-placeholder">
+                                {{ community.name|slice:":1"|upper }}
                             </div>
-                            
-                            <!-- Name -->
-                            <h4 class="text-center mb-2">{{ community.name }}</h4>
-                            
-                            <!-- Type & Access Badges -->
-                            <div class="text-center mb-3">
-                                <span class="badge" style="background: var(--secondary-color); color: white;">
-                                    {{ community.get_community_type_display }}
-                                </span>
-                                <span class="badge" style="background: var(--navy-blue); color: white;">
-                                    <i class="fas fa-{% if community.access_type == 'public' %}globe{% elif community.access_type == 'members_only' %}lock{% elif community.access_type == 'private' %}user-lock{% else %}user-plus{% endif %} me-1"></i>
-                                    {{ community.get_access_type_display }}
-                                </span>
+                        {% endif %}
+                        
+                        <!-- Name -->
+                        <h5 class="community-name">{{ community.name }}</h5>
+                        
+                        <!-- Badges -->
+                        <div class="community-badges">
+                            <span class="badge badge-type">
+                                <i class="fas fa-tag me-1" aria-hidden="true"></i>
+                                {{ community.get_community_type_display }}
+                            </span>
+                            <span class="badge badge-access">
+                                <i class="fas fa-{% if community.access_type == 'public' %}globe{% elif community.access_type == 'members_only' %}lock{% elif community.access_type == 'private' %}user-lock{% else %}user-plus{% endif %} me-1" aria-hidden="true"></i>
+                                {{ community.get_access_type_display }}
+                            </span>
+                        </div>
+                        
+                        <!-- Description -->
+                        <p class="community-description">
+                            {{ community.description|truncatewords:20|striptags }}
+                        </p>
+                        
+                        <!-- Stats -->
+                        <div class="community-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-users" aria-hidden="true"></i>
+                                <span class="stat-number">{{ community.member_count }}</span>
+                                <span class="stat-label">Members</span>
                             </div>
-                            
-                            <!-- Description -->
-                            <p class="small text-muted">{{ community.description|truncatewords:20|striptags }}</p>
-                            
-                            <!-- Stats -->
-                            <div class="d-flex justify-content-between text-center mb-3">
-                                <div>
-                                    <i class="fas fa-users text-gold"></i>
-                                    <div class="fw-bold">{{ community.member_count }}</div>
-                                    <small class="text-muted">Members</small>
-                                </div>
-                                <div>
-                                    <i class="fas fa-comments text-gold"></i>
-                                    <div class="fw-bold">{{ community.post_count }}</div>
-                                    <small class="text-muted">Posts</small>
-                                </div>
-                                <div>
-                                    <i class="fas fa-eye text-gold"></i>
-                                    <div class="fw-bold">{{ community.view_count }}</div>
-                                    <small class="text-muted">Views</small>
-                                </div>
+                            <div class="stat-item">
+                                <i class="fas fa-comments" aria-hidden="true"></i>
+                                <span class="stat-number">{{ community.post_count }}</span>
+                                <span class="stat-label">Posts</span>
                             </div>
-                            
-                            <!-- Tags -->
-                            {% if community.tags %}
-                                <div class="mb-3">
-                                    {% for tag in community.tags|slice:":3" %}
-                                        <span class="badge" style="background: var(--cream-color); color: var(--dark-blue); border: 1px solid var(--gold-color);">
-                                            #{{ tag }}
-                                        </span>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            
-                            <!-- Action Buttons -->
-                            <div class="d-grid gap-2">
-                                <a href="{% url 'communities:detail' slug=community.slug %}" class="btn-outline-gold">
-                                    <i class="fas fa-eye me-1"></i> View Community
-                                </a>
-                                {% if community.id in user_communities %}
-                                    <form action="{% url 'communities:leave' slug=community.slug %}" method="post" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-outline-danger w-100">
-                                            <i class="fas fa-sign-out-alt me-1"></i> Leave
-                                        </button>
-                                    </form>
-                                {% else %}
-                                    <form action="{% url 'communities:join' slug=community.slug %}" method="post" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn-navy w-100">
-                                            <i class="fas fa-user-plus me-1"></i> Join Community
-                                        </button>
-                                    </form>
-                                {% endif %}
+                            <div class="stat-item">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                <span class="stat-number">{{ community.view_count }}</span>
+                                <span class="stat-label">Views</span>
                             </div>
                         </div>
+                        
+                        <!-- Tags -->
+                        {% if community.tags %}
+                        <div class="community-tags">
+                            {% for tag in community.tags|slice:":3" %}
+                                <span class="tag">#{{ tag }}</span>
+                            {% endfor %}
+                            {% if community.tags|length > 3 %}
+                                <span class="tag">+{{ community.tags|length|add:"-3" }}</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Actions -->
+                        <div class="community-actions">
+                            <a href="{% url 'communities:detail' slug=community.slug %}" class="btn btn-view">
+                                <i class="fas fa-eye me-1" aria-hidden="true"></i> View Community
+                            </a>
+                            
+                            {% if community.id in user_communities %}
+                                <form action="{% url 'communities:leave' slug=community.slug %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-leave" onclick="return confirm('Are you sure you want to leave this community?')">
+                                        <i class="fas fa-sign-out-alt me-1" aria-hidden="true"></i> Leave
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form action="{% url 'communities:join' slug=community.slug %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-join">
+                                        <i class="fas fa-user-plus me-1" aria-hidden="true"></i> Join Community
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        
                     </div>
                 </div>
                 {% endfor %}
-            {% else %}
+                
+                <!-- ============================================================
+                PAGINATION
+                ============================================================ -->
+                {% if communities.has_other_pages %}
                 <div class="col-12">
-                    <div class="text-center py-5">
-                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
-                        <h3>No communities found</h3>
-                        <p class="text-muted">Be the first to create a community!</p>
-                        <a href="{% url 'communities:create' %}" class="btn-gold">
-                            <i class="fas fa-plus-circle me-2"></i> Create Community
+                    <nav aria-label="Page navigation" class="pagination-government">
+                        <ul class="pagination justify-content-center">
+                            {% if communities.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ communities.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_access %}&access={{ current_access }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                                        <i class="fas fa-chevron-left" aria-hidden="true"></i> Previous
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="fas fa-chevron-left" aria-hidden="true"></i> Previous</span>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in communities.paginator.page_range %}
+                                {% if communities.number == num %}
+                                    <li class="page-item active" aria-current="page">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > communities.number|add:'-3' and num < communities.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_access %}&access={{ current_access }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                                            {{ num }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if communities.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ communities.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_access %}&access={{ current_access }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                                        Next <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Next <i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+                
+            {% else %}
+                <!-- ============================================================
+                NO COMMUNITIES
+                ============================================================ -->
+                <div class="col-12">
+                    <div class="no-communities" data-aos="fade-up">
+                        <div class="no-icon">
+                            <i class="fas fa-users" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="no-title">No Communities Found</h3>
+                        <p class="no-text">
+                            {% if search_query or current_type or current_access %}
+                                Try adjusting your search filters or clear them to see all communities.
+                            {% else %}
+                                Be the first to create a community and start connecting with fellow researchers!
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'communities:create' %}" class="btn-gold" style="padding: 12px 32px;">
+                            <i class="fas fa-plus-circle me-2" aria-hidden="true"></i> Create Community
                         </a>
+                        {% if search_query or current_type or current_access %}
+                            <a href="{% url 'communities:list' %}" class="btn btn-outline-secondary ms-2" style="padding: 12px 32px;">
+                                <i class="fas fa-undo me-2" aria-hidden="true"></i> Clear Filters
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             {% endif %}
         </div>
         
-        <!-- Pagination -->
-        {% if communities.has_other_pages %}
-        <div class="row mt-4">
-            <div class="col-12">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        {% if communities.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ communities.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                            </li>
-                        {% endif %}
-                        
-                        {% for num in communities.paginator.page_range %}
-                            {% if communities.number == num %}
-                                <li class="page-item active">
-                                    <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
-                                        {{ num }}
-                                    </span>
-                                </li>
-                            {% elif num > communities.number|add:'-3' and num < communities.number|add:'3' %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">
-                                        {{ num }}
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% if communities.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ communities.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        {% endif %}
     </div>
 </section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ============================================================
+    // CONFIRM LEAVE COMMUNITY
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const leaveForms = document.querySelectorAll('form[action*="leave"]');
+        leaveForms.forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                if (!confirm('Are you sure you want to leave this community?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+    
+    // ============================================================
+    // AUTO-SUBMIT ON FILTER CHANGE (Optional)
+    // ============================================================
+    // Uncomment this to auto-submit when dropdown changes
+    /*
+    document.addEventListener('DOMContentLoaded', function() {
+        const selects = document.querySelectorAll('.filter-card select');
+        selects.forEach(function(select) {
+            select.addEventListener('change', function() {
+                this.closest('form').submit();
+            });
+        });
+    });
+    */
+</script>
 {% endblock %}

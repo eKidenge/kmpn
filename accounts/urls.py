@@ -1,3 +1,5 @@
+# accounts/urls.py
+
 from django.urls import path
 from . import views
 
@@ -22,11 +24,11 @@ urlpatterns = [
     path('dashboard/executive/', views.executive_dashboard, name='executive_dashboard'),
     path('dashboard/moderator/', views.moderator_dashboard, name='moderator_dashboard'),
     path('dashboard/member/', views.member_dashboard, name='member_dashboard'),
+    path('dashboard/basic-member/', views.basic_member_dashboard, name='basic_member_dashboard'),
     path('dashboard/alumni/', views.alumni_dashboard, name='alumni_dashboard'),
     path('dashboard/researcher/', views.researcher_dashboard, name='researcher_dashboard'),
     path('dashboard/partner/', views.partner_dashboard, name='partner_dashboard'),
     path('dashboard/guest/', views.guest_dashboard, name='guest_dashboard'),
-    path('dashboard/basic-member/', views.basic_member_dashboard, name='basic_member_dashboard'),
     path('dashboard/prospective/', views.prospective_member_dashboard, name='prospective_member_dashboard'),
     
     # ============================================================

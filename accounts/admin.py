@@ -1,18 +1,29 @@
+# accounts/admin.py
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, RegistrationApplication, RoleChangeRequest, UserActivityLog, UserDevice
+from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+from .models import (
+    User, 
+    UserActivityLog, 
+    UserDevice, 
+    RegistrationApplication, 
+    RoleChangeRequest
+)
 
 
 @admin.register(User)
 class UserAdminConfig(UserAdmin):
     """Custom User Admin configuration"""
     
-    # Fix: Change 'user_type' to 'role'
+    # Display fields in list view
     list_display = [
         'email', 
         'username', 
         'get_full_name', 
-        'role',  # Changed from 'user_type'
+        'role',
+        'registration_status',
         'institution',
         'is_verified',
         'is_active_member',
@@ -20,31 +31,36 @@ class UserAdminConfig(UserAdmin):
         'created_at'
     ]
     
-    # Fix: Change 'user_type' to 'role'
+    # Filters for sidebar
     list_filter = [
-        'role',  # Changed from 'user_type'
+        'role',
         'registration_status',
         'academic_level',
         'is_verified',
         'is_active_member',
         'is_active',
+        'email_verified',
         'created_at'
     ]
     
+    # Search fields
     search_fields = [
         'email', 
         'username', 
         'first_name', 
         'last_name',
-        'membership_number'
+        'membership_number',
+        'institution'
     ]
     
+    # Ordering
     ordering = ['-created_at']
     
+    # Fieldsets for detail view
     fieldsets = (
         ('Personal Information', {
             'fields': (
-                'email', 'username', 'first_name', 'last_name', 'title',
+                'uid', 'email', 'username', 'first_name', 'last_name', 'title',
                 'phone_number', 'bio', 'profile_picture'
             )
         }),
@@ -63,13 +79,45 @@ class UserAdminConfig(UserAdmin):
         ('Membership', {
             'fields': (
                 'membership_number', 'membership_start_date',
-                'membership_expiry_date', 'membership_fee_paid'
+                'membership_expiry_date', 'membership_fee_paid',
+                'membership_fee_paid_at'
             )
         }),
-        ('Social Links', {
+        ('Role-Specific Fields', {
+            'fields': (
+                'executive_position', 'executive_tenure_start', 'executive_tenure_end',
+                'partner_organization', 'partner_type',
+                'graduation_year', 'current_position',
+                'publication_count', 'citation_count', 'h_index'
+            )
+        }),
+        ('Social Media & Links', {
             'fields': (
                 'linkedin_url', 'researchgate_url',
-                'google_scholar_url', 'orcid_id', 'twitter_url'
+                'google_scholar_url', 'orcid_id', 'twitter_url', 'website_url'
+            )
+        }),
+        ('Mentorship', {
+            'fields': (
+                'is_mentor', 'mentor_areas', 'is_mentee', 'mentee_goals', 'mentor_id'
+            )
+        }),
+        ('Collaboration', {
+            'fields': (
+                'collaboration_interests', 'available_for_collaboration',
+                'collaboration_preferences'
+            )
+        }),
+        ('Preferences', {
+            'fields': (
+                'newsletter_subscribed', 'notification_preferences',
+                'language_preference', 'timezone'
+            )
+        }),
+        ('Security', {
+            'fields': (
+                'last_login_ip', 'login_attempts', 'locked_until',
+                'two_factor_enabled', 'two_factor_secret', 'security_questions'
             )
         }),
         ('Permissions', {
@@ -79,11 +127,13 @@ class UserAdminConfig(UserAdmin):
         }),
         ('Important Dates', {
             'fields': (
-                'last_login', 'created_at', 'updated_at'
+                'last_login', 'last_activity', 'created_at', 'updated_at',
+                'is_deleted', 'deleted_at'
             )
         }),
     )
     
+    # Fields for add user form
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -94,10 +144,69 @@ class UserAdminConfig(UserAdmin):
         }),
     )
     
+    # Read-only fields
     readonly_fields = (
-        'membership_number', 'membership_start_date',
-        'created_at', 'updated_at'
+        'uid', 'membership_number', 'membership_start_date',
+        'created_at', 'updated_at', 'last_activity',
+        'email_verification_token', 'verification_token'
     )
+    
+    # Actions
+    actions = [
+        'activate_users', 
+        'suspend_users', 
+        'ban_users',
+        'make_verified_member',
+        'make_basic_member',
+        'make_researcher',
+        'make_alumni'
+    ]
+    
+    def get_queryset(self, request):
+        """Prefetch related data for performance"""
+        return super().get_queryset(request).select_related('mentor_id')
+    
+    def activate_users(self, request, queryset):
+        """Activate selected users"""
+        count = queryset.update(is_active=True, registration_status='approved')
+        self.message_user(request, f'{count} users activated.')
+    activate_users.short_description = "Activate selected users"
+    
+    def suspend_users(self, request, queryset):
+        """Suspend selected users"""
+        count = queryset.update(is_active=False, registration_status='suspended')
+        self.message_user(request, f'{count} users suspended.')
+    suspend_users.short_description = "Suspend selected users"
+    
+    def ban_users(self, request, queryset):
+        """Ban selected users"""
+        count = queryset.update(is_active=False, registration_status='banned')
+        self.message_user(request, f'{count} users banned.')
+    ban_users.short_description = "Ban selected users"
+    
+    def make_verified_member(self, request, queryset):
+        """Make selected users verified members"""
+        count = queryset.update(role='verified_member', is_verified=True)
+        self.message_user(request, f'{count} users made verified members.')
+    make_verified_member.short_description = "Make verified member"
+    
+    def make_basic_member(self, request, queryset):
+        """Make selected users basic members"""
+        count = queryset.update(role='basic_member')
+        self.message_user(request, f'{count} users made basic members.')
+    make_basic_member.short_description = "Make basic member"
+    
+    def make_researcher(self, request, queryset):
+        """Make selected users researchers"""
+        count = queryset.update(role='researcher')
+        self.message_user(request, f'{count} users made researchers.')
+    make_researcher.short_description = "Make researcher"
+    
+    def make_alumni(self, request, queryset):
+        """Make selected users alumni"""
+        count = queryset.update(role='alumni')
+        self.message_user(request, f'{count} users made alumni.')
+    make_alumni.short_description = "Make alumni"
 
 
 @admin.register(RegistrationApplication)
@@ -105,19 +214,35 @@ class RegistrationApplicationAdmin(admin.ModelAdmin):
     """Admin for Registration Applications"""
     
     list_display = [
-        'user', 'requested_role', 'status', 'created_at', 'reviewed_at'
+        'user', 
+        'requested_role', 
+        'status', 
+        'created_at', 
+        'reviewed_at'
     ]
-    list_filter = ['status', 'requested_role', 'created_at']
-    search_fields = ['user__email', 'user__username', 'user__first_name', 'user__last_name']
+    
+    list_filter = [
+        'status', 
+        'requested_role', 
+        'created_at'
+    ]
+    
+    search_fields = [
+        'user__email', 
+        'user__username', 
+        'user__first_name', 
+        'user__last_name',
+        'motivation'
+    ]
+    
     readonly_fields = ['created_at', 'updated_at']
-    actions = ['approve_applications', 'reject_applications']
     
     fieldsets = (
         ('Application Details', {
-            'fields': ('user', 'requested_role', 'status')
+            'fields': ('uid', 'user', 'requested_role', 'status')
         }),
         ('Application Content', {
-            'fields': ('motivation', 'experience', 'publications')
+            'fields': ('motivation', 'experience', 'publications', 'references')
         }),
         ('Documents', {
             'fields': ('cv', 'recommendation_letter', 'additional_documents')
@@ -130,13 +255,17 @@ class RegistrationApplicationAdmin(admin.ModelAdmin):
         }),
     )
     
+    actions = [
+        'approve_applications', 
+        'reject_applications',
+        'mark_needs_info'
+    ]
+    
     def approve_applications(self, request, queryset):
-        from django.utils import timezone
         from .utils import send_approval_email, generate_membership_number
-        
         count = 0
         for application in queryset:
-            if application.status == 'pending':
+            if application.status in ['pending', 'needs_info']:
                 application.status = 'approved'
                 application.reviewed_by = request.user
                 application.reviewed_at = timezone.now()
@@ -156,7 +285,10 @@ class RegistrationApplicationAdmin(admin.ModelAdmin):
                 generate_membership_number(user)
                 
                 # Send approval email
-                send_approval_email(request, user)
+                try:
+                    send_approval_email(request, user)
+                except:
+                    pass
                 count += 1
         
         self.message_user(request, f'{count} applications approved.')
@@ -164,10 +296,9 @@ class RegistrationApplicationAdmin(admin.ModelAdmin):
     
     def reject_applications(self, request, queryset):
         from .utils import send_rejection_email
-        
         count = 0
         for application in queryset:
-            if application.status == 'pending':
+            if application.status in ['pending', 'needs_info']:
                 application.status = 'rejected'
                 application.reviewed_by = request.user
                 application.review_notes = 'Rejected via admin action'
@@ -179,20 +310,53 @@ class RegistrationApplicationAdmin(admin.ModelAdmin):
                 user.save()
                 
                 # Send rejection email
-                send_rejection_email(request, user, 'Your application has been rejected.')
+                try:
+                    send_rejection_email(request, user, 'Your application has been rejected.')
+                except:
+                    pass
                 count += 1
         
         self.message_user(request, f'{count} applications rejected.')
     reject_applications.short_description = "Reject selected applications"
+    
+    def mark_needs_info(self, request, queryset):
+        count = 0
+        for application in queryset:
+            if application.status == 'pending':
+                application.status = 'needs_info'
+                application.reviewed_by = request.user
+                application.reviewed_at = timezone.now()
+                application.save()
+                count += 1
+        
+        self.message_user(request, f'{count} applications marked as needing more information.')
+    mark_needs_info.short_description = "Mark as needs more information"
 
 
 @admin.register(RoleChangeRequest)
 class RoleChangeRequestAdmin(admin.ModelAdmin):
     """Admin for Role Change Requests"""
     
-    list_display = ['user', 'current_role', 'requested_role', 'status', 'created_at']
-    list_filter = ['status', 'current_role', 'requested_role']
-    search_fields = ['user__email', 'user__username']
+    list_display = [
+        'user', 
+        'current_role', 
+        'requested_role', 
+        'status', 
+        'created_at'
+    ]
+    
+    list_filter = [
+        'status', 
+        'current_role', 
+        'requested_role'
+    ]
+    
+    search_fields = [
+        'user__email', 
+        'user__username',
+        'reason'
+    ]
+    
     readonly_fields = ['created_at', 'updated_at']
     
     fieldsets = (
@@ -250,10 +414,41 @@ class RoleChangeRequestAdmin(admin.ModelAdmin):
 class UserActivityLogAdmin(admin.ModelAdmin):
     """Admin for User Activity Logs"""
     
-    list_display = ['user', 'action_type', 'action_description', 'created_at']
-    list_filter = ['action_type', 'created_at']
-    search_fields = ['user__email', 'user__username', 'action_description']
+    list_display = [
+        'user', 
+        'action_type', 
+        'action_description', 
+        'ip_address',
+        'created_at'
+    ]
+    
+    list_filter = [
+        'action_type', 
+        'created_at'
+    ]
+    
+    search_fields = [
+        'user__email', 
+        'user__username', 
+        'action_description'
+    ]
+    
     readonly_fields = ['created_at']
+    
+    fieldsets = (
+        ('Activity Details', {
+            'fields': ('user', 'action_type', 'action_description')
+        }),
+        ('Technical Details', {
+            'fields': ('ip_address', 'user_agent', 'referer_url')
+        }),
+        ('Metadata', {
+            'fields': ('metadata',)
+        }),
+        ('Timestamp', {
+            'fields': ('created_at',)
+        }),
+    )
     
     def has_add_permission(self, request):
         return False
@@ -266,7 +461,43 @@ class UserActivityLogAdmin(admin.ModelAdmin):
 class UserDeviceAdmin(admin.ModelAdmin):
     """Admin for User Devices"""
     
-    list_display = ['user', 'device_name', 'device_type', 'last_login', 'is_trusted']
-    list_filter = ['device_type', 'is_trusted']
-    search_fields = ['user__email', 'user__username', 'device_name']
+    list_display = [
+        'user', 
+        'device_name', 
+        'device_type', 
+        'last_login', 
+        'is_trusted'
+    ]
+    
+    list_filter = [
+        'device_type', 
+        'is_trusted',
+        'os'
+    ]
+    
+    search_fields = [
+        'user__email', 
+        'user__username', 
+        'device_name',
+        'device_id'
+    ]
+    
     readonly_fields = ['created_at']
+    
+    fieldsets = (
+        ('Device Details', {
+            'fields': ('user', 'device_type', 'device_name', 'device_id')
+        }),
+        ('Browser & OS', {
+            'fields': ('browser', 'browser_version', 'os', 'os_version')
+        }),
+        ('Network', {
+            'fields': ('ip_address', 'user_agent')
+        }),
+        ('Trust Status', {
+            'fields': ('is_trusted', 'last_login')
+        }),
+        ('Timestamp', {
+            'fields': ('created_at',)
+        }),
+    )

@@ -215,25 +215,30 @@ AUTHENTICATION_BACKENDS = [
 
 
 # ============================================================
-# DJANGO-ALLAUTH SETTINGS - FIXED (No deprecated warnings)
+# DJANGO-ALLAUTH SETTINGS - FIXED
 # ============================================================
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-# Modern allauth settings (NEW - replaces deprecated settings)
-ACCOUNT_LOGIN_METHODS = {'email'}  # Replaces ACCOUNT_AUTHENTICATION_METHOD
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']  # Replaces ACCOUNT_EMAIL_REQUIRED and ACCOUNT_USERNAME_REQUIRED
-ACCOUNT_RATE_LIMITS = {
-    'login_failed': '5/300',  # Replaces ACCOUNT_LOGIN_ATTEMPTS_LIMIT and ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT
-}
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
-
-# Additional allauth settings (these are still valid)
+# REQUIRED - These MUST be set for allauth to work
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[KMPN] '
+
+# Modern allauth settings (compatible with the above)
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_RATE_LIMITS = {
+    'login_failed': '5/300',
+}
 
 
 # ============================================================

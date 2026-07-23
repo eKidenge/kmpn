@@ -87,7 +87,7 @@ def home(request):
 
 
 # ============================================================
-# REGISTRATION (ROLE-BASED) - WITH DEBUG
+# REGISTRATION (ROLE-BASED) - WITH DEBUG & EMAIL ERROR HANDLING
 # ============================================================
 
 def register(request):
@@ -116,7 +116,8 @@ def register(request):
                     if field == '__all__':
                         messages.error(request, error)
                     else:
-                        messages.error(request, f"{field.replace('_', ' ').title()}: {error}")
+                        field_label = field.replace('_', ' ').title()
+                        messages.error(request, f"{field_label}: {error}")
         
         if form.is_valid():
             try:
@@ -136,15 +137,29 @@ def register(request):
                     }
                 )
                 
-                # Send verification email
-                send_verification_email(request, user)
+                # Send verification email with error handling
+                email_sent = False
+                try:
+                    email_sent = send_verification_email(request, user)
+                except Exception as email_error:
+                    logger.error(f"Email sending error: {str(email_error)}")
+                    print(f"EMAIL ERROR: {str(email_error)}")
                 
-                messages.success(
-                    request, 
-                    f'Registration successful! Your application for {dict(User.Roles.choices).get(form.cleaned_data["role"], "Member")} is pending review. '
-                    'Please check your email to verify your account.'
-                )
-                return redirect('login')
+                if email_sent:
+                    messages.success(
+                        request, 
+                        f'Registration successful! Your application for {dict(User.Roles.choices).get(form.cleaned_data["role"], "Member")} is pending review. '
+                        'Please check your email to verify your account.'
+                    )
+                else:
+                    messages.warning(
+                        request,
+                        'Registration successful but we could not send the verification email. '
+                        'Please contact support to verify your account or try resending the verification email.'
+                    )
+                
+                # FIXED: Use accounts:login instead of login
+                return redirect('accounts:login')
             
             except Exception as e:
                 logger.error(f"Registration error: {str(e)}")
@@ -200,7 +215,11 @@ def user_login(request):
                         'Please verify your email before logging in. Check your inbox for the verification link.'
                     )
                     # Resend verification
-                    send_verification_email(request, user)
+                    try:
+                        send_verification_email(request, user)
+                        messages.info(request, 'A new verification email has been sent to your inbox.')
+                    except:
+                        pass
                     return render(request, 'accounts/login.html', {'form': form})
                 
                 # Login successful
@@ -746,7 +765,10 @@ def review_application(request, application_id):
             generate_membership_number(user)
             
             # Send approval email
-            send_approval_email(request, user)
+            try:
+                send_approval_email(request, user)
+            except Exception as e:
+                logger.error(f"Failed to send approval email: {str(e)}")
             
             messages.success(request, f'Application for {user.get_full_name()} has been approved.')
             
@@ -762,7 +784,10 @@ def review_application(request, application_id):
             user.save()
             
             # Send rejection email
-            send_rejection_email(request, user, notes)
+            try:
+                send_rejection_email(request, user, notes)
+            except Exception as e:
+                logger.error(f"Failed to send rejection email: {str(e)}")
             
             messages.success(request, f'Application for {user.get_full_name()} has been rejected.')
             
@@ -774,7 +799,10 @@ def review_application(request, application_id):
             application.save()
             
             # Send email requesting more info
-            send_info_request_email(request, application.user, notes)
+            try:
+                send_info_request_email(request, application.user, notes)
+            except Exception as e:
+                logger.error(f"Failed to send info request email: {str(e)}")
             
             messages.success(request, f'Request for more information sent to {application.user.get_full_name()}.')
         
@@ -1044,7 +1072,7 @@ def activity_logs(request):
 
 
 # ============================================================
-# VERIFICATION
+# VERIFICATION - FIXED: Use accounts:login
 # ============================================================
 
 def verify_email(request, token):
@@ -1053,14 +1081,14 @@ def verify_email(request, token):
         user = User.objects.get(email_verification_token=token)
         if user.email_verified:
             messages.info(request, 'Your email is already verified.')
-            return redirect('login')
+            return redirect('accounts:login')  # FIXED
         
         user.email_verified = True
         user.is_active = True
         user.save()
         
         messages.success(request, 'Your email has been verified successfully! You can now login.')
-        return redirect('login')
+        return redirect('accounts:login')  # FIXED
     
     except User.DoesNotExist:
         messages.error(request, 'Invalid verification token.')
@@ -1075,11 +1103,15 @@ def resend_verification(request):
             user = User.objects.get(email=email)
             if user.email_verified:
                 messages.info(request, 'Your email is already verified.')
-                return redirect('login')
+                return redirect('accounts:login')  # FIXED
             
-            send_verification_email(request, user)
-            messages.success(request, 'Verification email has been resent. Please check your inbox.')
-            return redirect('login')
+            try:
+                send_verification_email(request, user)
+                messages.success(request, 'Verification email has been resent. Please check your inbox.')
+            except Exception as e:
+                messages.error(request, f'Could not send verification email: {str(e)}')
+            
+            return redirect('accounts:login')  # FIXED
         
         except User.DoesNotExist:
             messages.error(request, 'No user found with this email address.')
@@ -1088,7 +1120,7 @@ def resend_verification(request):
 
 
 # ============================================================
-# PASSWORD RESET
+# PASSWORD RESET - FIXED: Use accounts:login
 # ============================================================
 
 def password_reset_request(request):
@@ -1120,13 +1152,14 @@ def password_reset_request(request):
                     settings.DEFAULT_FROM_EMAIL,
                     [email],
                     fail_silently=False,
+                    html_message=message,
                 )
                 
                 messages.success(
                     request,
                     'Password reset email has been sent. Please check your inbox.'
                 )
-                return redirect('login')
+                return redirect('accounts:login')  # FIXED
             except User.DoesNotExist:
                 messages.error(request, 'No user found with this email address.')
     else:
@@ -1159,7 +1192,7 @@ def password_reset_confirm(request, uidb64, token):
                     request,
                     'Your password has been reset successfully! You can now login with your new password.'
                 )
-                return redirect('login')
+                return redirect('accounts:login')  # FIXED
         else:
             form = PasswordResetConfirmForm()
         
