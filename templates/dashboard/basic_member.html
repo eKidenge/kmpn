@@ -1,0 +1,815 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Basic Member Dashboard - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       BASIC MEMBER DASHBOARD - GOVERNMENT STYLE
+       ============================================================ */
+    
+    /* Government Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+Pro:wght@400;600;700;900&family=Roboto+Slab:wght@300;400;600;700&display=swap');
+    
+    :root {
+        --gold-color: #c9a84c;
+        --gold-dark: #a8893a;
+        --gold-light: #e6d4a0;
+        --dark-blue: #0a1a2a;
+        --primary-color: #0a2a4a;
+        --navy-blue: #1a3a5a;
+        --cream-color: #faf8f0;
+        --cream-dark: #f0ece0;
+        --white: #ffffff;
+        --gray-200: #f0f0f0;
+        --gray-300: #e0e0e0;
+        --gray-400: #c0c0c0;
+        --gray-500: #a0a0a0;
+        --gray-600: #808080;
+        --gray-700: #606060;
+        --gray-800: #404040;
+        --gray-900: #202020;
+        --success-color: #1a7a4a;
+        --danger-color: #8a1a1a;
+        --warning-color: #b8860b;
+        --info-color: #1a5a7a;
+        --font-heading: 'Playfair Display', 'Georgia', serif;
+        --font-primary: 'Merriweather', 'Times New Roman', serif;
+        --font-secondary: 'Inter', 'Arial', sans-serif;
+        --font-serif-pro: 'Source Serif Pro', 'Georgia', serif;
+        --font-slab: 'Roboto Slab', 'Georgia', serif;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 15px rgba(0,0,0,0.10);
+        --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+        --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-full: 9999px;
+        --transition-normal: 0.3s ease;
+    }
+    
+    /* Welcome Section */
+    .welcome-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-normal);
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .welcome-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+    
+    .welcome-card .welcome-avatar {
+        width: 75px;
+        height: 75px;
+        border-radius: var(--radius-full);
+        border: 3px solid var(--gold-color);
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    
+    .welcome-card .welcome-avatar-placeholder {
+        width: 75px;
+        height: 75px;
+        border-radius: var(--radius-full);
+        background: linear-gradient(135deg, var(--gold-color), var(--gold-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--white);
+        font-family: var(--font-heading);
+        flex-shrink: 0;
+        border: 3px solid var(--gold-light);
+    }
+    
+    .welcome-card .welcome-name {
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--dark-blue);
+        margin-bottom: 2px;
+    }
+    
+    .welcome-card .welcome-name .gold-text {
+        color: var(--gold-color);
+    }
+    
+    .welcome-card .welcome-role {
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+        color: var(--gray-600);
+        margin-bottom: 2px;
+    }
+    
+    .welcome-card .welcome-role .role-badge {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        color: var(--gold-dark);
+        background: rgba(201, 168, 76, 0.1);
+        padding: 2px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+    }
+    
+    .welcome-card .membership-status {
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        color: var(--gray-600);
+    }
+    
+    .welcome-card .membership-status .status-badge {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        padding: 4px 14px;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .welcome-card .membership-status .status-badge.active {
+        background: #e8f5e9;
+        color: var(--success-color);
+    }
+    
+    .welcome-card .membership-status .status-badge.expired {
+        background: #fbe9e7;
+        color: var(--danger-color);
+    }
+    
+    .welcome-card .membership-status .status-badge.pending {
+        background: #fff8e1;
+        color: var(--warning-color);
+    }
+    
+    .member-since-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        box-shadow: var(--shadow-sm);
+        padding: 20px;
+        text-align: center;
+        transition: var(--transition-normal);
+        height: 100%;
+    }
+    
+    .member-since-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+    
+    .member-since-card .since-icon {
+        font-size: 2.5rem;
+        color: var(--gold-color);
+        opacity: 0.5;
+        margin-bottom: 4px;
+    }
+    
+    .member-since-card .since-label {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+    
+    .member-since-card .since-date {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 1.1rem;
+    }
+    
+    .member-since-card .membership-id {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        margin-top: 4px;
+    }
+    
+    .member-since-card .membership-id strong {
+        color: var(--dark-blue);
+        font-family: var(--font-slab);
+    }
+    
+    /* Upgrade Notice */
+    .upgrade-notice {
+        border-left: 4px solid var(--gold-color);
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-normal);
+    }
+    
+    .upgrade-notice:hover {
+        box-shadow: var(--shadow-md);
+    }
+    
+    .upgrade-notice .upgrade-icon {
+        font-size: 2.2rem;
+        color: var(--gold-color);
+        flex-shrink: 0;
+    }
+    
+    .upgrade-notice .upgrade-title {
+        font-family: var(--font-heading);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        margin-bottom: 2px;
+    }
+    
+    .upgrade-notice .upgrade-title .gold-text {
+        color: var(--gold-color);
+    }
+    
+    .upgrade-notice .upgrade-desc {
+        font-family: var(--font-secondary);
+        color: var(--gray-600);
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+    
+    /* Quick Actions */
+    .quick-action-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px 15px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--gray-200);
+        text-decoration: none;
+        background: var(--white);
+        transition: var(--transition-normal);
+        height: 100%;
+        color: var(--gray-800);
+    }
+    
+    .quick-action-card:hover {
+        border-color: var(--gold-color);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-4px);
+        text-decoration: none;
+        color: var(--gold-dark);
+    }
+    
+    .quick-action-card .action-icon {
+        font-size: 2rem;
+        color: var(--gold-color);
+        margin-bottom: 8px;
+        transition: var(--transition-normal);
+    }
+    
+    .quick-action-card:hover .action-icon {
+        transform: scale(1.1);
+    }
+    
+    .quick-action-card .action-title {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--gray-800);
+    }
+    
+    .quick-action-card .action-desc {
+        font-family: var(--font-secondary);
+        font-size: 0.7rem;
+        color: var(--gray-500);
+        margin-top: 2px;
+    }
+    
+    /* Features Cards */
+    .features-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-normal);
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .features-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-3px);
+    }
+    
+    .features-card .features-header {
+        background: transparent;
+        border-bottom: 1px solid var(--gray-200);
+        padding: 15px 20px;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .features-card .features-header .header-icon {
+        color: var(--gold-color);
+        margin-right: 8px;
+    }
+    
+    .features-card .features-body {
+        padding: 20px;
+    }
+    
+    .features-card .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .features-card .feature-item:last-child {
+        border-bottom: none;
+    }
+    
+    .features-card .feature-item .feature-icon-check {
+        color: var(--success-color);
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    
+    .features-card .feature-item .feature-icon-lock {
+        color: var(--gray-400);
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    
+    .features-card .feature-item .feature-text {
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+        color: var(--gray-700);
+        flex: 1;
+    }
+    
+    .features-card .feature-item .feature-badge {
+        font-size: 0.6rem;
+        padding: 2px 10px;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .features-card .feature-item .feature-badge.active {
+        background: #e8f5e9;
+        color: var(--success-color);
+    }
+    
+    .features-card .feature-item .feature-badge.locked {
+        background: var(--gray-200);
+        color: var(--gray-600);
+    }
+    
+    .features-card .feature-item .feature-badge.premium {
+        background: var(--gold-color);
+        color: var(--white);
+    }
+    
+    /* Upgrade Button */
+    .btn-upgrade {
+        background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
+        color: var(--white);
+        border: none;
+        padding: 10px 25px;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: var(--radius-sm);
+        transition: var(--transition-normal);
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .btn-upgrade:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+        color: var(--white);
+    }
+    
+    /* Activity Empty State */
+    .activity-empty {
+        text-align: center;
+        padding: 30px 20px;
+    }
+    
+    .activity-empty .empty-icon {
+        font-size: 3rem;
+        color: var(--gold-color);
+        opacity: 0.2;
+        margin-bottom: 10px;
+    }
+    
+    .activity-empty .empty-title {
+        font-family: var(--font-secondary);
+        color: var(--gray-500);
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+    
+    .activity-empty .empty-desc {
+        font-family: var(--font-secondary);
+        color: var(--gray-400);
+        font-size: 0.8rem;
+    }
+    
+    /* Footer Note */
+    .footer-note {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--gray-500);
+        text-align: center;
+    }
+    
+    .footer-note .note-link {
+        color: var(--gold-color);
+        font-weight: 700;
+        text-decoration: none;
+        transition: var(--transition-normal);
+    }
+    
+    .footer-note .note-link:hover {
+        text-decoration: underline;
+    }
+    
+    .footer-note .note-link i {
+        transition: var(--transition-normal);
+    }
+    
+    .footer-note .note-link:hover i {
+        transform: translateX(4px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 991px) {
+        .welcome-card .welcome-name {
+            font-size: 1.3rem;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .welcome-card .welcome-avatar,
+        .welcome-card .welcome-avatar-placeholder {
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+        }
+        
+        .welcome-card .welcome-name {
+            font-size: 1.1rem;
+        }
+        
+        .quick-action-card {
+            padding: 15px 10px;
+        }
+        
+        .quick-action-card .action-icon {
+            font-size: 1.5rem;
+        }
+        
+        .quick-action-card .action-title {
+            font-size: 0.8rem;
+        }
+        
+        .upgrade-notice .upgrade-title {
+            font-size: 1rem;
+        }
+        
+        .features-card .features-header {
+            font-size: 0.9rem;
+            padding: 12px 16px;
+        }
+        
+        .features-card .features-body {
+            padding: 15px;
+        }
+    }
+    
+    @media (max-width: 575px) {
+        .welcome-card .welcome-avatar,
+        .welcome-card .welcome-avatar-placeholder {
+            width: 50px;
+            height: 50px;
+            font-size: 1.4rem;
+        }
+        
+        .welcome-card .welcome-name {
+            font-size: 1rem;
+        }
+        
+        .member-since-card .since-date {
+            font-size: 1rem;
+        }
+        
+        .quick-action-card {
+            padding: 12px 8px;
+        }
+        
+        .quick-action-card .action-icon {
+            font-size: 1.3rem;
+        }
+        
+        .quick-action-card .action-title {
+            font-size: 0.75rem;
+        }
+        
+        .quick-action-card .action-desc {
+            font-size: 0.6rem;
+        }
+        
+        .features-card .feature-item .feature-text {
+            font-size: 0.8rem;
+        }
+        
+        .btn-upgrade {
+            font-size: 0.8rem;
+            padding: 8px 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Basic Member</span> Dashboard
+{% endblock %}
+
+{% block breadcrumb %}Basic Member Dashboard{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- ============================================
+WELCOME & STATUS
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="welcome-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="flex-shrink-0">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" class="welcome-avatar">
+                        {% else %}
+                            <div class="welcome-avatar-placeholder">
+                                {{ user.get_full_name|first|default:user.username|first|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="welcome-name">
+                            Welcome back, <span class="gold-text">{{ user.get_full_name|default:user.username }}</span>
+                        </div>
+                        <div class="welcome-role">
+                            <i class="fas fa-user-tag me-1" style="color:var(--gold-color);"></i>
+                            Role: <span class="role-badge">{{ user.get_role_display }}</span>
+                        </div>
+                        <div class="membership-status">
+                            <i class="fas fa-id-card me-1" style="color:var(--gold-color);"></i>
+                            Membership Status: 
+                            <span class="status-badge 
+                                {% if membership_status == 'active' %}active
+                                {% elif membership_status == 'expired' %}expired
+                                {% else %}pending{% endif %}">
+                                {{ membership_status|default:"Pending"|title }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="member-since-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="since-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="since-label">Member Since</div>
+            <div class="since-date">
+                {{ user.membership_start_date|date:"F d, Y"|default:"Pending Approval" }}
+            </div>
+            {% if user.membership_number %}
+                <div class="membership-id">
+                    <i class="fas fa-id-card me-1" style="color:var(--gold-color);"></i>
+                    ID: <strong>{{ user.membership_number }}</strong>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+UPGRADE NOTICE
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="upgrade-notice" data-aos="fade-up" data-aos-delay="150">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="upgrade-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div style="flex:1;">
+                        <div class="upgrade-title">
+                            <span class="gold-text">Upgrade</span> to Verified Member
+                        </div>
+                        <p class="upgrade-desc">
+                            Unlock full features including mentorship, research collaboration, and exclusive opportunities.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'accounts:request_role_change' %}" class="btn-upgrade" style="width:auto;padding:10px 25px;">
+                            <i class="fas fa-arrow-up me-1"></i> Upgrade Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+QUICK ACTIONS
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-6">
+        <a href="{% url 'accounts:profile_detail' username=user.username %}" class="quick-action-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="action-icon"><i class="fas fa-user"></i></div>
+            <div class="action-title">My Profile</div>
+            <div class="action-desc">View & update</div>
+        </a>
+    </div>
+    <div class="col-md-3 col-6">
+        <a href="{% url 'accounts:profile_update' %}" class="quick-action-card" data-aos="fade-up" data-aos-delay="250">
+            <div class="action-icon"><i class="fas fa-edit"></i></div>
+            <div class="action-title">Edit Profile</div>
+            <div class="action-desc">Update information</div>
+        </a>
+    </div>
+    <div class="col-md-3 col-6">
+        <a href="{% url 'accounts:change_password' %}" class="quick-action-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="action-icon"><i class="fas fa-key"></i></div>
+            <div class="action-title">Change Password</div>
+            <div class="action-desc">Security settings</div>
+        </a>
+    </div>
+    <div class="col-md-3 col-6">
+        <a href="{% url 'accounts:request_role_change' %}" class="quick-action-card" data-aos="fade-up" data-aos-delay="350">
+            <div class="action-icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="action-title">Request Upgrade</div>
+            <div class="action-desc">Become verified</div>
+        </a>
+    </div>
+</div>
+
+<!-- ============================================
+FEATURES SECTION
+============================================ -->
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="features-card" data-aos="fade-right" data-aos-delay="200">
+            <div class="features-header">
+                <span>
+                    <i class="fas fa-check-circle header-icon"></i>
+                    Available Features
+                </span>
+                <span class="feature-badge active">Active</span>
+            </div>
+            <div class="features-body">
+                <div class="feature-item">
+                    <i class="fas fa-check-circle feature-icon-check"></i>
+                    <span class="feature-text">View your profile</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle feature-icon-check"></i>
+                    <span class="feature-text">Update personal information</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle feature-icon-check"></i>
+                    <span class="feature-text">Browse public resources</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle feature-icon-check"></i>
+                    <span class="feature-text">View upcoming events</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle feature-icon-check"></i>
+                    <span class="feature-text">Request role upgrade</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="features-card" data-aos="fade-left" data-aos-delay="200">
+            <div class="features-header">
+                <span>
+                    <i class="fas fa-crown header-icon"></i>
+                    Premium Features
+                </span>
+                <span class="feature-badge premium">Upgrade Required</span>
+            </div>
+            <div class="features-body">
+                <div class="feature-item">
+                    <i class="fas fa-times-circle feature-icon-lock"></i>
+                    <span class="feature-text">Mentorship program</span>
+                    <span class="feature-badge locked">Locked</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-times-circle feature-icon-lock"></i>
+                    <span class="feature-text">Research collaboration</span>
+                    <span class="feature-badge locked">Locked</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-times-circle feature-icon-lock"></i>
+                    <span class="feature-text">Exclusive opportunities</span>
+                    <span class="feature-badge locked">Locked</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-times-circle feature-icon-lock"></i>
+                    <span class="feature-text">Community forums</span>
+                    <span class="feature-badge locked">Locked</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-times-circle feature-icon-lock"></i>
+                    <span class="feature-text">Advanced resources</span>
+                    <span class="feature-badge locked">Locked</span>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'accounts:request_role_change' %}" class="btn-upgrade">
+                        <i class="fas fa-arrow-up me-1"></i> Upgrade to Verified Member
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+RECENT ACTIVITY
+============================================ -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="features-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="features-header">
+                <span>
+                    <i class="fas fa-clock header-icon"></i>
+                    Recent Activity
+                </span>
+            </div>
+            <div class="features-body">
+                <div class="activity-empty">
+                    <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                    <p class="empty-title">No recent activity to display</p>
+                    <p class="empty-desc">Activities will appear here as you interact with the network</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+FOOTER NOTE
+============================================ -->
+<div class="row mt-4">
+    <div class="col-12">
+        <p class="footer-note">
+            <i class="fas fa-info-circle me-1" style="color:var(--gold-color);"></i>
+            Your basic membership gives you access to essential features. 
+            <a href="{% url 'accounts:request_role_change' %}" class="note-link">
+                Upgrade to Verified <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block dashboard_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Any basic member dashboard specific JavaScript
+        console.log('Basic Member Dashboard loaded');
+    });
+</script>
+{% endblock %}

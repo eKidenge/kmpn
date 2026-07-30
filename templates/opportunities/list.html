@@ -1,0 +1,863 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Opportunities - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       OPPORTUNITIES LIST - GOVERNMENT STYLE
+       ============================================================ */
+    
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+Pro:wght@400;600;700;900&family=Roboto+Slab:wght@300;400;600;700&display=swap');
+    
+    :root {
+        --gold-color: #c9a84c;
+        --gold-dark: #a8893a;
+        --gold-light: #e6d4a0;
+        --dark-blue: #0a1a2a;
+        --primary-color: #0a2a4a;
+        --navy-blue: #1a3a5a;
+        --cream-color: #faf8f0;
+        --cream-dark: #f0ece0;
+        --white: #ffffff;
+        --gray-50: #f9f9f9;
+        --gray-100: #f8f8f8;
+        --gray-200: #f0f0f0;
+        --gray-300: #e0e0e0;
+        --gray-400: #c0c0c0;
+        --gray-500: #a0a0a0;
+        --gray-600: #808080;
+        --gray-700: #606060;
+        --gray-800: #404040;
+        --gray-900: #202020;
+        --success-color: #1a7a4a;
+        --danger-color: #8a1a1a;
+        --warning-color: #b8860b;
+        --info-color: #1a5a7a;
+        --font-heading: 'Playfair Display', 'Georgia', serif;
+        --font-primary: 'Merriweather', 'Times New Roman', serif;
+        --font-secondary: 'Inter', 'Arial', sans-serif;
+        --font-serif-pro: 'Source Serif Pro', 'Georgia', serif;
+        --font-slab: 'Roboto Slab', 'Georgia', serif;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 15px rgba(0,0,0,0.10);
+        --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+        --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-full: 9999px;
+        --transition-normal: 0.3s ease;
+        --transition-slow: 0.5s ease;
+    }
+    
+    .opportunities-wrapper {
+        padding: 60px 0 80px;
+        background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d0 50%, #f0ece0 100%);
+        min-height: 100vh;
+        position: relative;
+    }
+    
+    .opportunities-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--gold-color), var(--gold-dark), var(--gold-color));
+    }
+    
+    /* Page Header */
+    .page-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(201, 168, 76, 0.2);
+    }
+    
+    .page-header h1 {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        color: var(--dark-blue);
+        font-size: 2.2rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .page-header h1 .text-gold {
+        color: var(--gold-color);
+    }
+    
+    .page-header .subtitle {
+        font-family: var(--font-secondary);
+        color: var(--gray-600);
+        font-size: 1rem;
+        margin-top: 4px;
+    }
+    
+    .page-header .header-actions {
+        text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    
+    /* Filter Section */
+    .filter-section {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.12);
+        box-shadow: var(--shadow-sm);
+        padding: 20px 24px;
+        margin-bottom: 30px;
+        transition: var(--transition-normal);
+    }
+    
+    .filter-section:hover {
+        box-shadow: var(--shadow-md);
+    }
+    
+    .filter-section .form-control,
+    .filter-section .form-select {
+        border: 2px solid #d4c8b0;
+        border-radius: var(--radius-sm);
+        padding: 10px 15px;
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+        transition: var(--transition-normal);
+        background: var(--white);
+        color: var(--gray-800);
+        height: 46px;
+    }
+    
+    .filter-section .form-control:focus,
+    .filter-section .form-select:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+        outline: none;
+    }
+    
+    .filter-section .form-control::placeholder {
+        color: var(--gray-500);
+        font-weight: 300;
+    }
+    
+    .filter-section .btn-filter {
+        background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
+        color: var(--white);
+        border: none;
+        padding: 10px 25px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: var(--transition-normal);
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .filter-section .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+        color: var(--white);
+    }
+    
+    /* Opportunity Cards */
+    .opportunity-card {
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-normal);
+        height: 100%;
+        background: var(--white);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .opportunity-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-6px);
+        border-color: var(--gold-color);
+    }
+    
+    .opportunity-card .card-body {
+        padding: 22px 24px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    
+    .opportunity-card .card-badges {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    
+    .opportunity-card .badge-type {
+        background: var(--gold-color);
+        color: var(--white);
+        padding: 4px 14px;
+        border-radius: var(--radius-full);
+        font-family: var(--font-secondary);
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    
+    .opportunity-card .badge-featured {
+        background: var(--danger-color);
+        color: var(--white);
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-family: var(--font-secondary);
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .opportunity-card .badge-verified {
+        background: var(--success-color);
+        color: var(--white);
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-family: var(--font-secondary);
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .opportunity-card .card-title {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .opportunity-card .card-title a {
+        color: var(--dark-blue);
+        text-decoration: none;
+        transition: var(--transition-normal);
+    }
+    
+    .opportunity-card .card-title a:hover {
+        color: var(--gold-color);
+    }
+    
+    .opportunity-card .card-org {
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        color: var(--gray-600);
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .opportunity-card .card-org i {
+        color: var(--gold-color);
+        width: 16px;
+    }
+    
+    .opportunity-card .card-location {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--gray-500);
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .opportunity-card .card-location i {
+        color: var(--gold-color);
+        width: 16px;
+    }
+    
+    .opportunity-card .card-deadline {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--gray-500);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .opportunity-card .card-deadline i {
+        color: var(--gold-color);
+        width: 16px;
+    }
+    
+    .opportunity-card .card-deadline .deadline-urgent {
+        color: var(--danger-color);
+        font-weight: 600;
+    }
+    
+    .opportunity-card .card-desc {
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        color: var(--gray-700);
+        line-height: 1.6;
+        flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+    
+    .opportunity-card .card-footer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: auto;
+        padding-top: 14px;
+        border-top: 1px solid var(--gray-200);
+    }
+    
+    .opportunity-card .btn-view {
+        background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
+        color: var(--white);
+        border: none;
+        padding: 8px 20px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 0.8rem;
+        transition: var(--transition-normal);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .opportunity-card .btn-view:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+        color: var(--white);
+    }
+    
+    .opportunity-card .btn-save {
+        background: var(--gray-200);
+        color: var(--gray-700);
+        border: none;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-secondary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: var(--transition-normal);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .opportunity-card .btn-save:hover {
+        background: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .opportunity-card .btn-save.saved {
+        background: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .opportunity-card .card-stats {
+        font-family: var(--font-secondary);
+        font-size: 0.7rem;
+        color: var(--gray-400);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 2px;
+    }
+    
+    .opportunity-card .card-stats i {
+        margin-right: 3px;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-state .empty-icon {
+        font-size: 4.5rem;
+        color: var(--gray-300);
+        margin-bottom: 20px;
+        display: block;
+    }
+    
+    .empty-state .empty-title {
+        font-family: var(--font-heading);
+        font-size: 1.6rem;
+        color: var(--gray-600);
+        margin-bottom: 8px;
+    }
+    
+    .empty-state .empty-desc {
+        font-family: var(--font-secondary);
+        color: var(--gray-500);
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state .btn-post {
+        background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
+        color: var(--white);
+        border: none;
+        padding: 12px 30px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1rem;
+        transition: var(--transition-normal);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .empty-state .btn-post:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+        color: var(--white);
+    }
+    
+    /* Pagination */
+    .pagination-container {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .pagination .page-link {
+        color: var(--gray-700);
+        border: 1px solid var(--gray-300);
+        padding: 8px 16px;
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        transition: var(--transition-normal);
+        background: var(--white);
+    }
+    
+    .pagination .page-link:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: var(--gold-color);
+        border-color: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .pagination .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 991px) {
+        .page-header h1 {
+            font-size: 1.8rem;
+        }
+        .page-header .header-actions {
+            text-align: left;
+            justify-content: flex-start;
+            margin-top: 10px;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .opportunities-wrapper {
+            padding: 30px 0 50px;
+        }
+        
+        .page-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .filter-section {
+            padding: 16px;
+        }
+        
+        .filter-section .btn-filter {
+            height: 42px;
+            font-size: 0.8rem;
+        }
+        
+        .opportunity-card .card-body {
+            padding: 16px 18px;
+        }
+        
+        .opportunity-card .card-title {
+            font-size: 1rem;
+        }
+        
+        .empty-state .empty-title {
+            font-size: 1.3rem;
+        }
+        
+        .empty-state .empty-icon {
+            font-size: 3.5rem;
+        }
+    }
+    
+    @media (max-width: 575px) {
+        .page-header h1 {
+            font-size: 1.3rem;
+        }
+        
+        .page-header .subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .filter-section .form-control,
+        .filter-section .form-select {
+            height: 40px;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+        }
+        
+        .opportunity-card .card-footer-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .opportunity-card .btn-view {
+            justify-content: center;
+        }
+        
+        .opportunity-card .btn-save {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="opportunities-wrapper">
+    <div class="container">
+        
+        <!-- ============================================
+        PAGE HEADER
+        ============================================ -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1>
+                        <i class="fas fa-briefcase text-gold me-2"></i>
+                        <span class="text-gold">Opportunities</span>
+                    </h1>
+                    <p class="subtitle">
+                        Discover scholarships, jobs, research positions, and more
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <div class="header-actions">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'opportunities:create' %}" class="btn-gold" style="padding:10px 25px;display:inline-flex;align-items:center;gap:8px;font-family:var(--font-heading);font-weight:700;font-size:0.9rem;border-radius:var(--radius-sm);text-decoration:none;transition:var(--transition-normal);">
+                                <i class="fas fa-plus-circle"></i> Post Opportunity
+                            </a>
+                        {% endif %}
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'opportunities:my_applications' %}" class="btn-navy" style="padding:10px 20px;display:inline-flex;align-items:center;gap:6px;background:var(--navy-blue);color:var(--white);border-radius:var(--radius-sm);text-decoration:none;font-family:var(--font-secondary);font-weight:600;font-size:0.85rem;transition:var(--transition-normal);">
+                                <i class="fas fa-file-alt"></i> My Apps
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============================================
+        FILTER SECTION
+        ============================================ -->
+        <div class="filter-section" data-aos="fade-up" data-aos-duration="600">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label" style="font-family:var(--font-secondary);font-weight:600;font-size:0.8rem;color:var(--gray-700);margin-bottom:4px;">
+                        <i class="fas fa-tag text-gold me-1"></i> Type
+                    </label>
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        <option value="scholarship" {% if request.GET.type == 'scholarship' %}selected{% endif %}>Scholarship</option>
+                        <option value="phd_position" {% if request.GET.type == 'phd_position' %}selected{% endif %}>PhD Position</option>
+                        <option value="masters_position" {% if request.GET.type == 'masters_position' %}selected{% endif %}>Master's Position</option>
+                        <option value="postdoc" {% if request.GET.type == 'postdoc' %}selected{% endif %}>Postdoctoral Fellowship</option>
+                        <option value="conference" {% if request.GET.type == 'conference' %}selected{% endif %}>Conference</option>
+                        <option value="call_for_papers" {% if request.GET.type == 'call_for_papers' %}selected{% endif %}>Call for Papers</option>
+                        <option value="grant" {% if request.GET.type == 'grant' %}selected{% endif %}>Grant</option>
+                        <option value="job" {% if request.GET.type == 'job' %}selected{% endif %}>Job</option>
+                        <option value="internship" {% if request.GET.type == 'internship' %}selected{% endif %}>Internship</option>
+                        <option value="training" {% if request.GET.type == 'training' %}selected{% endif %}>Training/Workshop</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" style="font-family:var(--font-secondary);font-weight:600;font-size:0.8rem;color:var(--gray-700);margin-bottom:4px;">
+                        <i class="fas fa-search text-gold me-1"></i> Search
+                    </label>
+                    <input type="text" name="search" class="form-control" placeholder="Search opportunities..." value="{{ request.GET.search|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" style="font-family:var(--font-secondary);font-weight:600;font-size:0.8rem;color:var(--gray-700);margin-bottom:4px;">
+                        <i class="fas fa-sort text-gold me-1"></i> Sort By
+                    </label>
+                    <select name="sort" class="form-select">
+                        <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
+                        <option value="deadline" {% if request.GET.sort == 'deadline' %}selected{% endif %}>Deadline Soon</option>
+                        <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Most Popular</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn-filter">
+                        <i class="fas fa-sliders-h"></i> Filter Opportunities
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- ============================================
+        OPPORTUNITIES GRID
+        ============================================ -->
+        <div class="row g-4">
+            {% for opportunity in opportunities %}
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                    <div class="opportunity-card">
+                        <div class="card-body">
+                            
+                            <!-- Badges -->
+                            <div class="card-badges">
+                                <span class="badge-type">{{ opportunity.get_opportunity_type_display }}</span>
+                                <div class="d-flex gap-1">
+                                    {% if opportunity.is_verified %}
+                                        <span class="badge-verified">
+                                            <i class="fas fa-check-circle"></i> Verified
+                                        </span>
+                                    {% endif %}
+                                    {% if opportunity.is_featured %}
+                                        <span class="badge-featured">
+                                            <i class="fas fa-star"></i> Featured
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Title -->
+                            <h5 class="card-title">
+                                <a href="{% url 'opportunities:detail' opportunity.id %}">
+                                    {{ opportunity.title|truncatechars:55 }}
+                                </a>
+                            </h5>
+                            
+                            <!-- Organization -->
+                            <div class="card-org">
+                                <i class="fas fa-building"></i>
+                                {{ opportunity.organization_name }}
+                            </div>
+                            
+                            <!-- Location -->
+                            <div class="card-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ opportunity.location|default:"Remote" }}{% if opportunity.is_remote %} <span style="color:var(--gold-color);font-weight:600;">(Remote)</span>{% endif %}
+                            </div>
+                            
+                            <!-- Deadline -->
+                            <div class="card-deadline">
+                                <i class="fas fa-calendar-alt"></i>
+                                Deadline: 
+                                <span class="{% if opportunity.is_expired %}deadline-urgent{% endif %}">
+                                    {{ opportunity.application_deadline|date:"M d, Y" }}
+                                    {% if opportunity.is_expired %}
+                                        <span style="color:var(--danger-color);font-weight:700;margin-left:4px;">(Expired)</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="card-desc">
+                                {{ opportunity.description|striptags|truncatechars:120 }}
+                            </div>
+                            
+                            <!-- Footer Actions -->
+                            <div class="card-footer-actions">
+                                <a href="{% url 'opportunities:detail' opportunity.id %}" class="btn-view">
+                                    View Details <i class="fas fa-arrow-right"></i>
+                                </a>
+                                {% if user.is_authenticated %}
+                                    <button class="btn-save {% if opportunity.id in saved_opportunities %}saved{% endif %}" 
+                                            data-opportunity="{{ opportunity.id }}" 
+                                            onclick="toggleSave(this, {{ opportunity.id }})">
+                                        <i class="fas fa-heart"></i> 
+                                        <span class="save-text">{% if opportunity.id in saved_opportunities %}Saved{% else %}Save{% endif %}</span>
+                                        <span class="save-count">({{ opportunity.save_count }})</span>
+                                    </button>
+                                {% else %}
+                                    <span class="card-stats">
+                                        <i class="fas fa-heart" style="color:var(--gold-color);"></i> {{ opportunity.save_count }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Stats -->
+                            <div class="card-stats">
+                                <span><i class="far fa-eye"></i> {{ opportunity.view_count }}</span>
+                                <span><i class="far fa-file-alt"></i> {{ opportunity.application_count }}</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <!-- Empty State -->
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox empty-icon"></i>
+                        <h3 class="empty-title">No Opportunities Available</h3>
+                        <p class="empty-desc">Check back soon for new opportunities from the KPSN community.</p>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'opportunities:create' %}" class="btn-post">
+                                <i class="fas fa-plus-circle"></i> Post the First Opportunity
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- ============================================
+        PAGINATION
+        ============================================ -->
+        {% if opportunities.has_other_pages %}
+            <div class="pagination-container">
+                <nav aria-label="Opportunities pagination">
+                    <ul class="pagination">
+                        {% if opportunities.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ opportunities.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link"><i class="fas fa-chevron-left"></i> Previous</span>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in opportunities.paginator.page_range %}
+                            {% if opportunities.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > opportunities.number|add:'-3' and num < opportunities.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if opportunities.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ opportunities.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Next <i class="fas fa-chevron-right"></i></span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+        
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ============================================================
+    // SAVE OPPORTUNITY (AJAX)
+    // ============================================================
+    function toggleSave(button, opportunityId) {
+        const icon = button.querySelector('.fa-heart');
+        const text = button.querySelector('.save-text');
+        const countSpan = button.querySelector('.save-count');
+        
+        // Get current count
+        let currentCount = parseInt(countSpan.textContent.replace(/[()]/g, ''));
+        
+        fetch(`/opportunities/${opportunityId}/save/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.saved) {
+                button.classList.add('saved');
+                text.textContent = 'Saved';
+                countSpan.textContent = `(${data.save_count})`;
+            } else {
+                button.classList.remove('saved');
+                text.textContent = 'Save';
+                countSpan.textContent = `(${data.save_count})`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    
+    // ============================================================
+    // AUTO-SUBMIT FILTER ON CHANGE
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterSelects = document.querySelectorAll('.filter-section select');
+        filterSelects.forEach(function(select) {
+            select.addEventListener('change', function() {
+                this.closest('form').submit();
+            });
+        });
+    });
+</script>
+{% endblock %}

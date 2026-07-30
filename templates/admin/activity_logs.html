@@ -1,0 +1,484 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Activity Logs - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page-wrapper {
+        padding: 20px 0;
+    }
+    
+    .admin-page-header {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
+        padding: 20px 25px;
+        border-radius: var(--radius-md);
+        border-bottom: 4px solid var(--gold-color);
+        margin-bottom: 25px;
+    }
+    
+    .admin-page-header h1 {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--white);
+        margin-bottom: 4px;
+    }
+    
+    .admin-page-header h1 .gold-text {
+        color: var(--gold-color);
+    }
+    
+    .admin-page-header .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .admin-page-header .breadcrumb-item {
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.6);
+    }
+    
+    .admin-page-header .breadcrumb-item.active {
+        color: var(--gold-color);
+    }
+    
+    .admin-page-header .breadcrumb-item a {
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+    }
+    
+    .admin-page-header .breadcrumb-item a:hover {
+        color: var(--gold-color);
+    }
+    
+    .admin-page-header .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255,255,255,0.3);
+    }
+    
+    .filter-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.12);
+        box-shadow: var(--shadow-sm);
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .filter-card .filter-label {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--gray-700);
+        margin-bottom: 4px;
+    }
+    
+    .filter-card .form-control,
+    .filter-card .form-select {
+        border: 2px solid #d4c8b0;
+        border-radius: var(--radius-sm);
+        padding: 8px 12px;
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .filter-card .form-control:focus,
+    .filter-card .form-select:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+    }
+    
+    .filter-card .btn-filter {
+        background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
+        color: var(--white);
+        border: none;
+        padding: 8px 25px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        transition: var(--transition-normal);
+    }
+    
+    .filter-card .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+    }
+    
+    .filter-card .btn-clear {
+        background: var(--gray-200);
+        color: var(--gray-700);
+        border: none;
+        padding: 8px 25px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        transition: var(--transition-normal);
+    }
+    
+    .filter-card .btn-clear:hover {
+        background: var(--gray-300);
+    }
+    
+    .table-container {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.12);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+    
+    .table-container .table-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .table-container .table-header .table-title {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 1.1rem;
+    }
+    
+    .table-container .table-header .table-title .count-badge {
+        background: var(--gold-color);
+        color: var(--white);
+        padding: 2px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        margin-left: 8px;
+    }
+    
+    .table-container .table-responsive {
+        padding: 0 20px 20px;
+    }
+    
+    .table-container table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .table-container table thead {
+        background: var(--cream-color);
+        border-bottom: 2px solid var(--gold-color);
+    }
+    
+    .table-container table thead th {
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .table-container table tbody td {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--gray-200);
+        vertical-align: middle;
+    }
+    
+    .table-container table tbody tr:hover {
+        background: rgba(201, 168, 76, 0.04);
+    }
+    
+    .table-container table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .activity-type-badge {
+        padding: 3px 10px;
+        border-radius: var(--radius-full);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        display: inline-block;
+    }
+    
+    .activity-type-badge.login {
+        background: #e3f2fd;
+        color: var(--info-color);
+    }
+    
+    .activity-type-badge.logout {
+        background: var(--gray-200);
+        color: var(--gray-600);
+    }
+    
+    .activity-type-badge.registration {
+        background: #e8f5e9;
+        color: var(--success-color);
+    }
+    
+    .activity-type-badge.profile_update {
+        background: #fff3e0;
+        color: var(--warning-color);
+    }
+    
+    .activity-type-badge.role_change {
+        background: #f3e5f5;
+        color: #7b1fa2;
+    }
+    
+    .activity-type-badge.member_verification {
+        background: #e0f7fa;
+        color: #00695c;
+    }
+    
+    .activity-type-badge.community_join {
+        background: #e0f7fa;
+        color: #00695c;
+    }
+    
+    .activity-type-badge.event_registration {
+        background: #fce4ec;
+        color: #c62828;
+    }
+    
+    .activity-type-badge.opportunity_apply {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .activity-type-badge.resource_download {
+        background: #f3e5f5;
+        color: #6a1b9a;
+    }
+    
+    .activity-type-badge.forum_post {
+        background: #fff8e1;
+        color: #f57f17;
+    }
+    
+    .pagination-container {
+        padding: 15px 20px;
+        border-top: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .pagination-container .pagination-info {
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        color: var(--gray-600);
+    }
+    
+    .pagination-container .pagination {
+        margin: 0;
+    }
+    
+    .pagination-container .page-link {
+        color: var(--secondary-color);
+        border: 1px solid var(--gray-200);
+        padding: 6px 14px;
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        transition: var(--transition-normal);
+    }
+    
+    .pagination-container .page-link:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+    }
+    
+    .pagination-container .page-item.active .page-link {
+        background: var(--gold-color);
+        border-color: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+    }
+    
+    .empty-state .empty-icon {
+        font-size: 3rem;
+        color: var(--gray-300);
+        margin-bottom: 15px;
+    }
+    
+    .empty-state .empty-title {
+        font-family: var(--font-heading);
+        font-size: 1.2rem;
+        color: var(--gray-600);
+    }
+    
+    .empty-state .empty-desc {
+        font-family: var(--font-secondary);
+        color: var(--gray-500);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page-wrapper">
+    <div class="container">
+        
+        <!-- Page Header -->
+        <div class="admin-page-header" data-aos="fade-down">
+            <h1>
+                <i class="fas fa-history me-2 gold-text"></i>
+                Activity <span class="gold-text">Logs</span>
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard_redirect' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Activity Logs</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <!-- Filter -->
+        <div class="filter-card" data-aos="fade-up">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <div class="filter-label">Action Type</div>
+                    <select name="action" class="form-select">
+                        <option value="">All Actions</option>
+                        {% for action in action_types %}
+                            <option value="{{ action.0 }}" {% if action_filter == action.0 %}selected{% endif %}>
+                                {{ action.1 }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="filter-label">User</div>
+                    <input type="text" name="user" class="form-control" placeholder="Search by username..." value="{{ user_filter|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <div class="filter-label">From Date</div>
+                    <input type="date" name="from_date" class="form-control" value="{{ from_date|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <div class="filter-label">To Date</div>
+                    <input type="date" name="to_date" class="form-control" value="{{ to_date|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn-filter">Filter</button>
+                        <a href="{% url 'accounts:activity_logs' %}" class="btn-clear">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Table -->
+        <div class="table-container" data-aos="fade-up" data-aos-delay="100">
+            <div class="table-header">
+                <div class="table-title">
+                    <i class="fas fa-list me-2" style="color:var(--gold-color);"></i>
+                    Activity Logs
+                    <span class="count-badge">{{ logs|length }}</span>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>IP Address</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                            <tr>
+                                <td>
+                                    <strong>{{ log.user.get_full_name|default:log.user.username }}</strong>
+                                    <br>
+                                    <small style="color:var(--gray-500);">{{ log.user.email }}</small>
+                                </td>
+                                <td>
+                                    <span class="activity-type-badge {{ log.action_type }}">
+                                        {{ log.action_type|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="font-size:0.9rem;">{{ log.action_description }}</span>
+                                </td>
+                                <td>
+                                    <span style="font-family:monospace;font-size:0.8rem;color:var(--gray-600);">
+                                        {{ log.ip_address|default:"-" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small style="font-family:var(--font-secondary);color:var(--gray-600);">
+                                        {{ log.created_at|date:"M d, Y H:i" }}
+                                        <br>
+                                        <span style="font-size:0.7rem;">{{ log.created_at|timesince }} ago</span>
+                                    </small>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                                        <div class="empty-title">No activity logs found</div>
+                                        <div class="empty-desc">There are no activity logs matching your criteria.</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if logs.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing {{ logs.start_index }} to {{ logs.end_index }} of {{ logs.paginator.count }} entries
+                    </div>
+                    <nav>
+                        <ul class="pagination">
+                            {% if logs.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ logs.previous_page_number }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if user_filter %}&user={{ user_filter }}{% endif %}{% if from_date %}&from_date={{ from_date }}{% endif %}{% if to_date %}&to_date={{ to_date }}{% endif %}">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% for num in logs.paginator.page_range %}
+                                <li class="page-item {% if logs.number == num %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if user_filter %}&user={{ user_filter }}{% endif %}{% if from_date %}&from_date={{ from_date }}{% endif %}{% if to_date %}&to_date={{ to_date }}{% endif %}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                            {% if logs.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ logs.next_page_number }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if user_filter %}&user={{ user_filter }}{% endif %}{% if from_date %}&from_date={{ from_date }}{% endif %}{% if to_date %}&to_date={{ to_date }}{% endif %}">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

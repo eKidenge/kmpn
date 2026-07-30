@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Event - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--cream-color); min-height: 100vh;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="government-title" style="font-size: 2rem;">
+                    <i class="fas fa-edit text-gold me-2"></i> Edit Event
+                </h1>
+                <p class="government-subtitle">Update the details for <strong>{{ event.title }}</strong></p>
+                
+                <div class="card-government mt-4">
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn-gold-government w-100">
+                                        <i class="fas fa-save me-2"></i> Update Event
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'events:detail' slug=event.slug %}" class="btn-outline-gold-government w-100">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

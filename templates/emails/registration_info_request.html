@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Additional Information Required - KPSN</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f0e8;
+            color: #404040;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 1px solid rgba(201, 168, 76, 0.2);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #0a1a2a 0%, #0a2a4a 50%, #1a3a5a 100%);
+            padding: 30px 35px 25px;
+            text-align: center;
+            border-bottom: 4px solid #c9a84c;
+        }
+        .email-header h1 {
+            font-family: 'Georgia', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        .email-header h1 span {
+            color: #c9a84c;
+        }
+        .email-header .subtitle {
+            font-family: 'Arial', sans-serif;
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+        .email-body {
+            padding: 35px 40px;
+        }
+        .email-body .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0a1a2a;
+            margin-bottom: 16px;
+        }
+        .email-body p {
+            font-family: 'Arial', sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #404040;
+            margin-bottom: 16px;
+        }
+        .email-body .info-box {
+            background: #fff8e1;
+            border-left: 4px solid #b8860b;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+        .email-body .info-box p {
+            margin: 0;
+            color: #6a5a0a;
+        }
+        .email-body .info-box strong {
+            color: #5a4a0a;
+        }
+        .email-body .action-box {
+            background: #f5f0e8;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+            text-align: center;
+        }
+        .email-body .action-box p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #606060;
+        }
+        .email-body .action-box .action-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #c9a84c 0%, #a8893a 100%);
+            color: #ffffff;
+            padding: 12px 35px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            margin: 10px 0 4px;
+        }
+        .email-body .action-box .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+        }
+        .email-body .next-steps {
+            background: #e8f5e9;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+            border-left: 4px solid #1a7a4a;
+        }
+        .email-body .next-steps p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #1a4a2a;
+        }
+        .email-body .next-steps ul {
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            color: #1a4a2a;
+            line-height: 1.8;
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        .email-footer {
+            padding: 20px 40px;
+            border-top: 1px solid #e8e0d0;
+            text-align: center;
+            background: #faf8f0;
+        }
+        .email-footer p {
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            color: #808080;
+            margin: 4px 0;
+        }
+        .email-footer .footer-links a {
+            color: #c9a84c;
+            text-decoration: none;
+            margin: 0 8px;
+            font-size: 12px;
+        }
+        .email-footer .footer-links a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 480px) {
+            .email-container {
+                margin: 20px 10px;
+            }
+            .email-header {
+                padding: 20px;
+            }
+            .email-header h1 {
+                font-size: 22px;
+            }
+            .email-body {
+                padding: 25px 20px;
+            }
+            .email-footer {
+                padding: 15px 20px;
+            }
+            .email-body .action-box .action-btn {
+                display: block;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <h1>Kenya <span>Postgraduate</span> Scholars Network</h1>
+            <div class="subtitle">Kenya's Premier Postgraduate Network</div>
+        </div>
+        
+        <!-- Body -->
+        <div class="email-body">
+            <div class="greeting">Dear {{ user.get_full_name|default:user.username }},</div>
+            
+            <p>Thank you for your interest in joining the <strong>Kenya Postgraduate Scholars Network (KPSN)</strong>.</p>
+            
+            <div class="info-box">
+                <p>
+                    <strong>Action Required:</strong> We need <strong>additional information</strong> to complete your registration application.
+                </p>
+            </div>
+            
+            {% if notes %}
+                <div style="background:#f5f0e8;padding:16px 20px;border-radius:6px;margin:16px 0;border-left:4px solid #c9a84c;">
+                    <p style="font-size:14px;margin:0;color:#606060;">
+                        <strong>Please provide the following information:</strong>
+                    </p>
+                    <p style="font-size:14px;margin:4px 0 0 0;color:#404040;white-space:pre-line;">
+                        {{ notes }}
+                    </p>
+                </div>
+            {% endif %}
+            
+            <div class="action-box">
+                <p><strong>How to provide the information:</strong></p>
+                <p style="font-size:13px;">Please reply to this email with the requested information or use the button below:</p>
+                <a href="mailto:support@kpsn.or.ke" class="action-btn">
+                    <i class="fas fa-reply"></i> Reply with Information
+                </a>
+                <p style="font-size:12px;color:#a0a0a0;margin-top:4px;">
+                    Alternatively, you can visit our support portal
+                </p>
+            </div>
+            
+            <div class="next-steps">
+                <p><strong>What happens next:</strong></p>
+                <ul>
+                    <li>Review the requested information above</li>
+                    <li>Provide the required details within <strong>7 days</strong></li>
+                    <li>Our team will review your updated application</li>
+                    <li>You will receive a final decision via email</li>
+                </ul>
+            </div>
+            
+            <p style="font-family:'Arial',sans-serif;font-size:13px;color:#808080;margin:16px 0;">
+                <strong>Note:</strong> If we don't receive the requested information within 7 days, your application may be closed.
+            </p>
+            
+            <p style="font-family:'Arial',sans-serif;font-size:14px;color:#0a1a2a;margin-top:20px;">
+                We look forward to reviewing your complete application.
+            </p>
+            <p style="font-family:'Arial',sans-serif;font-size:14px;color:#0a1a2a;font-weight:600;">
+                The KPSN Team
+            </p>
+        </div>
+        
+        <!-- Footer -->
+        <div class="email-footer">
+            <p>
+                <strong>Kenya Postgraduate Scholars Network</strong>
+            </p>
+            <p style="font-size:11px;">
+                Nairobi, Kenya | info@kpsn.or.ke | +254 700 000 000
+            </p>
+            <div class="footer-links">
+                <a href="https://{{ domain }}">Home</a>
+                <a href="https://{{ domain }}/about/">About</a>
+                <a href="https://{{ domain }}/contact/">Contact</a>
+                <a href="https://{{ domain }}/privacy/">Privacy Policy</a>
+            </div>
+            <p style="margin-top:8px;font-size:10px;color:#a0a0a0;">
+                &copy; 2026 Kenya Postgraduate Scholars Network. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

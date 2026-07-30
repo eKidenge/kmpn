@@ -1,0 +1,808 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Member Dashboard - KMPN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       GOVERNMENT STYLE FONTS - MEMBER DASHBOARD
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700;900&family=Source+Serif+Pro:wght@400;600;700&family=Cormorant+Garamond:wght@400;600;700&display=swap');
+    
+    :root {
+        --gov-serif: 'Playfair Display', 'Times New Roman', serif;
+        --gov-serif-alt: 'Merriweather', 'Georgia', serif;
+        --gov-serif-body: 'Source Serif Pro', 'Georgia', serif;
+        --gov-serif-heading: 'Cormorant Garamond', 'Georgia', serif;
+    }
+    
+    .government-title {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-subtitle {
+        font-family: var(--gov-serif-alt);
+        font-weight: 400;
+        color: #4a4a4a;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-text {
+        font-family: var(--gov-serif-body);
+        font-weight: 400;
+        line-height: 1.7;
+        color: #2d2d2d;
+    }
+    
+    .government-heading {
+        font-family: var(--gov-serif);
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-label {
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: #4a4a4a;
+    }
+    
+    /* ============================================================
+       DASHBOARD CARDS
+       ============================================================ */
+    .dashboard-card {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .dashboard-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+    
+    .dashboard-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        border-color: var(--gold-color);
+    }
+    
+    .dashboard-card .card-header {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 100%);
+        color: var(--white);
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        padding: 15px 20px;
+        border-bottom: 3px solid var(--gold-color);
+        font-size: 1.05rem;
+        letter-spacing: 0.3px;
+    }
+    
+    .dashboard-card .card-header .header-icon {
+        color: var(--gold-color);
+        margin-right: 10px;
+    }
+    
+    .dashboard-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    /* ============================================================
+       STAT CARDS
+       ============================================================ */
+    .stat-card {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gold-color);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover::after {
+        transform: scaleX(1);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        border-color: var(--gold-color);
+    }
+    
+    .stat-card .stat-icon {
+        font-size: 2rem;
+        color: var(--gold-color);
+        margin-bottom: 8px;
+    }
+    
+    .stat-card .stat-number {
+        font-family: var(--gov-serif);
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--dark-blue);
+        display: block;
+        line-height: 1.2;
+    }
+    
+    .stat-card .stat-label {
+        font-family: var(--gov-serif-alt);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--gray-600);
+        font-weight: 700;
+    }
+    
+    /* ============================================================
+       QUICK ACTION CARDS
+       ============================================================ */
+    .quick-action {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        border: 1px solid #d4c9b0;
+        text-decoration: none;
+        background: var(--white);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .quick-action::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--gold-color);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .quick-action:hover::before {
+        transform: scaleY(1);
+    }
+    
+    .quick-action:hover {
+        border-color: var(--gold-color);
+        transform: translateX(6px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        text-decoration: none;
+    }
+    
+    .quick-action .action-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--cream-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gold-color);
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .quick-action:hover .action-icon {
+        background: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .quick-action .action-text {
+        flex: 1;
+    }
+    
+    .quick-action .action-title {
+        font-family: var(--gov-serif);
+        font-weight: 600;
+        color: var(--dark-blue);
+        font-size: 1rem;
+        letter-spacing: 0.3px;
+    }
+    
+    .quick-action .action-desc {
+        font-family: var(--gov-serif-body);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+    }
+    
+    .quick-action .action-arrow {
+        color: var(--gray-400);
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+    
+    .quick-action:hover .action-arrow {
+        color: var(--gold-color);
+        transform: translateX(4px);
+    }
+    
+    /* ============================================================
+       BADGES
+       ============================================================ */
+    .badge-government {
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.6rem;
+        padding: 4px 12px;
+        border-radius: 0;
+    }
+    
+    .badge-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #28a745;
+    }
+    
+    .badge-warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffc107;
+    }
+    
+    .badge-danger {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #dc3545;
+    }
+    
+    .badge-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #17a2b8;
+    }
+    
+    /* ============================================================
+       ACTIVITY ITEMS
+       ============================================================ */
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0ece0;
+        transition: all 0.3s ease;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-item:hover {
+        padding-left: 8px;
+    }
+    
+    .activity-item .activity-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.9rem;
+    }
+    
+    .activity-icon-blue {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    
+    .activity-icon-green {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .activity-icon-gold {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .activity-icon-red {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .activity-icon-purple {
+        background: #ede9fe;
+        color: #5b21b6;
+    }
+    
+    .activity-icon-gray {
+        background: #f3f4f6;
+        color: #374151;
+    }
+    
+    .activity-item .activity-content {
+        flex: 1;
+    }
+    
+    .activity-item .activity-title {
+        font-family: var(--gov-serif-body);
+        font-weight: 600;
+        color: var(--dark-blue);
+        font-size: 0.95rem;
+    }
+    
+    .activity-item .activity-meta {
+        font-family: var(--gov-serif-body);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+    }
+    
+    .activity-item .activity-meta i {
+        color: var(--gold-color);
+        width: 14px;
+        text-align: center;
+    }
+    
+    /* ============================================================
+       EMPTY STATE
+       ============================================================ */
+    .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: #ccc;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-state h6 {
+        font-family: var(--gov-serif);
+        color: var(--dark-blue);
+        margin-bottom: 4px;
+    }
+    
+    .empty-state p {
+        font-family: var(--gov-serif-body);
+        color: #777;
+        font-size: 0.9rem;
+    }
+    
+    .btn-gold {
+        background: var(--gold-color);
+        color: var(--white);
+        border: 2px solid var(--gold-color);
+        padding: 8px 24px;
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .btn-gold:hover {
+        background: var(--gold-dark);
+        border-color: var(--gold-dark);
+        color: var(--white);
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(212, 168, 67, 0.3);
+    }
+    
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+        .quick-action {
+            flex-wrap: wrap;
+        }
+        
+        .quick-action .action-text {
+            flex: 1 1 100%;
+            order: 2;
+        }
+        
+        .quick-action .action-icon {
+            order: 1;
+        }
+        
+        .quick-action .action-arrow {
+            order: 3;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 1.8rem;
+        }
+        
+        .dashboard-card .card-header {
+            font-size: 0.95rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .quick-action {
+            padding: 12px 16px;
+        }
+        
+        .quick-action .action-title {
+            font-size: 0.9rem;
+        }
+        
+        .quick-action .action-desc {
+            font-size: 0.75rem;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Member</span> Dashboard
+{% endblock %}
+
+{% block breadcrumb %}Member Dashboard{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- ============================================================
+WELCOME & STATUS
+============================================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-md-8">
+        <div class="dashboard-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-body">
+                <h4 class="government-heading" style="font-size: 1.4rem; color: var(--dark-blue); margin-bottom: 8px;">
+                    Welcome back, <span class="text-gold">{{ user.get_full_name|default:user.username }}</span>!
+                </h4>
+                <p class="government-text" style="font-size: 0.95rem;">
+                    Your membership status: 
+                    <span class="badge badge-government 
+                        {% if membership_status == 'active' %}badge-success
+                        {% elif membership_status == 'expired' %}badge-danger
+                        {% else %}badge-warning{% endif %}">
+                        {{ membership_status|default:"Active"|title }}
+                    </span>
+                </p>
+                {% if user.membership_number %}
+                    <p class="government-text" style="font-size: 0.9rem; color: var(--gray-600); margin-top: 4px;">
+                        <i class="fas fa-id-card text-gold me-2"></i>
+                        Membership ID: <strong style="color: var(--dark-blue);">{{ user.membership_number }}</strong>
+                    </p>
+                {% endif %}
+                {% if user.membership_expiry_date %}
+                    <p class="government-text" style="font-size: 0.85rem; color: var(--gray-600);">
+                        <i class="fas fa-clock text-gold me-2"></i>
+                        Expires: {{ user.membership_expiry_date|date:"F d, Y" }}
+                        {% if membership_status == 'active' %}
+                            <span class="text-success">({{ user.membership_expiry_date|timeuntil }} remaining)</span>
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-label">Member Since</div>
+            <div class="stat-number" style="font-size: 1.8rem; font-family: var(--gov-serif);">
+                {{ user.membership_start_date|date:"M d, Y"|default:"Pending" }}
+            </div>
+            {% if membership_duration %}
+                <div style="font-family: var(--gov-serif-body); font-size: 0.85rem; color: var(--gray-600); margin-top: 4px;">
+                    {{ membership_duration }} days
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+QUICK ACTIONS - FIXED URL NAMES
+============================================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4 col-sm-6">
+        <a href="{% url 'profiles:view' username=user.username %}" class="quick-action" data-aos="fade-up" data-aos-delay="150">
+            <div class="action-icon"><i class="fas fa-user"></i></div>
+            <div class="action-text">
+                <div class="action-title">My Profile</div>
+                <div class="action-desc">View your profile</div>
+            </div>
+            <i class="fas fa-chevron-right action-arrow"></i>
+        </a>
+    </div>
+    <div class="col-md-4 col-sm-6">
+        <a href="{% url 'profiles:edit' %}" class="quick-action" data-aos="fade-up" data-aos-delay="200">
+            <div class="action-icon"><i class="fas fa-edit"></i></div>
+            <div class="action-text">
+                <div class="action-title">Edit Profile</div>
+                <div class="action-desc">Update your information</div>
+            </div>
+            <i class="fas fa-chevron-right action-arrow"></i>
+        </a>
+    </div>
+    <div class="col-md-4 col-sm-6">
+        <a href="{% url 'accounts:change_password' %}" class="quick-action" data-aos="fade-up" data-aos-delay="250">
+            <div class="action-icon"><i class="fas fa-key"></i></div>
+            <div class="action-text">
+                <div class="action-title">Change Password</div>
+                <div class="action-desc">Update security</div>
+            </div>
+            <i class="fas fa-chevron-right action-arrow"></i>
+        </a>
+    </div>
+</div>
+
+<!-- ============================================================
+STATISTICS ROW
+============================================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="stat-number" style="color: var(--gold-color);">{{ total_publications|default:"0" }}</div>
+            <div class="stat-label">Publications</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="150">
+            <div class="stat-icon"><i class="fas fa-quote-right"></i></div>
+            <div class="stat-number" style="color: #17a2b8;">{{ total_citations|default:"0" }}</div>
+            <div class="stat-label">Citations</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-number" style="color: #28a745;">{{ communities_count|default:"0" }}</div>
+            <div class="stat-label">Communities</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="250">
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="stat-number" style="color: var(--navy-blue);">{{ upcoming_events_count|default:"0" }}</div>
+            <div class="stat-label">Upcoming Events</div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+MY COMMUNITIES & UPCOMING EVENTS
+============================================================ -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="card-header">
+                <i class="fas fa-users header-icon"></i>
+                My Communities
+            </div>
+            <div class="card-body">
+                {% if communities %}
+                    {% for community in communities %}
+                    <div class="activity-item">
+                        <div class="activity-icon activity-icon-blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">
+                                <a href="{% url 'communities:detail' slug=community.community.slug %}" style="color: var(--dark-blue); text-decoration: none;">
+                                    {{ community.community.name }}
+                                </a>
+                            </div>
+                            <div class="activity-meta">
+                                <i class="fas fa-user"></i> {{ community.community.member_count }} members
+                                <span class="mx-1">·</span>
+                                <i class="fas fa-calendar-alt"></i> Joined {{ community.joined_at|timesince }} ago
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h6 class="government-heading">No Communities Yet</h6>
+                        <p class="government-text">Join a community to connect with fellow researchers</p>
+                        <a href="{% url 'communities:list' %}" class="btn-gold">
+                            <i class="fas fa-search me-1"></i> Browse Communities
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="250">
+            <div class="card-header">
+                <i class="fas fa-calendar-alt header-icon"></i>
+                Upcoming Events
+            </div>
+            <div class="card-body">
+                {% if upcoming_events %}
+                    {% for event in upcoming_events %}
+                    <div class="activity-item">
+                        <div class="activity-icon activity-icon-gold">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">
+                                <a href="{% url 'events:detail' slug=event.event.slug %}" style="color: var(--dark-blue); text-decoration: none;">
+                                    {{ event.event.title }}
+                                </a>
+                            </div>
+                            <div class="activity-meta">
+                                <i class="fas fa-clock"></i> {{ event.event.start_date|date:"M d, Y g:i A" }}
+                                <span class="mx-1">·</span>
+                                <i class="fas fa-map-marker-alt"></i> {% if event.event.is_virtual %}Virtual{% else %}{{ event.event.venue|default:"TBD" }}{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-plus"></i>
+                        <h6 class="government-heading">No Upcoming Events</h6>
+                        <p class="government-text">Check back later for events you can attend</p>
+                        <a href="{% url 'events:list' %}" class="btn-gold">
+                            <i class="fas fa-calendar-alt me-1"></i> View Events
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+RECENT ACTIVITIES
+============================================================ -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="card-header">
+                <i class="fas fa-history header-icon"></i>
+                Recent Activities
+            </div>
+            <div class="card-body">
+                {% if recent_activities %}
+                    {% for activity in recent_activities %}
+                    <div class="activity-item">
+                        <div class="activity-icon 
+                            {% if activity.activity_type == 'login' %}activity-icon-blue
+                            {% elif activity.activity_type == 'profile_update' %}activity-icon-gold
+                            {% elif activity.activity_type == 'community_join' %}activity-icon-green
+                            {% elif activity.activity_type == 'event_registration' %}activity-icon-purple
+                            {% elif activity.activity_type == 'opportunity_apply' %}activity-icon-red
+                            {% else %}activity-icon-gray{% endif %}">
+                            <i class="fas fa-{% if activity.activity_type == 'login' %}sign-in-alt
+                                {% elif activity.activity_type == 'profile_update' %}user-edit
+                                {% elif activity.activity_type == 'community_join' %}users
+                                {% elif activity.activity_type == 'event_registration' %}calendar-plus
+                                {% elif activity.activity_type == 'opportunity_apply' %}briefcase
+                                {% else %}circle{% endif %}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">{{ activity.activity_description|default:activity.get_activity_type_display }}</div>
+                            <div class="activity-meta">
+                                <i class="fas fa-clock"></i> {{ activity.created_at|timesince }} ago
+                                {% if activity.ip_address %}
+                                    <span class="mx-1">·</span>
+                                    <i class="fas fa-map-marker-alt"></i> {{ activity.ip_address }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h6 class="government-heading">No Recent Activities</h6>
+                        <p class="government-text">Start engaging with the community to see your activities here</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+VERIFICATION STATUS
+============================================================ -->
+{% if verification_status and verification_status != 'verified' %}
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="350" style="border-left: 4px solid var(--gold-color);">
+            <div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h6 class="government-heading" style="margin-bottom: 4px;">
+                        <i class="fas fa-shield-alt text-gold me-2"></i>
+                        Verification Status: 
+                        <span class="badge badge-government 
+                            {% if verification_status == 'pending' %}badge-warning
+                            {% elif verification_status == 'rejected' %}badge-danger
+                            {% else %}badge-info{% endif %}">
+                            {{ verification_status|title }}
+                        </span>
+                    </h6>
+                    <p class="government-text" style="font-size: 0.85rem; color: var(--gray-600); margin-bottom: 0;">
+                        {% if verification_status == 'pending' %}
+                            Your verification request is being reviewed. You will be notified once approved.
+                        {% elif verification_status == 'rejected' %}
+                            Your verification request was rejected. Please review the notes and resubmit.
+                        {% else %}
+                            Complete your verification to access all features.
+                        {% endif %}
+                    </p>
+                </div>
+                <a href="{% url 'members:verification_status' %}" class="btn-gold" style="padding: 8px 24px; font-size: 0.8rem; white-space: nowrap;">
+                    <i class="fas fa-arrow-right me-1"></i> View Status
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize AOS animations
+        if (typeof AOS !== 'undefined') {
+            AOS.init({
+                duration: 600,
+                once: true,
+                offset: 30,
+                easing: 'ease-in-out'
+            });
+        }
+    });
+</script>
+{% endblock %}

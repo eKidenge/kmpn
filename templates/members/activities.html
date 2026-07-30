@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Activities - KMPN{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700&family=Source+Serif+Pro:wght@400;600;700&display=swap');
+    
+    .government-title {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-subtitle {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 400;
+        color: #4a4a4a;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-text {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-weight: 400;
+        line-height: 1.7;
+        color: #2d2d2d;
+    }
+    
+    .government-heading {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-label {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: #4a4a4a;
+    }
+    
+    .card-government {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+        position: relative;
+        margin-bottom: 1rem;
+    }
+    
+    .card-government::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+    }
+    
+    .card-government:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-color: var(--gold-color);
+    }
+    
+    .card-government .card-body {
+        padding: 1.5rem;
+    }
+    
+    .filter-link {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: var(--dark-blue);
+        padding: 6px 16px;
+        border: 1px solid #d4c9b0;
+        background: var(--white);
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border-radius: 0;
+    }
+    
+    .filter-link:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+        text-decoration: none;
+    }
+    
+    .filter-link.active {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    
+    .activity-icon-blue {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    
+    .activity-icon-green {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .activity-icon-gold {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .activity-icon-red {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .activity-icon-purple {
+        background: #ede9fe;
+        color: #5b21b6;
+    }
+    
+    .activity-icon-gray {
+        background: #f3f4f6;
+        color: #374151;
+    }
+    
+    .activity-meta {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .activity-meta i {
+        color: var(--gold-color);
+        width: 16px;
+        text-align: center;
+    }
+    
+    .pagination-government .page-link {
+        font-family: 'Merriweather', 'Georgia', serif;
+        color: var(--dark-blue);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        padding: 8px 16px;
+        margin: 0 2px;
+        transition: all 0.3s ease;
+        background: var(--white);
+    }
+    
+    .pagination-government .page-link:hover {
+        background: var(--cream-color);
+        border-color: var(--gold-color);
+        color: var(--dark-blue);
+    }
+    
+    .pagination-government .page-item.active .page-link {
+        background: var(--gold-color);
+        border-color: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .pagination-government .page-item.disabled .page-link {
+        color: #999;
+        background: var(--cream-color);
+        border-color: #d4c9b0;
+    }
+    
+    .form-control-government {
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.95rem;
+        padding: 8px 14px;
+        background: var(--white);
+        transition: all 0.3s ease;
+        color: #2d2d2d;
+        width: 100%;
+    }
+    
+    .form-control-government:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        outline: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--cream-color); min-height: 100vh;">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="government-title" style="font-size: 2rem;">
+                    <i class="fas fa-history text-gold me-2"></i> My Activities
+                </h1>
+                <p class="government-subtitle">
+                    Track your engagement and contributions to the community
+                </p>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <a href="?type=" class="filter-link {% if not request.GET.type %}active{% endif %}">
+                        <i class="fas fa-list me-1"></i> All
+                    </a>
+                    {% for type_value, type_label in activity_types %}
+                        <a href="?type={{ type_value }}" class="filter-link {% if request.GET.type == type_value %}active{% endif %}">
+                            <i class="fas fa-{% if type_value == 'login' %}sign-in-alt{% elif type_value == 'registration' %}user-plus{% elif type_value == 'profile_update' %}user-edit{% elif type_value == 'verification_request' %}check-circle{% elif type_value == 'community_join' %}users{% elif type_value == 'event_registration' %}calendar-plus{% elif type_value == 'opportunity_apply' %}briefcase{% elif type_value == 'forum_post' %}comments{% else %}circle{% endif %} me-1"></i>
+                            {{ type_label }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activities List -->
+        {% if activities %}
+            {% for activity in activities %}
+            <div class="card-government">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3">
+                        <!-- Icon -->
+                        <div class="activity-icon 
+                            {% if activity.activity_type == 'login' %}activity-icon-blue
+                            {% elif activity.activity_type == 'registration' %}activity-icon-green
+                            {% elif activity.activity_type == 'profile_update' %}activity-icon-gold
+                            {% elif activity.activity_type == 'verification_request' %}activity-icon-purple
+                            {% elif activity.activity_type == 'verification_approved' %}activity-icon-green
+                            {% elif activity.activity_type == 'verification_rejected' %}activity-icon-red
+                            {% elif activity.activity_type == 'community_join' %}activity-icon-blue
+                            {% elif activity.activity_type == 'event_registration' %}activity-icon-gold
+                            {% elif activity.activity_type == 'opportunity_apply' %}activity-icon-purple
+                            {% elif activity.activity_type == 'forum_post' %}activity-icon-green
+                            {% else %}activity-icon-gray{% endif %}">
+                            <i class="fas fa-{% if activity.activity_type == 'login' %}sign-in-alt{% elif activity.activity_type == 'registration' %}user-plus{% elif activity.activity_type == 'profile_update' %}user-edit{% elif activity.activity_type == 'verification_request' %}check-circle{% elif activity.activity_type == 'verification_approved' %}check-double{% elif activity.activity_type == 'verification_rejected' %}times-circle{% elif activity.activity_type == 'community_join' %}users{% elif activity.activity_type == 'event_registration' %}calendar-plus{% elif activity.activity_type == 'opportunity_apply' %}briefcase{% elif activity.activity_type == 'forum_post' %}comments{% else %}circle{% endif %}"></i>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap">
+                                <div>
+                                    <h6 class="government-heading mb-1" style="color: var(--dark-blue);">
+                                        {{ activity.activity_description|default:activity.get_activity_type_display }}
+                                    </h6>
+                                    <div class="activity-meta">
+                                        <i class="fas fa-tag me-1"></i> {{ activity.get_activity_type_display }}
+                                        <span class="mx-2">|</span>
+                                        <i class="fas fa-clock me-1"></i> {{ activity.created_at|date:"M d, Y g:i A" }}
+                                        {% if activity.ip_address %}
+                                            <span class="mx-2">|</span>
+                                            <i class="fas fa-map-marker-alt me-1"></i> {{ activity.ip_address }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <span class="badge badge-government badge-government-secondary" style="font-size: 0.6rem; text-transform: uppercase; padding: 2px 10px; font-family: 'Merriweather', serif; border: 1px solid #d4c9b0;">
+                                    {{ activity.created_at|timesince }} ago
+                                </span>
+                            </div>
+                            
+                            {% if activity.metadata %}
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-gold-government" style="padding: 2px 10px; font-size: 0.7rem;" type="button" data-bs-toggle="collapse" data-bs-target="#metadata-{{ activity.id }}">
+                                        <i class="fas fa-code me-1"></i> View Details
+                                    </button>
+                                    <div class="collapse mt-2" id="metadata-{{ activity.id }}">
+                                        <pre class="small text-muted" style="background: var(--cream-color); padding: 0.5rem; border: 1px solid #d4c9b0; font-family: 'Source Serif Pro', serif; font-size: 0.75rem; max-height: 100px; overflow: auto;">
+{{ activity.metadata|pprint }}
+                                        </pre>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if activities.has_other_pages %}
+            <div class="row mt-4">
+                <div class="col-12">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-government justify-content-center">
+                            {% if activities.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ activities.previous_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">
+                                        <i class="fas fa-chevron-left me-1"></i> Previous
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Previous</span>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in activities.paginator.page_range %}
+                                {% if activities.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > activities.number|add:'-3' and num < activities.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if activities.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ activities.next_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">
+                                        Next <i class="fas fa-chevron-right ms-1"></i>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Next</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            {% endif %}
+            
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-history" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+                <h3 class="government-heading" style="color: var(--dark-blue);">No Activities Found</h3>
+                <p class="government-subtitle" style="font-size: 1rem; color: #777;">
+                    You haven't performed any activities yet. Start engaging with the community!
+                </p>
+                <div class="mt-3">
+                    <a href="{% url 'members:directory' %}" class="btn-gold-government me-2">
+                        <i class="fas fa-users me-1"></i> Member Directory
+                    </a>
+                    <a href="{% url 'communities:list' %}" class="btn-outline-gold-government">
+                        <i class="fas fa-users me-1"></i> Communities
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add any JavaScript for activities here
+        console.log('Activities page loaded');
+    });
+</script>
+{% endblock %}

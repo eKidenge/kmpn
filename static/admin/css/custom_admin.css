@@ -1,0 +1,130 @@
+/* static/admin/css/custom_admin.css */
+
+/* Government-style admin */
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+#header {
+    background: linear-gradient(135deg, #1a237e 0%, #0d47a1 50%, #1a237e 100%);
+    border-bottom: 4px solid #c9a84c;
+}
+
+#header h1 {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: #1a237e;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #1a237e;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover {
+    background: #0d47a1;
+}
+
+.button.default, input[type=submit].default, .submit-row input.default {
+    background: #c9a84c;
+}
+
+.button.default:hover, input[type=submit].default:hover {
+    background: #b8972e;
+}
+
+.breadcrumbs {
+    background: #f5f0e8;
+    border-bottom: 1px solid #d4c9b0;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.breadcrumbs a {
+    color: #1a237e;
+}
+
+.object-tools a {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+}
+
+/* Gold accent for active states */
+.selected {
+    background: #c9a84c !important;
+}
+
+a:link, a:visited {
+    color: #1a237e;
+}
+
+a:hover {
+    color: #c9a84c;
+}
+
+/* Dashboard styling */
+.dashboard .module table th {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    color: #1a237e;
+}
+
+.dashboard .module table td a {
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+/* List view */
+#changelist-filter h2 {
+    background: #1a237e;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 700;
+}
+
+#changelist-filter a {
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+/* Pagination */
+.paginator {
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.paginator a:link, .paginator a:visited {
+    color: #1a237e;
+}
+
+.paginator .this-page {
+    background: #c9a84c;
+    color: white;
+    font-weight: 700;
+}
+
+/* Result list */
+.result-list .row1 {
+    background: #faf8f5;
+}
+
+.result-list .row2 {
+    background: #f5f0e8;
+}
+
+/* Help text */
+.help, .help-tooltip {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-style: italic;
+    color: #666;
+}

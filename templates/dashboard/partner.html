@@ -1,0 +1,1005 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Partner Dashboard - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       PARTNER DASHBOARD STYLES
+       ============================================================ */
+    
+    /* Header */
+    .partner-header {
+        background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 40%, #2a3a5a 100%);
+        border-bottom: 5px solid #c9a84c;
+        padding: 30px 35px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+    
+    .partner-header::before {
+        content: '';
+        position: absolute;
+        top: -60%;
+        right: -5%;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.04);
+        pointer-events: none;
+    }
+    
+    .partner-header-content {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .partner-seal {
+        font-size: 2.8rem;
+        color: #c9a84c;
+        border: 3px solid #c9a84c;
+        border-radius: 50%;
+        padding: 18px;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(201, 168, 76, 0.08);
+        flex-shrink: 0;
+    }
+    
+    .partner-title-section {
+        flex: 1;
+        min-width: 250px;
+    }
+    
+    .partner-title-section h1 {
+        font-family: 'Merriweather', serif;
+        font-weight: 900;
+        font-size: 2.2rem;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: 0.5px;
+        line-height: 1.2;
+    }
+    
+    .partner-title-section h1 .gold-text {
+        color: #c9a84c;
+    }
+    
+    .partner-title-section .partner-subtitle {
+        font-family: 'Inter', sans-serif;
+        font-weight: 300;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-top: 5px;
+    }
+    
+    .partner-title-section .partner-subtitle .star {
+        color: #c9a84c;
+    }
+    
+    .partner-badges {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-left: auto;
+    }
+    
+    .partner-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 18px;
+        font-family: 'Merriweather', serif;
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 2px solid #c9a84c;
+        background: linear-gradient(135deg, #1a5c5c, #0a1628);
+        color: #ffffff;
+        white-space: nowrap;
+    }
+    
+    .partner-badge.gold {
+        background: #c9a84c;
+        color: #0a1628;
+        border-color: #c9a84c;
+    }
+    
+    .partner-badge i {
+        font-size: 0.85rem;
+    }
+    
+    /* Stat Cards */
+    .partner-stat-card {
+        background: #ffffff;
+        border: 1px solid #d4c8b8;
+        padding: 20px 18px;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(10, 22, 40, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .partner-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #1a5c5c, #c9a84c);
+    }
+    
+    .partner-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(10, 22, 40, 0.12);
+        border-color: #c9a84c;
+    }
+    
+    .partner-stat-card .stat-icon {
+        font-size: 2rem;
+        color: #1a5c5c;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .partner-stat-card .stat-number {
+        font-family: 'Merriweather', serif;
+        font-size: 2.8rem;
+        font-weight: 900;
+        color: #0a1628;
+        display: block;
+        line-height: 1.2;
+    }
+    
+    .partner-stat-card .stat-label {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6b7a8f;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 4px;
+    }
+    
+    /* Content Cards */
+    .partner-card {
+        background: #ffffff;
+        border: 1px solid #d4c8b8;
+        box-shadow: 0 2px 8px rgba(10, 22, 40, 0.05);
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .partner-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #1a5c5c, #c9a84c);
+    }
+    
+    .partner-card:hover {
+        box-shadow: 0 8px 25px rgba(10, 22, 40, 0.1);
+        border-color: #c9a84c;
+    }
+    
+    .partner-card .card-header {
+        background: linear-gradient(135deg, #1a5c5c, #0a1628);
+        color: #ffffff;
+        padding: 16px 22px;
+        font-family: 'Merriweather', serif;
+        font-weight: 700;
+        border-bottom: 3px solid #c9a84c;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 60px;
+        flex-wrap: wrap;
+    }
+    
+    .partner-card .card-header i {
+        color: #c9a84c;
+        font-size: 1.3rem;
+    }
+    
+    .partner-card .card-header .badge {
+        margin-left: auto;
+        background: #c9a84c;
+        color: #0a1628;
+        padding: 3px 14px;
+        border-radius: 20px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .partner-card .card-body {
+        padding: 22px;
+    }
+    
+    /* Quick Actions */
+    .partner-action {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 18px;
+        border: 1px solid #e8ecef;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #0a1628;
+        margin-bottom: 10px;
+        cursor: pointer;
+        background: #ffffff;
+    }
+    
+    .partner-action:last-child {
+        margin-bottom: 0;
+    }
+    
+    .partner-action:hover {
+        background: #f5f0e8;
+        border-color: #c9a84c;
+        text-decoration: none;
+        color: #0a1628;
+        transform: translateX(8px);
+        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
+    }
+    
+    .partner-action .action-icon {
+        width: 46px;
+        height: 46px;
+        background: #f5f0e8;
+        border: 2px solid #1a5c5c;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1a5c5c;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .partner-action:hover .action-icon {
+        background: #1a5c5c;
+        color: #ffffff;
+        transform: scale(1.08);
+    }
+    
+    .partner-action .action-text {
+        flex: 1;
+    }
+    
+    .partner-action .action-title {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #0a1628;
+    }
+    
+    .partner-action .action-desc {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.82rem;
+        color: #6b7a8f;
+        margin-top: 2px;
+    }
+    
+    .partner-action .action-arrow {
+        color: #c9a84c;
+        font-size: 0.9rem;
+        opacity: 0.3;
+        transition: all 0.3s ease;
+    }
+    
+    .partner-action:hover .action-arrow {
+        opacity: 1;
+        transform: translateX(6px);
+    }
+    
+    /* Partner Info List */
+    .partner-info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .partner-info-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #e8ecef;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .partner-info-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .partner-info-list .info-label {
+        font-size: 0.9rem;
+        color: #6b7a8f;
+    }
+    
+    .partner-info-list .info-value {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #0a1628;
+    }
+    
+    /* Buttons */
+    .btn-gov {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 10px 24px;
+        border: 2px solid #c9a84c;
+        background: transparent;
+        color: #0a1628;
+        transition: all 0.3s ease;
+        font-size: 0.78rem;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+    }
+    
+    .btn-gov:hover {
+        background: #c9a84c;
+        color: #0a1628;
+        text-decoration: none;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+    }
+    
+    .btn-gov-primary {
+        background: #1a5c5c;
+        border-color: #1a5c5c;
+        color: #ffffff;
+    }
+    
+    .btn-gov-primary:hover {
+        background: #0a1628;
+        border-color: #0a1628;
+        color: #ffffff;
+    }
+    
+    .btn-gov-gold {
+        background: #c9a84c;
+        border-color: #c9a84c;
+        color: #0a1628;
+    }
+    
+    .btn-gov-gold:hover {
+        background: #a8872e;
+        border-color: #a8872e;
+        color: #ffffff;
+    }
+    
+    .btn-gov-sm {
+        padding: 6px 16px;
+        font-size: 0.7rem;
+    }
+    
+    .btn-gov-block {
+        display: block;
+        width: 100%;
+    }
+    
+    .btn-gov-center {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    /* Timeline */
+    .partner-timeline {
+        position: relative;
+        padding-left: 30px;
+        max-height: 320px;
+        overflow-y: auto;
+    }
+    
+    .partner-timeline::-webkit-scrollbar {
+        width: 5px;
+    }
+    
+    .partner-timeline::-webkit-scrollbar-track {
+        background: #e8ecef;
+    }
+    
+    .partner-timeline::-webkit-scrollbar-thumb {
+        background: #c9a84c;
+        border-radius: 10px;
+    }
+    
+    .partner-timeline::before {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, #1a5c5c, #e8ecef);
+    }
+    
+    .partner-timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding-left: 18px;
+    }
+    
+    .partner-timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -26px;
+        top: 5px;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #1a5c5c;
+        border: 3px solid #ffffff;
+        box-shadow: 0 0 0 2px #1a5c5c;
+    }
+    
+    .partner-timeline-item .timeline-date {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.7rem;
+        color: #6b7a8f;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .partner-timeline-item .timeline-content {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        color: #0a1628;
+        margin-top: 3px;
+        line-height: 1.5;
+    }
+    
+    .partner-timeline-item .timeline-content strong {
+        color: #1a5c5c;
+    }
+    
+    /* Notifications */
+    .partner-notification {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid #e8ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .partner-notification:last-child {
+        border-bottom: none;
+    }
+    
+    .partner-notification:hover {
+        background: #f5f0e8;
+        padding-left: 8px;
+        padding-right: 8px;
+        margin: 0 -8px;
+    }
+    
+    .partner-notification .notif-icon {
+        color: #c9a84c;
+        font-size: 1.1rem;
+        margin-top: 2px;
+        width: 22px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+    
+    .partner-notification .notif-content {
+        flex: 1;
+    }
+    
+    .partner-notification .notif-title {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: #0a1628;
+    }
+    
+    .partner-notification .notif-text {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.82rem;
+        color: #6b7a8f;
+        margin-top: 2px;
+    }
+    
+    .partner-notification .notif-time {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.65rem;
+        color: #6b7a8f;
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    
+    /* Footer */
+    .partner-footer {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.78rem;
+        color: #6b7a8f;
+        text-align: center;
+        padding: 25px 0 15px;
+        border-top: 2px solid #d4c8b8;
+        margin-top: 35px;
+        width: 100%;
+    }
+    
+    .partner-footer i {
+        color: #c9a84c;
+    }
+    
+    .partner-footer .footer-divider {
+        color: #d4c8b8;
+        margin: 0 8px;
+    }
+    
+    .partner-footer .footer-small {
+        font-size: 0.7rem;
+        opacity: 0.6;
+        display: block;
+        margin-top: 6px;
+    }
+    
+    /* Utility */
+    .text-center {
+        text-align: center;
+    }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 16px; }
+    .mt-4 { margin-top: 24px; }
+    .mb-3 { margin-bottom: 16px; }
+    .mb-4 { margin-bottom: 24px; }
+    .w-100 { width: 100%; }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .partner-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .partner-badges {
+            margin-left: 0;
+            justify-content: center;
+        }
+        
+        .partner-title-section h1 {
+            font-size: 1.6rem;
+        }
+        
+        .partner-seal {
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            padding: 12px;
+        }
+        
+        .partner-stat-card .stat-number {
+            font-size: 2rem;
+        }
+        
+        .partner-card .card-header {
+            font-size: 0.9rem;
+            padding: 14px 18px;
+        }
+        
+        .partner-action {
+            padding: 12px 14px;
+        }
+        
+        .partner-action .action-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 1rem;
+        }
+        
+        .partner-action .action-title {
+            font-size: 0.88rem;
+        }
+        
+        .partner-action .action-desc {
+            font-size: 0.75rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .partner-header {
+            padding: 15px;
+        }
+        
+        .partner-title-section h1 {
+            font-size: 1.3rem;
+        }
+        
+        .partner-title-section .partner-subtitle {
+            font-size: 0.65rem;
+        }
+        
+        .partner-seal {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            padding: 10px;
+        }
+        
+        .partner-badge {
+            font-size: 0.6rem;
+            padding: 4px 10px;
+        }
+        
+        .partner-stat-card {
+            padding: 14px 10px;
+        }
+        
+        .partner-stat-card .stat-number {
+            font-size: 1.6rem;
+        }
+        
+        .partner-stat-card .stat-label {
+            font-size: 0.65rem;
+        }
+        
+        .partner-card .card-body {
+            padding: 14px;
+        }
+        
+        .partner-info-list .info-label {
+            font-size: 0.8rem;
+        }
+        
+        .partner-info-list .info-value {
+            font-size: 0.85rem;
+        }
+        
+        .btn-gov {
+            padding: 6px 14px;
+            font-size: 0.65rem;
+        }
+        
+        .partner-footer {
+            font-size: 0.65rem;
+            padding: 15px 0 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_title %}
+<div class="partner-header">
+    <div class="partner-header-content">
+        <div class="partner-seal">
+            <i class="fas fa-handshake"></i>
+        </div>
+        <div class="partner-title-section">
+            <h1>
+                <span class="gold-text">Partner</span> Dashboard
+                <span style="font-size:0.9rem;font-weight:300;color:rgba(255,255,255,0.35);letter-spacing:0.1em;">
+                    — PARTNER PORTAL
+                </span>
+            </h1>
+            <div class="partner-subtitle">
+                Kenya Psychological Society Network <span class="star">★</span> Institutional Partners
+                <span style="color:rgba(255,255,255,0.3);margin:0 6px;">|</span> Official Partner Portal
+            </div>
+        </div>
+        <div class="partner-badges">
+            <span class="partner-badge">
+                <i class="fas fa-handshake"></i> Partner
+            </span>
+            {% if user.is_verified %}
+            <span class="partner-badge gold">
+                <i class="fas fa-shield-alt"></i> Verified
+            </span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- ============================================================
+     STATISTICS ROW
+     ============================================================ -->
+<div class="row g-3 g-md-4 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="partner-stat-card">
+            <span class="stat-icon"><i class="fas fa-users"></i></span>
+            <span class="stat-number">{{ total_partners|default:0 }}</span>
+            <div class="stat-label">Total Partners</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="partner-stat-card">
+            <span class="stat-icon"><i class="fas fa-calendar-alt"></i></span>
+            <span class="stat-number">{{ collaboration_count|default:0 }}</span>
+            <div class="stat-label">Collaborations</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="partner-stat-card">
+            <span class="stat-icon"><i class="fas fa-file-alt"></i></span>
+            <span class="stat-number">{{ opportunities_count|default:0 }}</span>
+            <div class="stat-label">Opportunities</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="partner-stat-card">
+            <span class="stat-icon"><i class="fas fa-star"></i></span>
+            <span class="stat-number">{{ impact_score|default:0 }}</span>
+            <div class="stat-label">Impact Score</div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<div class="row g-3 g-md-4">
+    
+    <!-- ============================================================
+         LEFT COLUMN
+         ============================================================ -->
+    <div class="col-lg-8">
+        
+        <!-- QUICK ACTIONS -->
+        <div class="partner-card">
+            <div class="card-header">
+                <i class="fas fa-bolt"></i>
+                Partner Actions
+                <span class="badge">Quick Access</span>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'accounts:profile_update' %}" class="partner-action">
+                    <div class="action-icon"><i class="fas fa-building"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Update Organization Profile</div>
+                        <div class="action-desc">Update partner organization information</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:alumni_research' %}" class="partner-action">
+                    <div class="action-icon"><i class="fas fa-search"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Find Collaborators</div>
+                        <div class="action-desc">Search for research partners and collaborators</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:alumni_resources' %}" class="partner-action">
+                    <div class="action-icon"><i class="fas fa-flask"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Research Resources</div>
+                        <div class="action-desc">Access research tools and databases</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:alumni_directory' %}" class="partner-action">
+                    <div class="action-icon"><i class="fas fa-users"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Partner Directory</div>
+                        <div class="action-desc">Browse other partner organizations</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:activity_log' %}" class="partner-action">
+                    <div class="action-icon"><i class="fas fa-history"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Partner Activity</div>
+                        <div class="action-desc">View your activity history</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="partner-card mt-3 mt-md-4">
+            <div class="card-header">
+                <i class="fas fa-history"></i>
+                Partner Activity Timeline
+                <span class="badge">Recent Activity</span>
+            </div>
+            <div class="card-body">
+                <div class="partner-timeline">
+                    {% for activity in user.activity_logs.all|slice:":5" %}
+                        <div class="partner-timeline-item">
+                            <div class="timeline-date">{{ activity.created_at|date:"M d, Y" }}</div>
+                            <div class="timeline-content">
+                                <strong>{{ activity.get_action_type_display }}</strong>
+                                — {{ activity.action_description|truncatechars:80 }}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="partner-timeline-item">
+                            <div class="timeline-content" style="color:#6b7a8f;">
+                                <i class="fas fa-info-circle"></i> No partner activity recorded yet.
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if user.activity_logs.count > 5 %}
+                    <div class="text-center mt-3">
+                        <a href="{% url 'accounts:activity_log' %}" class="btn-gov btn-gov-sm">
+                            <i class="fas fa-arrow-right"></i> View Full History
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         RIGHT COLUMN - SIDEBAR
+         ============================================================ -->
+    <div class="col-lg-4">
+        
+        <!-- PARTNER INFORMATION -->
+        <div class="partner-card">
+            <div class="card-header">
+                <i class="fas fa-building"></i>
+                Partner Information
+            </div>
+            <div class="card-body">
+                <ul class="partner-info-list">
+                    <li>
+                        <span class="info-label">Organization</span>
+                        <span class="info-value">{{ user.partner_organization|default:"Not set" }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">Partner Type</span>
+                        <span class="info-value">{{ user.partner_type|default:"Not set" }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">Status</span>
+                        <span class="info-value" style="color:{% if user.is_active_member %}#2d6a4f{% else %}#8b1a1a{% endif %};">
+                            {% if user.is_active_member %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </li>
+                    <li>
+                        <span class="info-label">Member Since</span>
+                        <span class="info-value">{{ user.date_joined|date:"M d, Y" }}</span>
+                    </li>
+                </ul>
+                <a href="{% url 'accounts:profile_update' %}" class="btn-gov btn-gov-gold btn-gov-sm btn-gov-center">
+                    <i class="fas fa-edit"></i> Update Organization Info
+                </a>
+            </div>
+        </div>
+
+        <!-- PARTNER METRICS -->
+        <div class="partner-card mt-3 mt-md-4">
+            <div class="card-header">
+                <i class="fas fa-chart-pie"></i>
+                Partner Metrics
+            </div>
+            <div class="card-body">
+                <ul class="partner-info-list">
+                    <li>
+                        <span class="info-label">Total Collaborations</span>
+                        <span class="info-value">{{ collaboration_count|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">Active Projects</span>
+                        <span class="info-value">{{ active_projects|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">Resources Shared</span>
+                        <span class="info-value">{{ resources_shared|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">Impact Score</span>
+                        <span class="info-value">{{ impact_score|default:0 }}/100</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RECENT NOTIFICATIONS -->
+        <div class="partner-card mt-3 mt-md-4">
+            <div class="card-header">
+                <i class="fas fa-bell"></i>
+                Recent Notifications
+                <span class="badge">3</span>
+            </div>
+            <div class="card-body" style="max-height:250px;overflow-y:auto;">
+                <div class="partner-notification">
+                    <span class="notif-icon"><i class="fas fa-handshake"></i></span>
+                    <div class="notif-content">
+                        <div class="notif-title">New Collaboration Request</div>
+                        <div class="notif-text">A researcher wants to collaborate with your organization.</div>
+                        <div class="notif-time">2 hours ago</div>
+                    </div>
+                </div>
+                <div class="partner-notification">
+                    <span class="notif-icon"><i class="fas fa-file-alt"></i></span>
+                    <div class="notif-content">
+                        <div class="notif-title">Resource Shared</div>
+                        <div class="notif-text">New research dataset shared with your organization.</div>
+                        <div class="notif-time">1 day ago</div>
+                    </div>
+                </div>
+                <div class="partner-notification">
+                    <span class="notif-icon"><i class="fas fa-calendar"></i></span>
+                    <div class="notif-content">
+                        <div class="notif-title">Partner Meeting</div>
+                        <div class="notif-text">Annual partner meeting scheduled for next month.</div>
+                        <div class="notif-time">3 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<div class="partner-footer">
+    <i class="fas fa-handshake"></i>
+    KPSN Partner Dashboard <span class="footer-divider">•</span> Official Partner Portal
+    <span class="footer-divider">•</span> Version 2.0
+    <span class="footer-divider">•</span> &copy; {% now "Y" %} Kenya Psychological Society Network
+    <span class="footer-small">
+        <i class="fas fa-handshake" style="color:#c9a84c;"></i>
+        Building partnerships for psychological research and education in Kenya.
+    </span>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate stats on load
+        const stats = document.querySelectorAll('.stat-number');
+        stats.forEach(stat => {
+            const target = parseInt(stat.textContent.replace(/,/g, '')) || 0;
+            if (target > 0) {
+                let current = 0;
+                const increment = Math.ceil(target / 20);
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = target.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = current.toLocaleString();
+                    }
+                }, 50);
+            }
+        });
+    });
+</script>
+{% endblock %}

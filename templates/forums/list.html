@@ -1,0 +1,342 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - KMPN Forums{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Same styles as list.html */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700&family=Source+Serif+Pro:wght@400;600;700&display=swap');
+    
+    .government-title {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-subtitle {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 400;
+        color: #4a4a4a;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-text {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-weight: 400;
+        line-height: 1.7;
+        color: #2d2d2d;
+    }
+    
+    .government-heading {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .card-government {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+        position: relative;
+        margin-bottom: 1rem;
+    }
+    
+    .card-government::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+    }
+    
+    .card-government:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-color: var(--gold-color);
+    }
+    
+    .card-government .card-body {
+        padding: 1.5rem;
+    }
+    
+    .btn-gold-government {
+        background: var(--gold-color);
+        color: var(--white);
+        border: 2px solid var(--gold-color);
+        padding: 8px 20px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .btn-gold-government:hover {
+        background: var(--gold-dark);
+        border-color: var(--gold-dark);
+        color: var(--white);
+        text-decoration: none;
+    }
+    
+    .btn-outline-gold-government {
+        background: transparent;
+        color: var(--gold-color);
+        border: 2px solid var(--gold-color);
+        padding: 6px 16px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 600;
+        font-size: 0.7rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .btn-outline-gold-government:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        text-decoration: none;
+    }
+    
+    .thread-title {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 600;
+        font-size: 1.05rem;
+        color: var(--dark-blue);
+        text-decoration: none;
+    }
+    
+    .thread-title:hover {
+        color: var(--gold-color);
+        text-decoration: none;
+    }
+    
+    .thread-meta {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .thread-meta i {
+        color: var(--gold-color);
+        width: 16px;
+        text-align: center;
+    }
+    
+    .badge-forum {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        padding: 2px 10px;
+        border-radius: 0;
+    }
+    
+    .badge-forum-pinned {
+        background: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .pagination-government .page-link {
+        font-family: 'Merriweather', 'Georgia', serif;
+        color: var(--dark-blue);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        padding: 8px 16px;
+        margin: 0 2px;
+        transition: all 0.3s ease;
+        background: var(--white);
+    }
+    
+    .pagination-government .page-link:hover {
+        background: var(--cream-color);
+        border-color: var(--gold-color);
+        color: var(--dark-blue);
+    }
+    
+    .pagination-government .page-item.active .page-link {
+        background: var(--gold-color);
+        border-color: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .form-control-government {
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.9rem;
+        padding: 8px 14px;
+        background: var(--white);
+        transition: all 0.3s ease;
+        color: #2d2d2d;
+        width: 100%;
+    }
+    
+    .form-control-government:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        outline: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--cream-color); min-height: 100vh;">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="government-title" style="font-size: 2.2rem;">
+                    <i class="fas fa-folder-open text-gold me-2"></i> {{ category.name }}
+                </h1>
+                <p class="government-subtitle" style="font-size: 1.05rem;">
+                    {{ category.description|default:"Browse threads in this category" }}
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'forums:create_thread' %}?category={{ category.slug }}" class="btn-gold-government">
+                    <i class="fas fa-plus-circle me-2"></i> New Thread
+                </a>
+                <a href="{% url 'forums:list' %}" class="btn-outline-gold-government mt-2 mt-md-0 ms-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back
+                </a>
+            </div>
+        </div>
+        
+        <!-- Search -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <form method="get" class="row g-3">
+                    <div class="col-md-8">
+                        <input type="text" name="search" class="form-control form-control-government" 
+                               placeholder="Search in this category..." value="{{ search_query }}">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn-gold-government w-100">
+                            <i class="fas fa-search me-1"></i> Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Threads -->
+        <div class="row">
+            <div class="col-12">
+                {% if threads %}
+                    {% for thread in threads %}
+                        <div class="card-government">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-7">
+                                        <div class="d-flex align-items-start gap-2">
+                                            {% if thread.is_sticky %}
+                                                <span class="badge-forum badge-forum-pinned">Pinned</span>
+                                            {% endif %}
+                                            <a href="{% url 'forums:thread_detail' thread_id=thread.id %}" class="thread-title">
+                                                {{ thread.title }}
+                                            </a>
+                                        </div>
+                                        <div class="thread-meta mt-1">
+                                            <i class="fas fa-user"></i> {{ thread.author.get_full_name|default:thread.author.username }}
+                                            <span class="mx-2">|</span>
+                                            <i class="fas fa-calendar-alt"></i> {{ thread.created_at|date:"M d, Y" }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 text-md-end">
+                                        <span class="thread-meta me-3">
+                                            <i class="fas fa-comments"></i> {{ thread.reply_count|default:0 }}
+                                        </span>
+                                        <span class="thread-meta me-3">
+                                            <i class="fas fa-eye"></i> {{ thread.view_count|default:0 }}
+                                        </span>
+                                        <span class="thread-meta">
+                                            <i class="fas fa-heart" style="color: #dc3545;"></i> {{ thread.like_count|default:0 }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    <!-- Pagination -->
+                    {% if threads.has_other_pages %}
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination pagination-government justify-content-center">
+                                        {% if threads.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ threads.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                                    <i class="fas fa-chevron-left me-1"></i> Previous
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">Previous</span>
+                                            </li>
+                                        {% endif %}
+                                        
+                                        {% for num in threads.paginator.page_range %}
+                                            {% if threads.number == num %}
+                                                <li class="page-item active">
+                                                    <span class="page-link">{{ num }}</span>
+                                                </li>
+                                            {% elif num > threads.number|add:'-3' and num < threads.number|add:'3' %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if threads.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ threads.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                                    Next <i class="fas fa-chevron-right ms-1"></i>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">Next</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-folder-open" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+                        <h3 class="government-heading" style="color: var(--dark-blue);">No Threads in {{ category.name }}</h3>
+                        <p class="government-subtitle" style="font-size: 1rem; color: #777;">
+                            Be the first to start a discussion in this category!
+                        </p>
+                        <a href="{% url 'forums:create_thread' %}?category={{ category.slug }}" class="btn-gold-government mt-3">
+                            <i class="fas fa-plus-circle me-2"></i> Create Thread
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

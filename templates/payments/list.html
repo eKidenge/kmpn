@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Payments - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="section-title">
+                    <i class="fas fa-credit-card text-gold me-2"></i> Payments
+                </h1>
+                <p class="text-muted">View your payment history and transactions</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'payments:initiate' %}" class="btn-gold">
+                    <i class="fas fa-plus-circle me-2"></i> Make Payment
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card-government text-center p-3">
+                    <h6 class="text-muted">Total Spent</h6>
+                    <p class="display-6 fw-bold text-gold mb-0">KES {{ total_spent|floatformat:0 }}</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-government text-center p-3">
+                    <h6 class="text-muted">Total Transactions</h6>
+                    <p class="display-6 fw-bold text-gold mb-0">{{ payments|length }}</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-government text-center p-3">
+                    <h6 class="text-muted">Active Subscriptions</h6>
+                    <p class="display-6 fw-bold text-gold mb-0">
+                        {% if subscription and subscription.is_active %}1{% else %}0{% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-3">
+                                <select name="payment_type" class="form-control">
+                                    <option value="">All Types</option>
+                                    {% for type_value, type_label in payment_types %}
+                                        <option value="{{ type_value }}" {% if type_value == current_type %}selected{% endif %}>
+                                            {{ type_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="status" class="form-control">
+                                    <option value="">All Status</option>
+                                    {% for status_value, status_label in status_choices %}
+                                        <option value="{{ status_value }}" {% if status_value == current_status %}selected{% endif %}>
+                                            {{ status_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-filter me-1"></i> Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-government mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Type</th>
+                                        <th>Method</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in payments %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold">{{ payment.transaction_id }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge" style="background: var(--secondary-color); color: white;">
+                                                {{ payment.get_payment_type_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ payment.get_payment_method_display }}</td>
+                                        <td>
+                                            <span class="fw-bold">{{ payment.amount }} {{ payment.currency }}</span>
+                                        </td>
+                                        <td>
+                                            {% if payment.status == 'completed' %}
+                                                <span class="badge" style="background: var(--success-color); color: white;">
+                                                    <i class="fas fa-check-circle me-1"></i> Completed
+                                                </span>
+                                            {% elif payment.status == 'pending' %}
+                                                <span class="badge" style="background: var(--warning-color); color: white;">
+                                                    <i class="fas fa-clock me-1"></i> Pending
+                                                </span>
+                                            {% elif payment.status == 'failed' %}
+                                                <span class="badge" style="background: var(--danger-color); color: white;">
+                                                    <i class="fas fa-times-circle me-1"></i> Failed
+                                                </span>
+                                            {% elif payment.status == 'refunded' %}
+                                                <span class="badge" style="background: var(--info-color); color: white;">
+                                                    <i class="fas fa-undo me-1"></i> Refunded
+                                                </span>
+                                            {% else %}
+                                                <span class="badge" style="background: var(--secondary-color); color: white;">
+                                                    {{ payment.get_status_display }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ payment.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'payments:detail' payment_id=payment.id %}" class="btn btn-sm btn-outline-gold">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if payment.status == 'completed' %}
+                                                <a href="{% url 'payments:receipt' payment_id=payment.id %}" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-receipt"></i>
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">
+                                            <p class="text-muted mb-0">No payment records found</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <!-- Pagination -->
+                        {% if payments.has_other_pages %}
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-0">
+                                {% if payments.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ payments.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                {% for num in payments.paginator.page_range %}
+                                    {% if payments.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                                {{ num }}
+                                            </span>
+                                        </li>
+                                    {% elif num > payments.number|add:'-3' and num < payments.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if payments.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ payments.next_page_number }}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

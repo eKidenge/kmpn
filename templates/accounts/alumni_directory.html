@@ -1,0 +1,54 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Alumni Directory - KPSN{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Alumni</span> Directory
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="institution" class="form-control" placeholder="Search by institution..." value="{{ request.GET.institution }}">
+                </div>
+                <div class="col-md-4">
+                    <select name="graduation_year" class="form-control">
+                        <option value="">All Graduation Years</option>
+                        {% for year in graduation_years %}
+                            <option value="{{ year }}" {% if request.GET.graduation_year == year|stringformat:"s" %}selected{% endif %}>
+                                {{ year }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-gold">Search</button>
+                    <a href="{% url 'accounts:alumni_directory' %}" class="btn btn-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for alumnus in alumni %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>{{ alumnus.get_full_name }}</h5>
+                        <p class="text-muted">{{ alumnus.institution|default:"Institution not set" }}</p>
+                        <p>Class of {{ alumnus.graduation_year|default:"N/A" }}</p>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p class="text-center">No alumni found matching your criteria.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

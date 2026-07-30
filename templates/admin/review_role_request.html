@@ -1,0 +1,350 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Review Role Request - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    .review-wrapper {
+        padding: 20px 0;
+    }
+    
+    .review-header {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
+        padding: 20px 25px;
+        border-radius: var(--radius-md);
+        border-bottom: 4px solid var(--gold-color);
+        margin-bottom: 25px;
+    }
+    
+    .review-header h1 {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--white);
+        margin-bottom: 4px;
+    }
+    
+    .review-header h1 .gold-text {
+        color: var(--gold-color);
+    }
+    
+    .review-header .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .review-header .breadcrumb-item {
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.6);
+    }
+    
+    .review-header .breadcrumb-item.active {
+        color: var(--gold-color);
+    }
+    
+    .review-header .breadcrumb-item a {
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+    }
+    
+    .review-header .breadcrumb-item a:hover {
+        color: var(--gold-color);
+    }
+    
+    .review-header .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255,255,255,0.3);
+    }
+    
+    .review-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.12);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        margin-bottom: 25px;
+    }
+    
+    .review-card .card-header {
+        background: var(--cream-color);
+        padding: 15px 20px;
+        border-bottom: 2px solid var(--gold-color);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 1rem;
+    }
+    
+    .review-card .card-header .header-icon {
+        color: var(--gold-color);
+        margin-right: 8px;
+    }
+    
+    .review-card .card-body {
+        padding: 20px;
+    }
+    
+    .review-card .card-body .detail-row {
+        display: flex;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .review-card .card-body .detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .review-card .card-body .detail-label {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        color: var(--gray-700);
+        width: 150px;
+        flex-shrink: 0;
+        font-size: 0.9rem;
+    }
+    
+    .review-card .card-body .detail-value {
+        font-family: var(--font-secondary);
+        color: var(--gray-800);
+        font-size: 0.9rem;
+    }
+    
+    .review-card .card-body .detail-value .status-badge {
+        padding: 3px 10px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+    
+    .review-card .card-body .detail-value .status-badge.pending {
+        background: #fff8e1;
+        color: var(--warning-color);
+    }
+    
+    .review-card .card-body .detail-value .status-badge.approved {
+        background: #e8f5e9;
+        color: var(--success-color);
+    }
+    
+    .review-card .card-body .detail-value .status-badge.rejected {
+        background: #fbe9e7;
+        color: var(--danger-color);
+    }
+    
+    .review-card .card-body .detail-value .role-badge {
+        display: inline-block;
+        background: rgba(201, 168, 76, 0.12);
+        color: var(--gold-dark);
+        padding: 3px 12px;
+        border-radius: var(--radius-full);
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .review-card .card-body .reason-text {
+        font-family: var(--font-secondary);
+        color: var(--gray-700);
+        line-height: 1.8;
+        padding: 10px 15px;
+        background: var(--cream-color);
+        border-radius: var(--radius-sm);
+        border-left: 3px solid var(--gold-color);
+        margin-top: 5px;
+    }
+    
+    .action-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.12);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        padding: 20px;
+    }
+    
+    .action-card .action-title {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+    
+    .action-card .btn-approve {
+        background: var(--success-color);
+        color: var(--white);
+        border: none;
+        padding: 10px 30px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        transition: var(--transition-normal);
+        width: 100%;
+    }
+    
+    .action-card .btn-approve:hover {
+        background: #0e5a35;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(26, 122, 74, 0.3);
+    }
+    
+    .action-card .btn-reject {
+        background: var(--danger-color);
+        color: var(--white);
+        border: none;
+        padding: 10px 30px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        transition: var(--transition-normal);
+        width: 100%;
+    }
+    
+    .action-card .btn-reject:hover {
+        background: #6a1a1a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(138, 26, 26, 0.3);
+    }
+    
+    .action-card .form-control {
+        border: 2px solid #d4c8b0;
+        border-radius: var(--radius-sm);
+        padding: 10px 15px;
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .action-card .form-control:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="review-wrapper">
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="review-header" data-aos="fade-down">
+            <h1>
+                <i class="fas fa-search me-2 gold-text"></i>
+                Review <span class="gold-text">Role Request</span>
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard_redirect' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'accounts:manage_role_requests' %}">Role Requests</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Review</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Request Details -->
+            <div class="col-lg-8">
+                <div class="review-card" data-aos="fade-up">
+                    <div class="card-header">
+                        <i class="fas fa-file-alt header-icon"></i>
+                        Request Details
+                    </div>
+                    <div class="card-body">
+                        <div class="detail-row">
+                            <div class="detail-label">User</div>
+                            <div class="detail-value">
+                                <strong>{{ role_request.user.get_full_name|default:role_request.user.username }}</strong>
+                                <br>
+                                <span style="color:var(--gray-500);">{{ role_request.user.email }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Current Role</div>
+                            <div class="detail-value">
+                                <span class="role-badge">{{ role_request.current_role|title }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Requested Role</div>
+                            <div class="detail-value">
+                                <span class="role-badge" style="background:rgba(201,168,76,0.2);">{{ role_request.requested_role|title }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value">
+                                <span class="status-badge {{ role_request.status }}">
+                                    {{ role_request.status|title }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Submitted</div>
+                            <div class="detail-value">
+                                {{ role_request.created_at|date:"F d, Y H:i" }}
+                                <br>
+                                <span style="font-size:0.8rem;color:var(--gray-500);">{{ role_request.created_at|timesince }} ago</span>
+                            </div>
+                        </div>
+                        <div class="detail-row" style="flex-direction:column;align-items:stretch;">
+                            <div class="detail-label" style="width:100%;margin-bottom:8px;">Reason</div>
+                            <div class="detail-value">
+                                <div class="reason-text">{{ role_request.reason|linebreaks }}</div>
+                            </div>
+                        </div>
+                        {% if role_request.supporting_documents %}
+                            <div class="detail-row">
+                                <div class="detail-label">Supporting Documents</div>
+                                <div class="detail-value">
+                                    <a href="{{ role_request.supporting_documents.url }}" target="_blank" class="text-gold">
+                                        <i class="fas fa-file-pdf me-1"></i> View Document
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="col-lg-4">
+                <div class="action-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="action-title">
+                        <i class="fas fa-gavel me-2" style="color:var(--gold-color);"></i>
+                        Review Actions
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label" style="font-family:var(--font-secondary);font-weight:600;">Notes (optional)</label>
+                            <textarea name="notes" class="form-control" rows="4" placeholder="Add review notes..."></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" name="action" value="approve" class="btn-approve">
+                                <i class="fas fa-check me-2"></i> Approve Request
+                            </button>
+                            <button type="submit" name="action" value="reject" class="btn-reject">
+                                <i class="fas fa-times me-2"></i> Reject Request
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr>
+                    
+                    <a href="{% url 'accounts:manage_role_requests' %}" class="btn" style="background:var(--gray-200);color:var(--gray-700);width:100%;">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Requests
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

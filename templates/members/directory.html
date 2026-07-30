@@ -1,0 +1,641 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Member Directory - KMPN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       GOVERNMENT STYLE FONTS
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700;900&family=Source+Serif+Pro:wght@400;600;700&family=Cormorant+Garamond:wght@400;600;700&display=swap');
+    
+    :root {
+        --gov-serif: 'Playfair Display', 'Times New Roman', serif;
+        --gov-serif-alt: 'Merriweather', 'Georgia', serif;
+        --gov-serif-body: 'Source Serif Pro', 'Georgia', serif;
+        --gov-serif-heading: 'Cormorant Garamond', 'Georgia', serif;
+    }
+    
+    .government-title {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-subtitle {
+        font-family: var(--gov-serif-alt);
+        font-weight: 400;
+        color: #4a4a4a;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-text {
+        font-family: var(--gov-serif-body);
+        font-weight: 400;
+        line-height: 1.7;
+        color: #2d2d2d;
+    }
+    
+    .government-heading {
+        font-family: var(--gov-serif);
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-label {
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: #4a4a4a;
+    }
+    
+    .card-government {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .card-government::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+    
+    .card-government:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .card-government:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        border-color: var(--gold-color);
+    }
+    
+    .card-government .card-body {
+        padding: 1.5rem;
+    }
+    
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .btn-gold {
+        background: var(--gold-color);
+        color: var(--white);
+        border: 2px solid var(--gold-color);
+        padding: 8px 20px;
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .btn-gold:hover {
+        background: var(--gold-dark);
+        border-color: var(--gold-dark);
+        color: var(--white);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(212, 168, 67, 0.3);
+        text-decoration: none;
+    }
+    
+    .btn-outline-gold {
+        background: transparent;
+        color: var(--gold-color);
+        border: 2px solid var(--gold-color);
+        padding: 6px 16px;
+        font-family: var(--gov-serif-alt);
+        font-weight: 600;
+        font-size: 0.7rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .btn-outline-gold:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(212, 168, 67, 0.25);
+        text-decoration: none;
+    }
+    
+    .btn-sm {
+        padding: 4px 14px;
+        font-size: 0.7rem;
+    }
+    
+    /* ============================================================
+       FORM CONTROLS
+       ============================================================ */
+    .form-control-government {
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        font-family: var(--gov-serif-body);
+        font-size: 0.9rem;
+        padding: 10px 14px;
+        background: var(--white);
+        transition: all 0.3s ease;
+        color: #2d2d2d;
+        width: 100%;
+    }
+    
+    .form-control-government:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        outline: none;
+    }
+    
+    .form-control-government::placeholder {
+        color: #999;
+        font-family: var(--gov-serif-body);
+        font-style: italic;
+    }
+    
+    select.form-control-government {
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='%234a4a4a' d='M6 7L0 0h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 36px;
+        cursor: pointer;
+    }
+    
+    .input-group-government .input-group-text {
+        background: var(--cream-color);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        font-family: var(--gov-serif-alt);
+        color: var(--dark-blue);
+    }
+    
+    /* ============================================================
+       PROFILE IMAGE
+       ============================================================ */
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--gold-color);
+        background: var(--cream-color);
+    }
+    
+    .profile-avatar-placeholder {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--gold-color), var(--gold-dark));
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        font-family: var(--gov-serif);
+        font-size: 2.5rem;
+        font-weight: 900;
+        border: 3px solid var(--gold-color);
+    }
+    
+    /* ============================================================
+       TAGS/BADGES
+       ============================================================ */
+    .badge-research {
+        font-family: var(--gov-serif-body);
+        font-size: 0.7rem;
+        background: var(--cream-color);
+        color: var(--dark-blue);
+        border: 1px solid var(--gold-color);
+        padding: 2px 10px;
+        margin: 2px;
+        display: inline-block;
+        border-radius: 0;
+        font-weight: 600;
+    }
+    
+    .badge-research:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+    }
+    
+    /* ============================================================
+       MEMBER META
+       ============================================================ */
+    .member-meta {
+        font-family: var(--gov-serif-body);
+        font-size: 0.85rem;
+        color: #6c757d;
+        line-height: 1.8;
+    }
+    
+    .member-meta i {
+        color: var(--gold-color);
+        width: 18px;
+        text-align: center;
+    }
+    
+    .member-name {
+        font-family: var(--gov-serif);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        margin-bottom: 4px;
+    }
+    
+    /* ============================================================
+       PAGINATION
+       ============================================================ */
+    .pagination-government .page-link {
+        font-family: var(--gov-serif-alt);
+        color: var(--dark-blue);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        padding: 8px 16px;
+        margin: 0 2px;
+        transition: all 0.3s ease;
+        background: var(--white);
+    }
+    
+    .pagination-government .page-link:hover {
+        background: var(--cream-color);
+        border-color: var(--gold-color);
+        color: var(--dark-blue);
+    }
+    
+    .pagination-government .page-item.active .page-link {
+        background: var(--gold-color);
+        border-color: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .pagination-government .page-item.disabled .page-link {
+        color: #999;
+        background: var(--cream-color);
+        border-color: #d4c9b0;
+    }
+    
+    /* ============================================================
+       SECTION HEADER
+       ============================================================ */
+    .section-header-government {
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e8e0d0;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    
+    .section-header-government::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 80px;
+        height: 2px;
+        background: var(--gold-color);
+    }
+    
+    .section-header-government h1 {
+        font-family: var(--gov-serif);
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        letter-spacing: 0.5px;
+    }
+    
+    .section-header-government h1 i {
+        color: var(--gold-color);
+    }
+    
+    .section-header-government p {
+        font-family: var(--gov-serif-body);
+        color: #6c757d;
+        font-size: 1rem;
+        margin-bottom: 0;
+    }
+    
+    /* ============================================================
+       EMPTY STATE
+       ============================================================ */
+    .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #ccc;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state h3 {
+        font-family: var(--gov-serif);
+        color: var(--dark-blue);
+        margin-bottom: 8px;
+    }
+    
+    .empty-state p {
+        font-family: var(--gov-serif-body);
+        color: #777;
+    }
+    
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+        .section-header-government h1 {
+            font-size: 1.6rem;
+        }
+        
+        .profile-avatar,
+        .profile-avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+        
+        .card-government .card-body {
+            padding: 1rem;
+        }
+        
+        .member-name {
+            font-size: 0.95rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .section-header-government h1 {
+            font-size: 1.3rem;
+        }
+        
+        .profile-avatar,
+        .profile-avatar-placeholder {
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section style="background: var(--cream-color); min-height: 100vh; padding: 60px 0;">
+    <div class="container">
+        <!-- ============================================================
+        HEADER
+        ============================================================ -->
+        <div class="section-header-government">
+            <div class="row align-items-end">
+                <div class="col-md-8">
+                    <h1>
+                        <i class="fas fa-address-book me-2"></i> Member Directory
+                    </h1>
+                    <p class="government-subtitle" style="font-size: 1.05rem;">
+                        Connect with fellow postgraduate scholars across Kenya
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <span class="badge" style="background: var(--gold-color); color: white; padding: 8px 16px; font-family: var(--gov-serif-alt); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fas fa-users me-1"></i> {{ members.paginator.count|default:"0" }} Members
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============================================================
+        SEARCH & FILTERS
+        ============================================================ -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-4">
+                                <div class="input-group input-group-government">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" name="search" class="form-control form-control-government" 
+                                           placeholder="Search by name, institution, interests..." 
+                                           value="{{ search_query }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="institution" class="form-control form-control-government">
+                                    <option value="">All Institutions</option>
+                                    {% for inst in institutions %}
+                                        <option value="{{ inst }}" {% if inst == current_institution %}selected{% endif %}>
+                                            {{ inst }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="academic_level" class="form-control form-control-government">
+                                    <option value="">All Levels</option>
+                                    <option value="masters" {% if current_academic_level == 'masters' %}selected{% endif %}>Master's</option>
+                                    <option value="phd" {% if current_academic_level == 'phd' %}selected{% endif %}>PhD</option>
+                                    <option value="postdoc" {% if current_academic_level == 'postdoc' %}selected{% endif %}>Postdoctoral</option>
+                                    <option value="early_career" {% if current_academic_level == 'early_career' %}selected{% endif %}>Early Career</option>
+                                    <option value="senior_researcher" {% if current_academic_level == 'senior_researcher' %}selected{% endif %}>Senior Researcher</option>
+                                    <option value="professor" {% if current_academic_level == 'professor' %}selected{% endif %}>Professor</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="sort" class="form-control form-control-government">
+                                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Recent</option>
+                                    <option value="user__first_name" {% if current_sort == 'user__first_name' %}selected{% endif %}>Name A-Z</option>
+                                    <option value="-publication_count" {% if current_sort == '-publication_count' %}selected{% endif %}>Most Publications</option>
+                                    <option value="-citation_count" {% if current_sort == '-citation_count' %}selected{% endif %}>Most Cited</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============================================================
+        RESULTS
+        ============================================================ -->
+        <div class="row g-4">
+            {% if members %}
+                {% for member in members %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card-government">
+                        <div class="card-body text-center">
+                            <!-- Profile Picture -->
+                            <div class="mb-3">
+                                {% if member.user.profile_picture %}
+                                    <img src="{{ member.user.profile_picture.url }}" 
+                                         alt="{{ member.user.get_full_name }}" 
+                                         class="profile-avatar">
+                                {% else %}
+                                    <div class="profile-avatar-placeholder">
+                                        {{ member.user.get_full_name|slice:":1"|upper }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Name -->
+                            <h5 class="member-name">{{ member.user.get_full_name }}</h5>
+                            
+                            <!-- Institution -->
+                            <p class="member-meta mb-1">
+                                <i class="fas fa-university"></i> 
+                                {{ member.user.institution|default:"N/A" }}
+                            </p>
+                            
+                            <!-- Academic Level -->
+                            <p class="member-meta mb-2">
+                                <i class="fas fa-graduation-cap"></i> 
+                                {{ member.user.get_academic_level_display|default:"N/A" }}
+                            </p>
+                            
+                            <!-- Publications -->
+                            <p class="member-meta mb-3">
+                                <i class="fas fa-file-alt"></i> 
+                                {{ member.publication_count|default:0 }} Publications
+                            </p>
+                            
+                            <!-- Research Interests -->
+                            {% if member.user.research_interests %}
+                                <div class="mb-3">
+                                    {% for interest in member.user.research_interests|slice:":3" %}
+                                        <span class="badge-research">
+                                            {{ interest|truncatechars:15 }}
+                                        </span>
+                                    {% endfor %}
+                                    {% if member.user.research_interests|length > 3 %}
+                                        <span class="badge-research">+{{ member.user.research_interests|length|add:"-3" }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Action Button -->
+                            <a href="{% url 'members:detail' member_id=member.id %}" class="btn-outline-gold">
+                                <i class="fas fa-eye me-1"></i> View Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <!-- ============================================================
+                PAGINATION
+                ============================================================ -->
+                {% if members.has_other_pages %}
+                <div class="col-12">
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-government justify-content-center">
+                                    {% if members.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ members.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_institution %}&institution={{ current_institution }}{% endif %}{% if current_academic_level %}&academic_level={{ current_academic_level }}{% endif %}">
+                                                <i class="fas fa-chevron-left me-1"></i> Previous
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Previous</span>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    {% for num in members.paginator.page_range %}
+                                        {% if members.number == num %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ num }}</span>
+                                            </li>
+                                        {% elif num > members.number|add:'-3' and num < members.number|add:'3' %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_institution %}&institution={{ current_institution }}{% endif %}{% if current_academic_level %}&academic_level={{ current_academic_level }}{% endif %}">
+                                                    {{ num }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if members.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ members.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_institution %}&institution={{ current_institution }}{% endif %}{% if current_academic_level %}&academic_level={{ current_academic_level }}{% endif %}">
+                                                Next <i class="fas fa-chevron-right ms-1"></i>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Next</span>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+            {% else %}
+                <!-- ============================================================
+                EMPTY STATE
+                ============================================================ -->
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>No Members Found</h3>
+                        <p class="government-text">Try adjusting your search filters to find more members.</p>
+                        <a href="{% url 'members:directory' %}" class="btn-gold mt-3">
+                            <i class="fas fa-undo me-1"></i> Clear Filters
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add government style to form controls
+        document.querySelectorAll('input, select').forEach(function(el) {
+            if (!el.classList.contains('form-control-government')) {
+                el.classList.add('form-control-government');
+            }
+        });
+    });
+</script>
+{% endblock %}

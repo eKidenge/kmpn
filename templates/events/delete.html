@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Event - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--cream-color); min-height: 100vh;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <div class="card-government">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #dc3545; margin-bottom: 1rem;"></i>
+                        <h3 class="government-heading" style="color: var(--dark-blue);">Delete Event</h3>
+                        <p class="government-text">Are you sure you want to delete <strong>"{{ event.title }}"</strong>?</p>
+                        <p class="text-muted small">This action cannot be undone.</p>
+                        
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn" style="background: #dc3545; color: white; border: none; padding: 10px 24px; width: 100%; font-family: 'Merriweather', serif; font-weight: 700; text-transform: uppercase; border-radius: 0;">
+                                        <i class="fas fa-trash me-2"></i> Yes, Delete
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'events:detail' slug=event.slug %}" class="btn-outline-gold-government w-100">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

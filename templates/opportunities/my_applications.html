@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Applications - KPSN{% endblock %}
+
+{% block content %}
+<section class="my-applications" style="padding:60px 0;background:linear-gradient(135deg,#f5f0e8 0%,#e8e0d0 50%,#f0ece0 100%);min-height:100vh;">
+    <div class="container">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-8">
+                <h1 style="font-family:var(--font-heading);font-weight:900;color:var(--dark-blue);">
+                    <i class="fas fa-file-alt text-gold me-2"></i>
+                    My Applications
+                </h1>
+                <p style="font-family:var(--font-secondary);color:var(--gray-600);">
+                    Track your applications to opportunities
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'opportunities:list' %}" class="btn btn-sm" style="background:var(--gray-200);color:var(--gray-700);padding:8px 20px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+                    <i class="fas fa-arrow-left"></i> Browse Opportunities
+                </a>
+            </div>
+        </div>
+        
+        <div class="card" style="border:1px solid rgba(201,168,76,0.2);border-radius:8px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.08);">
+            <div class="card-body" style="padding:0;">
+                <div class="table-responsive">
+                    <table class="table" style="font-family:var(--font-secondary);font-size:0.9rem;margin-bottom:0;">
+                        <thead style="background:var(--cream-color);border-bottom:2px solid var(--gold-color);">
+                            <tr>
+                                <th style="padding:12px 20px;">Opportunity</th>
+                                <th style="padding:12px 20px;">Type</th>
+                                <th style="padding:12px 20px;">Applied On</th>
+                                <th style="padding:12px 20px;">Status</th>
+                                <th style="padding:12px 20px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications %}
+                                <tr>
+                                    <td style="padding:12px 20px;">
+                                        <a href="{% url 'opportunities:detail' application.opportunity.id %}" style="color:var(--dark-blue);font-weight:600;text-decoration:none;">
+                                            {{ application.opportunity.title|truncatechars:50 }}
+                                        </a>
+                                    </td>
+                                    <td style="padding:12px 20px;">
+                                        <span class="badge" style="background:var(--gold-color);color:var(--white);padding:4px 12px;border-radius:9999px;font-size:0.65rem;text-transform:uppercase;font-weight:600;">
+                                            {{ application.opportunity.get_opportunity_type_display }}
+                                        </span>
+                                    </td>
+                                    <td style="padding:12px 20px;">
+                                        {{ application.created_at|date:"M d, Y" }}
+                                    </td>
+                                    <td style="padding:12px 20px;">
+                                        <span class="badge" style="background:{% if application.status == 'pending' %}var(--warning-color){% elif application.status == 'reviewing' %}var(--info-color){% elif application.status == 'shortlisted' %}var(--gold-color){% elif application.status == 'accepted' %}var(--success-color){% elif application.status == 'rejected' %}var(--danger-color){% else %}var(--gray-500){% endif %};color:var(--white);padding:4px 12px;border-radius:9999px;font-size:0.65rem;text-transform:uppercase;font-weight:600;">
+                                            {{ application.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td style="padding:12px 20px;">
+                                        <a href="{% url 'opportunities:detail' application.opportunity.id %}" class="btn btn-sm" style="background:var(--gold-color);color:var(--white);padding:4px 12px;border-radius:4px;text-decoration:none;font-size:0.8rem;">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4" style="font-family:var(--font-secondary);color:var(--gray-500);">
+                                        <i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px;color:var(--gray-300);"></i>
+                                        You haven't applied to any opportunities yet.
+                                        <br>
+                                        <a href="{% url 'opportunities:list' %}" class="text-gold" style="font-weight:600;text-decoration:none;">Browse Opportunities</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        {% if applications.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if applications.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ applications.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    {% for num in applications.paginator.page_range %}
+                        <li class="page-item {% if applications.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endfor %}
+                    {% if applications.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ applications.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

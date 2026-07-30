@@ -1,0 +1,1294 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Executive Dashboard - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       GOVERNMENT-STYLE TYPOGRAPHY
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    :root {
+        --gov-serif: 'Merriweather', 'Times New Roman', serif;
+        --gov-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        --gov-mono: 'JetBrains Mono', 'Courier New', monospace;
+        
+        /* Government Color Palette */
+        --gov-navy: #0a1628;
+        --gov-navy-light: #1a2a4a;
+        --gov-gold: #c9a84c;
+        --gov-gold-light: #e8d5a3;
+        --gov-gold-dark: #a8872e;
+        --gov-cream: #f5f0e8;
+        --gov-gray: #6b7a8f;
+        --gov-gray-light: #e8ecef;
+        --gov-border: #d4c8b8;
+        --gov-success: #2d6a4f;
+        --gov-warning: #b8860b;
+        --gov-danger: #8b1a1a;
+        --gov-info: #1a3a5c;
+        
+        /* KPSN Brand Colors */
+        --dark-blue: #0a1628;
+        --gold-color: #c9a84c;
+    }
+
+    /* ============================================================
+       GOVERNMENT HEADER
+       ============================================================ */
+    .gov-header {
+        border-bottom: 4px solid var(--gov-gold);
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .gov-header::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--gov-gold), transparent);
+    }
+
+    .gov-seal {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .gov-seal-icon {
+        font-size: 2.5rem;
+        color: var(--gov-gold);
+        opacity: 0.8;
+        border: 3px solid var(--gov-gold);
+        border-radius: 50%;
+        padding: 0.75rem;
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(201, 168, 76, 0.1), transparent);
+        flex-shrink: 0;
+    }
+
+    .gov-title {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        color: var(--gov-navy);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .gov-title h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        margin: 0;
+        background: linear-gradient(135deg, var(--gov-navy), var(--gov-navy-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        word-wrap: break-word;
+    }
+
+    .gov-title .subtitle {
+        font-family: var(--gov-sans);
+        font-weight: 300;
+        font-size: 0.85rem;
+        color: var(--gov-gray);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        -webkit-text-fill-color: var(--gov-gray);
+    }
+
+    .gov-title .gold-text {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        color: var(--gov-gold);
+        -webkit-text-fill-color: var(--gov-gold);
+    }
+
+    .gov-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-left: auto;
+    }
+
+    .executive-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, var(--gov-gold), var(--gov-gold-dark));
+        color: var(--gov-navy);
+        padding: 0.25rem 1rem;
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 2px solid var(--gov-gold-dark);
+        white-space: nowrap;
+    }
+
+    .executive-badge i {
+        font-size: 0.8rem;
+    }
+
+    .executive-badge.secure {
+        background: var(--gov-navy);
+        color: #ffffff;
+        border-color: var(--gov-navy);
+    }
+
+    /* ============================================================
+       EXECUTIVE STAT CARDS
+       ============================================================ */
+    .executive-stat-card {
+        background: #ffffff;
+        border: 1px solid var(--gov-border);
+        border-radius: 0;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(10, 22, 40, 0.06);
+        text-align: center;
+        height: 100%;
+    }
+
+    .executive-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gov-gold), var(--gov-gold-light));
+    }
+
+    .executive-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(10, 22, 40, 0.12);
+        border-color: var(--gov-gold);
+    }
+
+    .executive-stat-card .stat-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--gov-cream), #ffffff);
+        border: 2px solid var(--gov-gold);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.5rem;
+        color: var(--gov-gold);
+        transition: all 0.3s ease;
+    }
+
+    .executive-stat-card:hover .stat-icon-wrapper {
+        background: var(--gov-gold);
+        color: #ffffff;
+        transform: scale(1.05);
+    }
+
+    .executive-stat-card .stat-number {
+        font-family: var(--gov-serif);
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--gov-navy);
+        display: block;
+        line-height: 1.2;
+    }
+
+    .executive-stat-card .stat-label {
+        font-family: var(--gov-sans);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--gov-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 0.25rem;
+    }
+
+    .executive-stat-card .stat-change {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        font-family: var(--gov-mono);
+        border-radius: 20px;
+        margin-top: 0.5rem;
+    }
+
+    .executive-stat-card .stat-change.positive {
+        background: rgba(45, 106, 79, 0.1);
+        color: var(--gov-success);
+    }
+
+    .executive-stat-card .stat-change.negative {
+        background: rgba(139, 26, 26, 0.1);
+        color: var(--gov-danger);
+    }
+
+    .executive-stat-card .stat-change.neutral {
+        background: rgba(184, 134, 11, 0.1);
+        color: var(--gov-warning);
+    }
+
+    /* ============================================================
+       EXECUTIVE CARDS
+       ============================================================ */
+    .executive-card {
+        background: #ffffff;
+        border: 1px solid var(--gov-border);
+        border-radius: 0;
+        box-shadow: 0 4px 12px rgba(10, 22, 40, 0.06);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .executive-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gov-gold), var(--gov-gold-light));
+    }
+
+    .executive-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(10, 22, 40, 0.1);
+        border-color: var(--gov-gold);
+    }
+
+    .executive-card .card-header {
+        background: linear-gradient(135deg, var(--gov-navy), var(--gov-navy-light));
+        color: #ffffff;
+        padding: 1rem 1.5rem;
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        border-bottom: 3px solid var(--gov-gold);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        letter-spacing: 0.03em;
+        min-height: 60px;
+        flex-wrap: wrap;
+    }
+
+    .executive-card .card-header i {
+        color: var(--gov-gold);
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .executive-card .card-header .header-badge {
+        margin-left: auto;
+        background: var(--gov-gold);
+        color: var(--gov-navy);
+        padding: 0.2rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        font-family: var(--gov-sans);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+    .executive-card .card-body {
+        padding: 1.5rem;
+        font-family: var(--gov-sans);
+    }
+
+    /* ============================================================
+       EXECUTIVE QUICK ACTIONS
+       ============================================================ */
+    .executive-action {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--gov-gray-light);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: var(--gov-navy);
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+    }
+
+    .executive-action:last-child {
+        margin-bottom: 0;
+    }
+
+    .executive-action:hover {
+        background: var(--gov-cream);
+        border-color: var(--gov-gold);
+        text-decoration: none;
+        color: var(--gov-navy);
+        transform: translateX(4px);
+    }
+
+    .executive-action .action-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gov-cream);
+        border: 2px solid var(--gov-gold);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gov-gold);
+        font-size: 1rem;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .executive-action:hover .action-icon {
+        background: var(--gov-gold);
+        color: #ffffff;
+    }
+
+    .executive-action .action-text {
+        flex: 1;
+    }
+
+    .executive-action .action-title {
+        font-family: var(--gov-sans);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--gov-navy);
+    }
+
+    .executive-action .action-desc {
+        font-family: var(--gov-sans);
+        font-size: 0.8rem;
+        color: var(--gov-gray);
+    }
+
+    .executive-action .action-arrow {
+        color: var(--gov-gold);
+        font-size: 0.8rem;
+        opacity: 0.5;
+        transition: all 0.3s ease;
+    }
+
+    .executive-action:hover .action-arrow {
+        opacity: 1;
+        transform: translateX(4px);
+    }
+
+    /* ============================================================
+       EXECUTIVE STATS LIST
+       ============================================================ */
+    .executive-stats-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .executive-stats-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--gov-gray-light);
+        font-family: var(--gov-sans);
+    }
+
+    .executive-stats-list li:last-child {
+        border-bottom: none;
+    }
+
+    .executive-stats-list .stat-label {
+        font-size: 0.9rem;
+        color: var(--gov-gray);
+        font-weight: 400;
+    }
+
+    .executive-stats-list .stat-value {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        color: var(--gov-navy);
+        font-size: 1.1rem;
+    }
+
+    .executive-stats-list .stat-value .trend-icon {
+        margin-left: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .executive-stats-list .stat-value .trend-icon.up {
+        color: var(--gov-success);
+    }
+
+    .executive-stats-list .stat-value .trend-icon.down {
+        color: var(--gov-danger);
+    }
+
+    .executive-stats-list .stat-value .trend-icon.flat {
+        color: var(--gov-warning);
+    }
+
+    /* ============================================================
+       RECENT ACTIVITY / TIMELINE
+       ============================================================ */
+    .activity-timeline {
+        position: relative;
+        padding-left: 2rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .activity-timeline::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .activity-timeline::-webkit-scrollbar-track {
+        background: var(--gov-gray-light);
+    }
+
+    .activity-timeline::-webkit-scrollbar-thumb {
+        background: var(--gov-gold);
+    }
+
+    .activity-timeline::before {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, var(--gov-gold), var(--gov-gray-light));
+    }
+
+    .activity-item {
+        position: relative;
+        margin-bottom: 1.25rem;
+        padding-left: 1rem;
+        padding-bottom: 0.25rem;
+    }
+
+    .activity-item::before {
+        content: '';
+        position: absolute;
+        left: -1.75rem;
+        top: 0.25rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--gov-gold);
+        border: 3px solid #ffffff;
+        box-shadow: 0 0 0 2px var(--gov-gold);
+    }
+
+    .activity-item .activity-time {
+        font-family: var(--gov-mono);
+        font-size: 0.7rem;
+        color: var(--gov-gray);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .activity-item .activity-content {
+        font-family: var(--gov-sans);
+        font-size: 0.9rem;
+        color: var(--gov-navy);
+        margin-top: 0.15rem;
+        line-height: 1.4;
+    }
+
+    .activity-item .activity-content strong {
+        color: var(--gov-gold-dark);
+    }
+
+    .activity-item .activity-meta {
+        font-size: 0.75rem;
+        color: var(--gov-gray);
+        margin-top: 0.15rem;
+    }
+
+    /* ============================================================
+       EXECUTIVE NOTIFICATIONS
+       ============================================================ */
+    .notification-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--gov-gray-light);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-item:hover {
+        background: var(--gov-cream);
+    }
+
+    .notification-item .notif-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 0.35rem;
+    }
+
+    .notification-item .notif-dot.unread {
+        background: var(--gov-gold);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.2);
+    }
+
+    .notification-item .notif-dot.read {
+        background: var(--gov-gray-light);
+    }
+
+    .notification-item .notif-content {
+        flex: 1;
+    }
+
+    .notification-item .notif-title {
+        font-family: var(--gov-sans);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--gov-navy);
+    }
+
+    .notification-item .notif-text {
+        font-family: var(--gov-sans);
+        font-size: 0.8rem;
+        color: var(--gov-gray);
+        margin-top: 0.1rem;
+    }
+
+    .notification-item .notif-time {
+        font-family: var(--gov-mono);
+        font-size: 0.65rem;
+        color: var(--gov-gray);
+        flex-shrink: 0;
+    }
+
+    /* ============================================================
+       EXECUTIVE BUTTONS
+       ============================================================ */
+    .gov-btn {
+        font-family: var(--gov-sans);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.6rem 1.5rem;
+        border: 2px solid var(--gov-gold);
+        background: transparent;
+        color: var(--gov-navy);
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .gov-btn:hover {
+        border-color: var(--gov-gold-dark);
+        color: var(--gov-navy);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.2);
+        text-decoration: none;
+    }
+
+    .gov-btn-primary {
+        background: var(--gov-navy);
+        border-color: var(--gov-navy);
+        color: #ffffff;
+    }
+
+    .gov-btn-primary:hover {
+        background: var(--gov-navy-light);
+        border-color: var(--gov-navy-light);
+        color: #ffffff;
+    }
+
+    .gov-btn-gold {
+        background: var(--gov-gold);
+        border-color: var(--gov-gold);
+        color: var(--gov-navy);
+    }
+
+    .gov-btn-gold:hover {
+        background: var(--gov-gold-dark);
+        border-color: var(--gov-gold-dark);
+        color: #ffffff;
+    }
+
+    .gov-btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.7rem;
+    }
+
+    .gov-btn-block {
+        display: block;
+        width: 100%;
+    }
+
+    /* ============================================================
+       RESPONSIVE ADJUSTMENTS
+       ============================================================ */
+    @media (max-width: 768px) {
+        .gov-seal {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .gov-badges {
+            margin-left: 0;
+            justify-content: center;
+        }
+
+        .gov-title h1 {
+            font-size: 1.5rem;
+        }
+
+        .executive-stat-card .stat-number {
+            font-size: 2rem;
+        }
+
+        .executive-card .card-header {
+            font-size: 0.9rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .executive-action {
+            padding: 0.5rem 0.75rem;
+        }
+
+        .activity-timeline {
+            max-height: 250px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .gov-seal-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+        }
+
+        .gov-title h1 {
+            font-size: 1.2rem;
+        }
+
+        .executive-stat-card {
+            padding: 1rem;
+        }
+
+        .executive-stat-card .stat-icon-wrapper {
+            width: 45px;
+            height: 45px;
+            font-size: 1.2rem;
+        }
+
+        .executive-stat-card .stat-number {
+            font-size: 1.6rem;
+        }
+
+        .executive-stat-card .stat-label {
+            font-size: 0.65rem;
+        }
+
+        .executive-card .card-body {
+            padding: 1rem;
+        }
+
+        .gov-btn {
+            padding: 0.4rem 1rem;
+            font-size: 0.7rem;
+        }
+
+        .executive-badge {
+            font-size: 0.6rem;
+            padding: 0.2rem 0.7rem;
+        }
+    }
+
+    /* ============================================================
+       PRINT STYLES
+       ============================================================ */
+    @media print {
+        .executive-stat-card,
+        .executive-card {
+            break-inside: avoid;
+            box-shadow: none;
+            border-color: #000;
+        }
+
+        .executive-stat-card:hover,
+        .executive-card:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .gov-btn {
+            border: 1px solid #000;
+            color: #000;
+        }
+
+        .gov-btn-primary {
+            background: #000;
+            color: #fff;
+        }
+    }
+
+    /* ============================================================
+       UTILITY CLASSES
+       ============================================================ */
+    .text-gov-gold {
+        color: var(--gov-gold);
+    }
+
+    .text-gov-navy {
+        color: var(--gov-navy);
+    }
+
+    .text-gov-gray {
+        color: var(--gov-gray);
+    }
+
+    .bg-gov-cream {
+        background: var(--gov-cream);
+    }
+
+    .font-gov-serif {
+        font-family: var(--gov-serif);
+    }
+
+    .font-gov-sans {
+        font-family: var(--gov-sans);
+    }
+
+    .font-gov-mono {
+        font-family: var(--gov-mono);
+    }
+
+    .letter-spacing-wide {
+        letter-spacing: 0.08em;
+    }
+
+    .border-gov-gold {
+        border-color: var(--gov-gold);
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .mt-3 {
+        margin-top: 1rem;
+    }
+
+    .mt-4 {
+        margin-top: 1.5rem;
+    }
+
+    .mb-3 {
+        margin-bottom: 1rem;
+    }
+
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .flex-wrap {
+        flex-wrap: wrap;
+    }
+
+    .gap-1 {
+        gap: 0.25rem;
+    }
+
+    .gap-2 {
+        gap: 0.5rem;
+    }
+
+    .gap-3 {
+        gap: 1rem;
+    }
+
+    .align-center {
+        align-items: center;
+    }
+
+    .justify-between {
+        justify-content: space-between;
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_title %}
+    <div class="gov-header">
+        <div class="gov-seal">
+            <div class="gov-seal-icon">
+                <i class="fas fa-gavel"></i>
+            </div>
+            <div class="gov-title">
+                <h1>
+                    <span class="gold-text">Executive</span> Dashboard
+                    <span style="font-size:0.9rem;font-weight:300;color:var(--gov-gray);-webkit-text-fill-color:var(--gov-gray);letter-spacing:0.1em;">
+                        — COMMAND CENTER
+                    </span>
+                </h1>
+                <div class="subtitle">
+                    Kenya Psychological Society Network &bull; Executive Committee
+                    <span style="color:var(--gov-gold);-webkit-text-fill-color:var(--gov-gold);">★</span>
+                    Official Command Center
+                </div>
+            </div>
+            <div class="gov-badges">
+                <span class="executive-badge">
+                    <i class="fas fa-star"></i> Executive Access
+                </span>
+                <span class="executive-badge secure">
+                    <i class="fas fa-shield-alt"></i> Secure
+                </span>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- ============================================================
+     EXECUTIVE STATISTICS ROW
+     ============================================================ -->
+<div class="row g-3 g-md-4 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="executive-stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon-wrapper">
+                <i class="fas fa-users"></i>
+            </div>
+            <span class="stat-number" id="total-members">{{ user_count|default:0 }}</span>
+            <div class="stat-label">Total Members</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> 12% this month
+            </span>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="executive-stat-card" data-aos="fade-up" data-aos-delay="150">
+            <div class="stat-icon-wrapper">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <span class="stat-number" id="upcoming-events">{{ upcoming_events|default:0 }}</span>
+            <div class="stat-label">Upcoming Events</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> 3 new this week
+            </span>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="executive-stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon-wrapper">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <span class="stat-number" id="mentorship-pairs">{{ mentorship_pairs|default:0 }}</span>
+            <div class="stat-label">Mentorship Pairs</div>
+            <span class="stat-change neutral">
+                <i class="fas fa-minus"></i> Steady growth
+            </span>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="executive-stat-card" data-aos="fade-up" data-aos-delay="250">
+            <div class="stat-icon-wrapper">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <span class="stat-number" id="newsletter-subscribers">{{ newsletter_count|default:0 }}</span>
+            <div class="stat-label">Newsletter Subscribers</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> 8% growth
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     EXECUTIVE DASHBOARD GRID
+     ============================================================ -->
+<div class="row g-3 g-md-4">
+    
+    <!-- ============================================================
+         LEFT COLUMN - PRIMARY CONTENT
+         ============================================================ -->
+    <div class="col-lg-8">
+        
+        <!-- QUICK ACTIONS - FIXED: Using accounts namespace -->
+        <div class="executive-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-bolt"></i>
+                Executive Actions
+                <span class="header-badge">
+                    <i class="fas fa-clock"></i> Quick Access
+                </span>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'accounts:manage_applications' %}" class="executive-action">
+                    <div class="action-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Manage Registrations</div>
+                        <div class="action-desc">Review and approve member registrations</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:manage_users' %}" class="executive-action">
+                    <div class="action-icon"><i class="fas fa-user-cog"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Member Management</div>
+                        <div class="action-desc">Manage member roles and status</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:manage_role_requests' %}" class="executive-action">
+                    <div class="action-icon"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Role Change Requests</div>
+                        <div class="action-desc">Review and approve role change requests</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:activity_logs' %}" class="executive-action">
+                    <div class="action-icon"><i class="fas fa-history"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Activity Logs</div>
+                        <div class="action-desc">View system activity and audit trails</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="executive-action">
+                    <div class="action-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Generate Reports</div>
+                        <div class="action-desc">Executive reports and analytics</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="executive-action">
+                    <div class="action-icon"><i class="fas fa-chess-queen"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Strategic Planning</div>
+                        <div class="action-desc">Executive committee planning and strategy</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="executive-card mt-3 mt-md-4" data-aos="fade-right" data-aos-delay="150">
+            <div class="card-header">
+                <i class="fas fa-history"></i>
+                Recent Executive Activity
+                <span class="header-badge">
+                    <i class="fas fa-clock"></i> Last 7 days
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="activity-timeline">
+                    {% for log in recent_activity|slice:":5" %}
+                        <div class="activity-item">
+                            <div class="activity-time">{{ log.created_at|date:"M d, Y" }}</div>
+                            <div class="activity-content">
+                                <strong>{{ log.get_action_type_display }}</strong>
+                                — {{ log.action_description|truncatechars:80 }}
+                            </div>
+                            <div class="activity-meta">
+                                <i class="fas fa-user"></i> {{ log.user.get_full_name|default:log.user.username }}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="activity-item">
+                            <div class="activity-content" style="color:var(--gov-gray);">
+                                <i class="fas fa-info-circle"></i> No recent activity recorded.
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'accounts:activity_logs' %}" class="gov-btn gov-btn-sm">
+                        <i class="fas fa-history"></i> View Full Activity Log
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         RIGHT COLUMN - SIDEBAR
+         ============================================================ -->
+    <div class="col-lg-4">
+        
+        <!-- KEY EXECUTIVE STATS -->
+        <div class="executive-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                Key Executive Metrics
+            </div>
+            <div class="card-body">
+                <ul class="executive-stats-list">
+                    <li>
+                        <span class="stat-label">Total Members</span>
+                        <span class="stat-value">
+                            {{ user_count|default:0 }}
+                            <span class="trend-icon up"><i class="fas fa-arrow-up"></i></span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="stat-label">Pending Approvals</span>
+                        <span class="stat-value">
+                            {{ pending_applications|default:0 }}
+                            <span class="trend-icon down"><i class="fas fa-arrow-down"></i></span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="stat-label">Active Members</span>
+                        <span class="stat-value">
+                            {{ active_members|default:0 }}
+                            <span class="trend-icon up"><i class="fas fa-arrow-up"></i></span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="stat-label">Pending Verifications</span>
+                        <span class="stat-value">
+                            {{ pending_verifications|default:0 }}
+                            <span class="trend-icon flat"><i class="fas fa-minus"></i></span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="stat-label">Role Change Requests</span>
+                        <span class="stat-value">
+                            {{ role_requests|default:0 }}
+                            <span class="trend-icon up"><i class="fas fa-arrow-up"></i></span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- PENDING APPROVALS -->
+        <div class="executive-card mt-3 mt-md-4" data-aos="fade-left" data-aos-delay="150">
+            <div class="card-header">
+                <i class="fas fa-tasks"></i>
+                Pending Approvals
+                <span class="header-badge">{{ pending_applications|default:0 }}</span>
+            </div>
+            <div class="card-body">
+                <ul class="executive-stats-list">
+                    <li style="border-left:3px solid var(--gov-warning);padding-left:0.75rem;">
+                        <span class="stat-label">Member Registrations</span>
+                        <span class="stat-value" style="color:var(--gov-warning);">{{ pending_applications|default:0 }}</span>
+                    </li>
+                    <li style="border-left:3px solid var(--gov-gold);padding-left:0.75rem;">
+                        <span class="stat-label">Role Change Requests</span>
+                        <span class="stat-value" style="color:var(--gov-gold);">{{ role_requests|default:0 }}</span>
+                    </li>
+                    <li style="border-left:3px solid var(--gov-info);padding-left:0.75rem;">
+                        <span class="stat-label">Mentorship Applications</span>
+                        <span class="stat-value" style="color:var(--gov-info);">{{ mentorship_pairs|default:0 }}</span>
+                    </li>
+                    <li style="border-left:3px solid var(--gov-success);padding-left:0.75rem;">
+                        <span class="stat-label">Email Verifications</span>
+                        <span class="stat-value" style="color:var(--gov-success);">{{ pending_verifications|default:0 }}</span>
+                    </li>
+                </ul>
+                <div class="text-center mt-3">
+                    <a href="{% url 'accounts:manage_applications' %}" class="gov-btn gov-btn-gold gov-btn-sm gov-btn-block">
+                        <i class="fas fa-check-double"></i> Review All Approvals
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXECUTIVE NOTIFICATIONS -->
+        <div class="executive-card mt-3 mt-md-4" data-aos="fade-left" data-aos-delay="200">
+            <div class="card-header">
+                <i class="fas fa-bell"></i>
+                Executive Notifications
+                <span class="header-badge">{{ notifications|default:0 }}</span>
+            </div>
+            <div class="card-body" style="max-height:280px;overflow-y:auto;">
+                <div class="notification-item">
+                    <span class="notif-dot unread"></span>
+                    <div class="notif-content">
+                        <div class="notif-title">New Member Registrations</div>
+                        <div class="notif-text">{{ pending_applications|default:0 }} new members need approval</div>
+                        <div class="notif-time">{{ now|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <span class="notif-dot unread"></span>
+                    <div class="notif-content">
+                        <div class="notif-title">Role Change Requests</div>
+                        <div class="notif-text">{{ role_requests|default:0 }} members requesting role changes</div>
+                        <div class="notif-time">{{ now|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <span class="notif-dot read"></span>
+                    <div class="notif-content">
+                        <div class="notif-title">System Update</div>
+                        <div class="notif-text">KPSN platform updated to version 2.0</div>
+                        <div class="notif-time">{{ now|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXECUTIVE QUICK LINKS -->
+        <div class="executive-card mt-3 mt-md-4" data-aos="fade-left" data-aos-delay="250">
+            <div class="card-header">
+                <i class="fas fa-link"></i>
+                Executive Resources
+            </div>
+            <div class="card-body">
+                <ul class="executive-stats-list">
+                    <li>
+                        <a href="{% url 'accounts:manage_users' %}" style="color:var(--gov-navy);text-decoration:none;">
+                            <span class="stat-label"><i class="fas fa-users" style="color:var(--gov-gold);"></i> Member Management</span>
+                            <span class="stat-value"><i class="fas fa-arrow-right" style="font-size:0.8rem;"></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'accounts:activity_logs' %}" style="color:var(--gov-navy);text-decoration:none;">
+                            <span class="stat-label"><i class="fas fa-history" style="color:var(--gov-gold);"></i> Activity Logs</span>
+                            <span class="stat-value"><i class="fas fa-arrow-right" style="font-size:0.8rem;"></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'accounts:manage_role_requests' %}" style="color:var(--gov-navy);text-decoration:none;">
+                            <span class="stat-label"><i class="fas fa-exchange-alt" style="color:var(--gov-gold);"></i> Role Requests</span>
+                            <span class="stat-value"><i class="fas fa-arrow-right" style="font-size:0.8rem;"></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'accounts:manage_applications' %}" style="color:var(--gov-navy);text-decoration:none;">
+                            <span class="stat-label"><i class="fas fa-file-alt" style="color:var(--gov-gold);"></i> Applications</span>
+                            <span class="stat-value"><i class="fas fa-arrow-right" style="font-size:0.8rem;"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     EXECUTIVE FOOTER
+     ============================================================ -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div style="font-family:var(--gov-sans);font-size:0.75rem;color:var(--gov-gray);
+                    text-align:center;padding:1.5rem 0;border-top:1px solid var(--gov-border);">
+            <i class="fas fa-gavel" style="color:var(--gov-gold);"></i>
+            KPSN Executive Dashboard &bull; Official Command Center &bull; 
+            Version 2.0 &bull; &copy; {% now "Y" %} Kenya Psychological Society Network
+            <br>
+            <span style="font-size:0.65rem;opacity:0.6;">
+                Authorized executive personnel only. All actions are logged and audited.
+                <i class="fas fa-shield-alt" style="color:var(--gov-gold);margin-left:0.5rem;"></i>
+            </span>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ============================================================
+    // EXECUTIVE DASHBOARD INTERACTIONS
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate statistics
+        animateExecutiveStats();
+        
+        // Auto-refresh notifications every 60 seconds
+        const notificationInterval = setInterval(function() {
+            refreshExecutiveNotifications();
+        }, 60000);
+        
+        window.notificationInterval = notificationInterval;
+    });
+    
+    // ============================================================
+    // ANIMATE STATISTICS
+    // ============================================================
+    function animateExecutiveStats() {
+        const stats = document.querySelectorAll('.stat-number');
+        stats.forEach(stat => {
+            const target = parseInt(stat.textContent.replace(/,/g, '')) || 0;
+            if (target > 0) {
+                let current = 0;
+                const increment = Math.ceil(target / 20);
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = target.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = current.toLocaleString();
+                    }
+                }, 50);
+            }
+        });
+    }
+    
+    // ============================================================
+    // REFRESH NOTIFICATIONS
+    // ============================================================
+    function refreshExecutiveNotifications() {
+        fetch('/api/executive/notifications/')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.querySelector('.executive-card .card-header .header-badge');
+                if (badge && data.count) {
+                    badge.textContent = data.count;
+                }
+                console.log('Notifications refreshed at:', new Date().toLocaleTimeString());
+            })
+            .catch(error => {
+                console.log('Notification refresh skipped:', error);
+            });
+    }
+    
+    // ============================================================
+    // CLEANUP
+    // ============================================================
+    window.addEventListener('beforeunload', function() {
+        if (window.notificationInterval) {
+            clearInterval(window.notificationInterval);
+        }
+    });
+</script>
+{% endblock %}

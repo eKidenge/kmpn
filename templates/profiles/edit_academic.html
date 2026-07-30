@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Academic Information - KMPN{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700;900&family=Source+Serif+Pro:wght@400;600;700&display=swap');
+    
+    .government-title {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-subtitle {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 400;
+        color: #4a4a4a;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-text {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-weight: 400;
+        line-height: 1.7;
+        color: #2d2d2d;
+    }
+    
+    .government-heading {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-label {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: #4a4a4a;
+    }
+    
+    .card-government {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        position: relative;
+    }
+    
+    .card-government::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+    }
+    
+    .card-government .card-body {
+        padding: 1.5rem;
+    }
+    
+    .form-control-government {
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.95rem;
+        padding: 10px 14px;
+        background: var(--white);
+        transition: all 0.3s ease;
+        color: #2d2d2d;
+        width: 100%;
+    }
+    
+    .form-control-government:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        outline: none;
+    }
+    
+    select.form-control-government {
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='%234a4a4a' d='M6 7L0 0h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 36px;
+        cursor: pointer;
+    }
+    
+    .btn-gold {
+        background: var(--gold-color);
+        color: var(--white);
+        border: 2px solid var(--gold-color);
+        padding: 10px 28px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .btn-gold:hover {
+        background: var(--gold-dark);
+        border-color: var(--gold-dark);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(212, 168, 67, 0.3);
+        text-decoration: none;
+    }
+    
+    .btn-outline-gold {
+        background: transparent;
+        color: var(--gold-color);
+        border: 2px solid var(--gold-color);
+        padding: 8px 24px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .btn-outline-gold:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        text-decoration: none;
+    }
+    
+    .helptext {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-style: italic;
+    }
+    
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .errorlist li {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-size: 0.85rem;
+        color: #dc3545;
+        padding: 4px 0;
+    }
+    
+    .edit-nav {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+    
+    .edit-nav .nav-link {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        padding: 8px 16px;
+        border: 1px solid #d4c9b0;
+        background: var(--white);
+        color: var(--dark-blue);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border-radius: 0;
+    }
+    
+    .edit-nav .nav-link:hover {
+        background: var(--cream-color);
+        border-color: var(--gold-color);
+        color: var(--gold-color);
+    }
+    
+    .edit-nav .nav-link.active {
+        background: var(--gold-color);
+        border-color: var(--gold-color);
+        color: var(--white);
+    }
+    
+    @media (max-width: 768px) {
+        .card-government .card-body {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section style="background: var(--cream-color); min-height: 100vh; padding: 60px 0;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- Header -->
+                <div class="mb-4">
+                    <h1 class="government-title" style="font-size: 2rem;">
+                        <i class="fas fa-graduation-cap text-gold me-2"></i> Academic Information
+                    </h1>
+                    <p class="government-subtitle">Update your academic details and qualifications</p>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="edit-nav">
+                    <a href="{% url 'profiles:edit' %}" class="nav-link">
+                        <i class="fas fa-user me-1"></i> Basic
+                    </a>
+                    <a href="{% url 'profiles:edit_academic' %}" class="nav-link active">
+                        <i class="fas fa-graduation-cap me-1"></i> Academic
+                    </a>
+                    <a href="{% url 'profiles:edit_research' %}" class="nav-link">
+                        <i class="fas fa-flask me-1"></i> Research
+                    </a>
+                    <a href="{% url 'profiles:edit_skills' %}" class="nav-link">
+                        <i class="fas fa-tools me-1"></i> Skills
+                    </a>
+                    <a href="{% url 'profiles:edit_publications' %}" class="nav-link">
+                        <i class="fas fa-file-alt me-1"></i> Publications
+                    </a>
+                </div>
+                
+                <!-- Form -->
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                            {% endif %}
+                            
+                            <!-- Academic Level -->
+                            <div class="mb-3">
+                                <label for="{{ form.academic_level.id_for_label }}" class="government-label form-label">
+                                    Academic Level <span class="text-danger">*</span>
+                                </label>
+                                {{ form.academic_level }}
+                                <div class="helptext">Select your current academic level</div>
+                                {% if form.academic_level.errors %}
+                                    <div class="errorlist">{{ form.academic_level.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Institution -->
+                            <div class="mb-3">
+                                <label for="{{ form.institution.id_for_label }}" class="government-label form-label">
+                                    Institution <span class="text-danger">*</span>
+                                </label>
+                                {{ form.institution }}
+                                <div class="helptext">Your university or research institution</div>
+                                {% if form.institution.errors %}
+                                    <div class="errorlist">{{ form.institution.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Department -->
+                            <div class="mb-3">
+                                <label for="{{ form.department.id_for_label }}" class="government-label form-label">
+                                    Department / School
+                                </label>
+                                {{ form.department }}
+                                {% if form.department.errors %}
+                                    <div class="errorlist">{{ form.department.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Year of Study -->
+                            <div class="mb-3">
+                                <label for="{{ form.year_of_study.id_for_label }}" class="government-label form-label">
+                                    Year of Study
+                                </label>
+                                {{ form.year_of_study }}
+                                <div class="helptext">Current year of study (for students)</div>
+                                {% if form.year_of_study.errors %}
+                                    <div class="errorlist">{{ form.year_of_study.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Expected Graduation Year -->
+                            <div class="mb-3">
+                                <label for="{{ form.expected_graduation_year.id_for_label }}" class="government-label form-label">
+                                    Expected Graduation Year
+                                </label>
+                                {{ form.expected_graduation_year }}
+                                {% if form.expected_graduation_year.errors %}
+                                    <div class="errorlist">{{ form.expected_graduation_year.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Buttons -->
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn-gold">
+                                        <i class="fas fa-save me-2"></i> Save Changes
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'profiles:view' username=user.username %}" class="btn-outline-gold">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

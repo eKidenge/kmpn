@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Dashboard - KPSN" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       DASHBOARD - GOVERNMENT STYLE
+       ============================================================ */
+    
+    .dashboard-wrapper {
+        background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d0 100%);
+        min-height: 100vh;
+        padding: 30px 0 50px;
+    }
+    
+    /* Dashboard Header */
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
+        border-bottom: 4px solid var(--gold-color);
+        padding: 25px 30px;
+        margin-bottom: 30px;
+        border-radius: var(--radius-md);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.03);
+        pointer-events: none;
+    }
+    
+    .dashboard-header h1 {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        color: var(--white);
+        font-size: 1.8rem;
+        margin-bottom: 0;
+        letter-spacing: 0.5px;
+    }
+    
+    .dashboard-header h1 .gold-text {
+        color: var(--gold-color);
+    }
+    
+    /* Dashboard Cards */
+    .dashboard-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-normal);
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .dashboard-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-3px);
+    }
+    
+    .dashboard-card .card-header {
+        background: transparent;
+        border-bottom: 1px solid var(--gray-200);
+        padding: 15px 20px;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 1rem;
+    }
+    
+    .dashboard-card .card-header .header-icon {
+        color: var(--gold-color);
+        margin-right: 8px;
+    }
+    
+    .dashboard-card .card-body {
+        padding: 20px;
+    }
+    
+    .dashboard-card .card-footer {
+        background: transparent;
+        border-top: 1px solid var(--gray-200);
+        padding: 12px 20px;
+        font-size: 0.85rem;
+    }
+    
+    /* Stat Cards */
+    .stat-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border-left: 4px solid var(--gold-color);
+        box-shadow: var(--shadow-sm);
+        padding: 20px 22px;
+        transition: var(--transition-normal);
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+    
+    .stat-card .stat-icon {
+        font-size: 2rem;
+        color: var(--gold-color);
+        margin-bottom: 6px;
+        opacity: 0.7;
+    }
+    
+    .stat-card .stat-number {
+        font-family: var(--font-heading);
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--dark-blue);
+        display: block;
+        line-height: 1.2;
+    }
+    
+    .stat-card .stat-label {
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        color: var(--gray-600);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .stat-card .stat-change {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: var(--radius-full);
+        display: inline-block;
+        margin-top: 5px;
+    }
+    
+    .stat-card .stat-change.up {
+        color: var(--success-color);
+        background: #e8f5e9;
+    }
+    
+    .stat-card .stat-change.down {
+        color: var(--danger-color);
+        background: #fbe9e7;
+    }
+    
+    .stat-card .stat-change.neutral {
+        color: var(--gray-600);
+        background: var(--gray-200);
+    }
+    
+    /* Quick Actions */
+    .quick-action {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--gray-200);
+        transition: var(--transition-normal);
+        text-decoration: none;
+        color: var(--gray-700);
+        background: var(--white);
+        margin-bottom: 8px;
+    }
+    
+    .quick-action:last-child {
+        margin-bottom: 0;
+    }
+    
+    .quick-action:hover {
+        border-color: var(--gold-color);
+        background: rgba(201, 168, 76, 0.05);
+        color: var(--gold-dark);
+        text-decoration: none;
+    }
+    
+    .quick-action .action-icon {
+        font-size: 1.2rem;
+        color: var(--gold-color);
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(201, 168, 76, 0.1);
+        border-radius: var(--radius-full);
+        flex-shrink: 0;
+    }
+    
+    .quick-action .action-text {
+        flex: 1;
+    }
+    
+    .quick-action .action-text .action-title {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--gray-800);
+    }
+    
+    .quick-action .action-text .action-desc {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--gray-500);
+    }
+    
+    .quick-action .action-arrow {
+        color: var(--gray-400);
+        transition: var(--transition-normal);
+    }
+    
+    .quick-action:hover .action-arrow {
+        color: var(--gold-color);
+        transform: translateX(4px);
+    }
+    
+    /* Activity Feed */
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-item .activity-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.8rem;
+    }
+    
+    .activity-item .activity-icon.icon-login {
+        background: #e3f2fd;
+        color: var(--info-color);
+    }
+    
+    .activity-item .activity-icon.icon-registration {
+        background: #e8f5e9;
+        color: var(--success-color);
+    }
+    
+    .activity-item .activity-icon.icon-profile {
+        background: #fff3e0;
+        color: var(--warning-color);
+    }
+    
+    .activity-item .activity-icon.icon-role {
+        background: #f3e5f5;
+        color: #7b1fa2;
+    }
+    
+    .activity-item .activity-icon.icon-community {
+        background: #e0f7fa;
+        color: #00695c;
+    }
+    
+    .activity-item .activity-icon.icon-event {
+        background: #fce4ec;
+        color: #c62828;
+    }
+    
+    .activity-item .activity-icon.icon-opportunity {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .activity-item .activity-content {
+        flex: 1;
+    }
+    
+    .activity-item .activity-content .activity-text {
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+        color: var(--gray-700);
+        margin-bottom: 2px;
+    }
+    
+    .activity-item .activity-content .activity-text strong {
+        color: var(--dark-blue);
+    }
+    
+    .activity-item .activity-content .activity-time {
+        font-family: var(--font-secondary);
+        font-size: 0.75rem;
+        color: var(--gray-500);
+    }
+    
+    /* Responsive */
+    @media (max-width: 991.98px) {
+        .dashboard-header {
+            padding: 20px;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        .dashboard-wrapper {
+            padding: 15px 0 30px;
+        }
+        
+        .dashboard-header {
+            padding: 15px;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.3rem;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 1.8rem;
+        }
+    }
+    
+    @media (max-width: 575.98px) {
+        .dashboard-header {
+            padding: 12px 15px;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.1rem;
+        }
+        
+        .stat-card {
+            padding: 15px;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 1.5rem;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="container">
+        
+        <!-- ============================================
+        DASHBOARD HEADER
+        ============================================ -->
+        <div class="dashboard-header" data-aos="fade-down" data-aos-duration="600">
+            <div class="row">
+                <div class="col-12">
+                    <h1>
+                        <i class="fas fa-tachometer-alt me-2 gold-text"></i>
+                        {% block dashboard_title %}Dashboard{% endblock %}
+                    </h1>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============================================
+        DASHBOARD CONTENT
+        ============================================ -->
+        {% block dashboard_content %}
+        {% endblock %}
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Dashboard loaded');
+    });
+</script>
+{% block dashboard_js %}{% endblock %}
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Subscription - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="section-title">
+                    <i class="fas fa-crown text-gold me-2"></i> Subscription
+                </h1>
+                <p class="text-muted">Manage your membership subscription and access premium features</p>
+            </div>
+        </div>
+
+        <!-- Current Subscription -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Current Plan</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h3 class="mb-2">{{ subscription.get_subscription_type_display|title }} Plan</h3>
+                                <p class="text-muted">
+                                    Status: 
+                                    {% if subscription.is_active %}
+                                        <span class="text-success"><i class="fas fa-check-circle me-1"></i> Active</span>
+                                    {% else %}
+                                        <span class="text-danger"><i class="fas fa-times-circle me-1"></i> Inactive</span>
+                                    {% endif %}
+                                </p>
+                                {% if subscription.end_date %}
+                                    <p class="text-muted">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        Valid until: {{ subscription.end_date|date:"F d, Y" }}
+                                        <span class="ms-2">({{ subscription.days_remaining }} days remaining)</span>
+                                    </p>
+                                {% endif %}
+                                <p class="text-muted">
+                                    <i class="fas fa-sync me-1"></i>
+                                    Auto-renew: {% if subscription.auto_renew %}Enabled{% else %}Disabled{% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                {% if subscription.is_active %}
+                                    <a href="{% url 'payments:cancel_subscription' %}" class="btn btn-outline-danger">
+                                        <i class="fas fa-times me-1"></i> Cancel Subscription
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'payments:initiate' %}?item_name=Membership&amount=1000&payment_type=membership" class="btn-gold">
+                                        <i class="fas fa-crown me-1"></i> Upgrade Now
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Plans -->
+        <div class="row">
+            <div class="col-12">
+                <h4 class="mb-3">Available Plans</h4>
+            </div>
+            {% for plan in plans %}
+            <div class="col-md-4">
+                <div class="card-government h-100 {% if plan.popular %}border-gold{% endif %}">
+                    <div class="card-body text-center">
+                        {% if plan.popular %}
+                            <div class="badge" style="background: var(--gold-color); color: white; padding: 6px 12px; margin-bottom: 10px;">
+                                <i class="fas fa-star me-1"></i> Most Popular
+                            </div>
+                        {% endif %}
+                        <h4 class="mb-2">{{ plan.name }}</h4>
+                        <div class="display-6 fw-bold text-gold mb-3">
+                            {% if plan.price == 0 %}
+                                Free
+                            {% else %}
+                                KES {{ plan.price }}
+                                {% if plan.billing_cycle %}
+                                    <span class="small text-muted">/{{ plan.billing_cycle }}</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <ul class="list-unstyled text-start">
+                            {% for feature in plan.features %}
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-gold me-2"></i> {{ feature }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="d-grid gap-2 mt-3">
+                            {% if plan.type == subscription.subscription_type %}
+                                <button class="btn btn-secondary" disabled>Current Plan</button>
+                            {% else %}
+                                <a href="{% url 'payments:initiate' %}?item_name={{ plan.name }} Subscription&amount={{ plan.price }}&payment_type=membership" class="btn-gold">
+                                    <i class="fas fa-arrow-right me-1"></i> Upgrade to {{ plan.name }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

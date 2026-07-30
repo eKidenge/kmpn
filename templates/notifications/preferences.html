@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Notification Preferences - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card-government">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="fas fa-cog text-gold me-2"></i> Notification Preferences</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Customize how and when you receive notifications</p>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="mb-3"><i class="fas fa-envelope text-gold me-2"></i> Channels</h6>
+                                    {{ form.email_enabled|as_crispy_field }}
+                                    {{ form.sms_enabled|as_crispy_field }}
+                                    {{ form.push_enabled|as_crispy_field }}
+                                    {{ form.in_app_enabled|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-3"><i class="fas fa-bell text-gold me-2"></i> Notifications</h6>
+                                    {{ form.event_notifications|as_crispy_field }}
+                                    {{ form.opportunity_notifications|as_crispy_field }}
+                                    {{ form.community_notifications|as_crispy_field }}
+                                    {{ form.message_notifications|as_crispy_field }}
+                                    {{ form.collaboration_notifications|as_crispy_field }}
+                                    {{ form.membership_notifications|as_crispy_field }}
+                                    {{ form.payment_notifications|as_crispy_field }}
+                                    {{ form.reminder_notifications|as_crispy_field }}
+                                </div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <h6 class="mb-3"><i class="fas fa-moon text-gold me-2"></i> Quiet Hours</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    {{ form.quiet_hours_enabled|as_crispy_field }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form.quiet_hours_start|as_crispy_field }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form.quiet_hours_end|as_crispy_field }}
+                                </div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <h6 class="mb-3"><i class="fas fa-file-alt text-gold me-2"></i> Digest Settings</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.digest_enabled|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.digest_frequency|as_crispy_field }}
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn-gold btn-lg">
+                                    <i class="fas fa-save me-2"></i> Save Preferences
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

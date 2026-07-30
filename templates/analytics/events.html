@@ -1,0 +1,438 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Event Analytics - KMPN{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700&family=Source+Serif+Pro:wght@400;600;700&display=swap');
+    
+    .government-title {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-subtitle {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 400;
+        color: #4a4a4a;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-text {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-weight: 400;
+        line-height: 1.7;
+        color: #2d2d2d;
+    }
+    
+    .government-heading {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-label {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: #4a4a4a;
+    }
+    
+    .card-government {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        position: relative;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .card-government::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+    }
+    
+    .card-government:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .card-government .card-body {
+        padding: 1.5rem;
+    }
+    
+    .stat-number {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 900;
+        font-size: 2.5rem;
+        color: var(--dark-blue);
+        line-height: 1.2;
+    }
+    
+    .stat-number.gold {
+        color: var(--gold-color);
+    }
+    
+    .stat-number.green {
+        color: #28a745;
+    }
+    
+    .stat-number.blue {
+        color: #007bff;
+    }
+    
+    .stat-number.red {
+        color: #dc3545;
+    }
+    
+    .stat-label {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+    }
+    
+    .table-government {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+    }
+    
+    .table-government thead th {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+        color: #4a4a4a;
+        border-bottom: 2px solid var(--gold-color);
+    }
+    
+    .table-government tbody td {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.9rem;
+        color: #2d2d2d;
+        vertical-align: middle;
+        padding: 0.75rem;
+    }
+    
+    .table-government tbody tr:hover {
+        background: var(--cream-color);
+    }
+    
+    .badge-government {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 0;
+    }
+    
+    .badge-government-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #28a745;
+    }
+    
+    .badge-government-warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffc107;
+    }
+    
+    .badge-government-danger {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #dc3545;
+    }
+    
+    .badge-government-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #17a2b8;
+    }
+    
+    .badge-government-secondary {
+        background: #e2e3e5;
+        color: #383d41;
+        border: 1px solid #6c757d;
+    }
+    
+    .pagination-government .page-link {
+        font-family: 'Merriweather', 'Georgia', serif;
+        color: var(--dark-blue);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        padding: 8px 16px;
+        margin: 0 2px;
+        transition: all 0.3s ease;
+        background: var(--white);
+    }
+    
+    .pagination-government .page-link:hover {
+        background: var(--cream-color);
+        border-color: var(--gold-color);
+        color: var(--dark-blue);
+    }
+    
+    .pagination-government .page-item.active .page-link {
+        background: var(--gold-color);
+        border-color: var(--gold-color);
+        color: var(--white);
+    }
+    
+    .pagination-government .page-item.disabled .page-link {
+        color: #999;
+        background: var(--cream-color);
+        border-color: #d4c9b0;
+    }
+    
+    .filter-link {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: var(--dark-blue);
+        padding: 6px 16px;
+        border: 1px solid #d4c9b0;
+        background: var(--white);
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border-radius: 0;
+    }
+    
+    .filter-link:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+        text-decoration: none;
+    }
+    
+    .filter-link.active {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--cream-color); min-height: 100vh;">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="government-title" style="font-size: 2.2rem;">
+                    <i class="fas fa-chart-bar text-gold me-2"></i> Event Analytics
+                </h1>
+                <p class="government-subtitle" style="font-size: 1.05rem;">
+                    Monitor event performance, registrations, and engagement metrics
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'events:list' %}" class="btn-outline-gold-government">
+                    <i class="fas fa-calendar-alt me-1"></i> View All Events
+                </a>
+            </div>
+        </div>
+        
+        <!-- Stats Overview -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card-government">
+                    <div class="card-body">
+                        <div class="stat-number gold">{{ total_events|default:"0" }}</div>
+                        <div class="stat-label">Total Events</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-government">
+                    <div class="card-body">
+                        <div class="stat-number blue">{{ total_registrations|default:"0" }}</div>
+                        <div class="stat-label">Total Registrations</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-government">
+                    <div class="card-body">
+                        <div class="stat-number green">{{ total_attendees|default:"0" }}</div>
+                        <div class="stat-label">Total Attendees</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-government">
+                    <div class="card-body">
+                        <div class="stat-number red">{{ total_views|default:"0" }}</div>
+                        <div class="stat-label">Total Views</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="?filter=all" class="filter-link {% if not request.GET.filter or request.GET.filter == 'all' %}active{% endif %}">
+                        <i class="fas fa-list me-1"></i> All
+                    </a>
+                    <a href="?filter=published" class="filter-link {% if request.GET.filter == 'published' %}active{% endif %}">
+                        <i class="fas fa-check-circle me-1"></i> Published
+                    </a>
+                    <a href="?filter=ongoing" class="filter-link {% if request.GET.filter == 'ongoing' %}active{% endif %}">
+                        <i class="fas fa-play me-1"></i> Ongoing
+                    </a>
+                    <a href="?filter=completed" class="filter-link {% if request.GET.filter == 'completed' %}active{% endif %}">
+                        <i class="fas fa-check-double me-1"></i> Completed
+                    </a>
+                    <a href="?filter=cancelled" class="filter-link {% if request.GET.filter == 'cancelled' %}active{% endif %}">
+                        <i class="fas fa-times me-1"></i> Cancelled
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Events Table -->
+        <div class="card-government">
+            <div class="card-body" style="padding: 0; overflow-x: auto;">
+                <table class="table table-government mb-0">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Registrations</th>
+                            <th>Views</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if events %}
+                            {% for event in events %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'events:detail' slug=event.slug %}" style="color: var(--dark-blue); text-decoration: none; font-weight: 600;">
+                                        {{ event.title|truncatechars:50 }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge badge-government badge-government-info">
+                                        {{ event.get_event_type_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if event.status == 'published' %}
+                                        <span class="badge badge-government badge-government-success">Published</span>
+                                    {% elif event.status == 'ongoing' %}
+                                        <span class="badge badge-government badge-government-warning">Ongoing</span>
+                                    {% elif event.status == 'completed' %}
+                                        <span class="badge badge-government badge-government-secondary">Completed</span>
+                                    {% elif event.status == 'cancelled' %}
+                                        <span class="badge badge-government badge-government-danger">Cancelled</span>
+                                    {% else %}
+                                        <span class="badge badge-government badge-government-secondary">{{ event.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ event.start_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <strong>{{ event.registration_count }}</strong>
+                                    {% if event.max_attendees %}
+                                        <span class="text-muted">/ {{ event.max_attendees }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ event.view_count }}</td>
+                                <td>
+                                    <a href="{% url 'events:detail' slug=event.slug %}" class="btn-outline-gold-government" style="padding: 2px 12px; font-size: 0.7rem;">
+                                        <i class="fas fa-eye me-1"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="fas fa-calendar-times" style="font-size: 2rem; color: #ccc; display: block; margin-bottom: 0.5rem;"></i>
+                                    <span class="government-text">No events found</span>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        {% if events.has_other_pages %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-government justify-content-center">
+                        {% if events.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ events.previous_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">
+                                    <i class="fas fa-chevron-left me-1"></i> Previous
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Previous</span>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in events.paginator.page_range %}
+                            {% if events.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > events.number|add:'-3' and num < events.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if events.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ events.next_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">
+                                    Next <i class="fas fa-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Next</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add any JavaScript for analytics here
+        console.log('Event Analytics loaded');
+    });
+</script>
+{% endblock %}

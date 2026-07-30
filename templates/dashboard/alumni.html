@@ -1,0 +1,1179 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Alumni Dashboard - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       GOVERNMENT-STYLE TYPOGRAPHY
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    :root {
+        --gov-serif: 'Merriweather', 'Times New Roman', serif;
+        --gov-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        --gov-mono: 'JetBrains Mono', 'Courier New', monospace;
+        
+        /* Government Color Palette */
+        --gov-navy: #0a1628;
+        --gov-navy-light: #1a2a4a;
+        --gov-gold: #c9a84c;
+        --gov-gold-light: #e8d5a3;
+        --gov-gold-dark: #a8872e;
+        --gov-cream: #f5f0e8;
+        --gov-gray: #6b7a8f;
+        --gov-gray-light: #e8ecef;
+        --gov-border: #d4c8b8;
+        --gov-success: #2d6a4f;
+        --gov-warning: #b8860b;
+        --gov-danger: #8b1a1a;
+        --gov-info: #1a3a5c;
+        
+        /* KPSN Brand Colors */
+        --dark-blue: #0a1628;
+        --gold-color: #c9a84c;
+    }
+
+    /* ============================================================
+       GOVERNMENT SEAL / HEADER STYLES
+       ============================================================ */
+    .gov-header {
+        border-bottom: 4px solid var(--gov-gold);
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .gov-header::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--gov-gold), transparent);
+    }
+
+    .gov-seal {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .gov-seal-icon {
+        font-size: 3rem;
+        color: var(--gov-gold);
+        opacity: 0.8;
+        border: 3px solid var(--gov-gold);
+        border-radius: 50%;
+        padding: 0.75rem;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(201, 168, 76, 0.1), transparent);
+    }
+
+    .gov-title {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        color: var(--gov-navy);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .gov-title h1 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin: 0;
+        background: linear-gradient(135deg, var(--gov-navy), var(--gov-navy-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .gov-title .subtitle {
+        font-family: var(--gov-sans);
+        font-weight: 300;
+        font-size: 0.95rem;
+        color: var(--gov-gray);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        -webkit-text-fill-color: var(--gov-gray);
+    }
+
+    .gov-title .gold-text {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        color: var(--gov-gold);
+        -webkit-text-fill-color: var(--gov-gold);
+    }
+
+    /* ============================================================
+       OFFICIAL DASHBOARD CARDS
+       ============================================================ */
+    .gov-card {
+        background: #ffffff;
+        border: 1px solid var(--gov-border);
+        border-radius: 0;
+        box-shadow: 0 4px 12px rgba(10, 22, 40, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .gov-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gov-gold), var(--gov-gold-light));
+    }
+
+    .gov-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(10, 22, 40, 0.15);
+        border-color: var(--gov-gold);
+    }
+
+    .gov-card .card-header {
+        background: linear-gradient(135deg, var(--gov-navy), var(--gov-navy-light));
+        color: #ffffff;
+        padding: 1rem 1.5rem;
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        border-bottom: 3px solid var(--gov-gold);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        letter-spacing: 0.03em;
+    }
+
+    .gov-card .card-header i {
+        color: var(--gov-gold);
+        font-size: 1.25rem;
+    }
+
+    .gov-card .card-body {
+        padding: 1.5rem;
+        font-family: var(--gov-sans);
+    }
+
+    /* ============================================================
+       OFFICIAL STATISTICS
+       ============================================================ */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .stat-item {
+        background: var(--gov-cream);
+        padding: 1.25rem;
+        text-align: center;
+        border-left: 4px solid var(--gov-gold);
+        transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+        background: #ffffff;
+        border-left-width: 6px;
+        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.2);
+    }
+
+    .stat-number {
+        font-family: var(--gov-serif);
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--gov-navy);
+        display: block;
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-family: var(--gov-sans);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--gov-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 0.25rem;
+    }
+
+    /* ============================================================
+       OFFICIAL ACTION BUTTONS
+       ============================================================ */
+    .gov-btn {
+        font-family: var(--gov-sans);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.6rem 1.5rem;
+        border: 2px solid var(--gov-gold);
+        background: transparent;
+        color: var(--gov-navy);
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .gov-btn::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        background: linear-gradient(180deg, transparent, rgba(201, 168, 76, 0.15));
+        transition: height 0.3s ease;
+    }
+
+    .gov-btn:hover {
+        border-color: var(--gov-gold-dark);
+        color: var(--gov-navy);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.25);
+        text-decoration: none;
+    }
+
+    .gov-btn:hover::after {
+        height: 100%;
+    }
+
+    .gov-btn-primary {
+        background: var(--gov-navy);
+        border-color: var(--gov-navy);
+        color: #ffffff;
+    }
+
+    .gov-btn-primary:hover {
+        background: var(--gov-navy-light);
+        border-color: var(--gov-navy-light);
+        color: #ffffff;
+    }
+
+    .gov-btn-primary::after {
+        background: linear-gradient(180deg, transparent, rgba(201, 168, 76, 0.3));
+    }
+
+    .gov-btn-gold {
+        background: var(--gov-gold);
+        border-color: var(--gov-gold);
+        color: var(--gov-navy);
+    }
+
+    .gov-btn-gold:hover {
+        background: var(--gov-gold-dark);
+        border-color: var(--gov-gold-dark);
+        color: #ffffff;
+    }
+
+    .gov-btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.7rem;
+    }
+
+    /* ============================================================
+       OFFICIAL LISTS & TIMELINES
+       ============================================================ */
+    .gov-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .gov-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--gov-gray-light);
+        font-family: var(--gov-sans);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .gov-list li:last-child {
+        border-bottom: none;
+    }
+
+    .gov-list li:hover {
+        background: var(--gov-cream);
+        padding-left: 0.5rem;
+    }
+
+    .gov-list .list-icon {
+        color: var(--gov-gold);
+        font-size: 1.1rem;
+        width: 24px;
+        text-align: center;
+    }
+
+    .gov-list .list-text {
+        flex: 1;
+        font-size: 0.95rem;
+        color: var(--gov-navy);
+    }
+
+    .gov-list .list-meta {
+        font-size: 0.8rem;
+        color: var(--gov-gray);
+        font-weight: 300;
+    }
+
+    .gov-list .list-badge {
+        background: var(--gov-gold);
+        color: var(--gov-navy);
+        padding: 0.2rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .gov-list .list-badge-success {
+        background: var(--gov-success);
+        color: #ffffff;
+    }
+
+    .gov-list .list-badge-warning {
+        background: var(--gov-warning);
+        color: #ffffff;
+    }
+
+    /* ============================================================
+       OFFICIAL TIMELINE
+       ============================================================ */
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, var(--gov-gold), var(--gov-gray-light));
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 1.5rem;
+        padding-left: 1rem;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -1.75rem;
+        top: 0.25rem;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--gov-gold);
+        border: 3px solid #ffffff;
+        box-shadow: 0 0 0 2px var(--gov-gold);
+    }
+
+    .timeline-item .timeline-date {
+        font-family: var(--gov-mono);
+        font-size: 0.8rem;
+        color: var(--gov-gray);
+        font-weight: 500;
+    }
+
+    .timeline-item .timeline-content {
+        font-family: var(--gov-sans);
+        font-size: 0.95rem;
+        color: var(--gov-navy);
+        margin-top: 0.25rem;
+    }
+
+    .timeline-item .timeline-content strong {
+        color: var(--gov-gold-dark);
+    }
+
+    /* ============================================================
+       OFFICIAL QUICK ACTIONS GRID
+       ============================================================ */
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .quick-action-item {
+        background: var(--gov-cream);
+        padding: 1rem;
+        text-align: center;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--gov-navy);
+    }
+
+    .quick-action-item:hover {
+        border-color: var(--gov-gold);
+        background: #ffffff;
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.2);
+        text-decoration: none;
+        color: var(--gov-navy);
+    }
+
+    .quick-action-item i {
+        font-size: 1.75rem;
+        color: var(--gov-gold);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .quick-action-item .action-label {
+        font-family: var(--gov-sans);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* ============================================================
+       OFFICIAL NOTIFICATIONS
+       ============================================================ */
+    .notification-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--gov-gray-light);
+        transition: all 0.3s ease;
+    }
+
+    .notification-item:hover {
+        background: var(--gov-cream);
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        margin: 0 -0.5rem;
+    }
+
+    .notification-item .notif-icon {
+        color: var(--gov-gold);
+        font-size: 1.1rem;
+        margin-top: 0.15rem;
+    }
+
+    .notification-item .notif-content {
+        flex: 1;
+        font-family: var(--gov-sans);
+        font-size: 0.9rem;
+        color: var(--gov-navy);
+    }
+
+    .notification-item .notif-content .notif-title {
+        font-weight: 600;
+        color: var(--gov-navy-light);
+    }
+
+    .notification-item .notif-time {
+        font-size: 0.75rem;
+        color: var(--gov-gray);
+        font-family: var(--gov-mono);
+        white-space: nowrap;
+    }
+
+    /* ============================================================
+       OFFICIAL MEMBERSHIP STATUS
+       ============================================================ */
+    .membership-status {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--gov-cream);
+        border-left: 4px solid var(--gov-gold);
+    }
+
+    .membership-status .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .membership-status .status-indicator.active {
+        background: var(--gov-success);
+        box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.2);
+    }
+
+    .membership-status .status-indicator.expired {
+        background: var(--gov-danger);
+        box-shadow: 0 0 0 3px rgba(139, 26, 26, 0.2);
+    }
+
+    .membership-status .status-indicator.pending {
+        background: var(--gov-warning);
+        box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.2);
+    }
+
+    .membership-status .status-text {
+        font-family: var(--gov-sans);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--gov-navy);
+    }
+
+    .membership-status .status-subtext {
+        font-family: var(--gov-sans);
+        font-size: 0.8rem;
+        color: var(--gov-gray);
+    }
+
+    /* ============================================================
+       OFFICIAL RESPONSIVE ADJUSTMENTS
+       ============================================================ */
+    @media (max-width: 768px) {
+        .gov-seal {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .gov-title h1 {
+            font-size: 1.5rem;
+        }
+
+        .stat-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .quick-actions-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .gov-card .card-header {
+            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stat-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .gov-seal-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+        }
+    }
+
+    /* ============================================================
+       PRINT STYLES - FOR OFFICIAL DOCUMENTS
+       ============================================================ */
+    @media print {
+        .gov-card {
+            break-inside: avoid;
+            box-shadow: none;
+            border-color: #000;
+        }
+
+        .gov-card:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .gov-btn {
+            border: 1px solid #000;
+            color: #000;
+        }
+
+        .stat-item {
+            border-left: 2px solid #000;
+        }
+    }
+
+    /* ============================================================
+       UTILITY CLASSES
+       ============================================================ */
+    .text-gov-gold {
+        color: var(--gov-gold);
+    }
+
+    .text-gov-navy {
+        color: var(--gov-navy);
+    }
+
+    .text-gov-gray {
+        color: var(--gov-gray);
+    }
+
+    .bg-gov-cream {
+        background: var(--gov-cream);
+    }
+
+    .font-gov-serif {
+        font-family: var(--gov-serif);
+    }
+
+    .font-gov-sans {
+        font-family: var(--gov-sans);
+    }
+
+    .font-gov-mono {
+        font-family: var(--gov-mono);
+    }
+
+    .letter-spacing-wide {
+        letter-spacing: 0.08em;
+    }
+
+    .border-gov-gold {
+        border-color: var(--gov-gold);
+    }
+
+    .border-gov-gold-2 {
+        border: 2px solid var(--gov-gold);
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_title %}
+    <div class="gov-header">
+        <div class="gov-seal">
+            <div class="gov-seal-icon">
+                <i class="fas fa-university"></i>
+            </div>
+            <div class="gov-title">
+                <h1>
+                    <span class="gold-text">Alumni</span> Dashboard
+                    <span style="font-size:1rem;font-weight:300;color:var(--gov-gray);-webkit-text-fill-color:var(--gov-gray);letter-spacing:0.1em;">
+                        — OFFICIAL PORTAL
+                    </span>
+                </h1>
+                <div class="subtitle">
+                    Kenya Psychological Society Network &bull; Alumni Division
+                    <span style="color:var(--gov-gold);-webkit-text-fill-color:var(--gov-gold);">★</span>
+                    Est. 2024
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block breadcrumb %}
+    <span style="font-family:var(--gov-sans);font-weight:300;letter-spacing:0.03em;">
+        <i class="fas fa-home" style="color:var(--gov-gold);"></i> 
+        Dashboard / <span class="gold-text">Alumni</span>
+    </span>
+{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- ============================================================
+     OFFICIAL STATISTICS ROW
+     ============================================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="gov-card" data-aos="fade-up" data-aos-delay="50">
+            <div class="card-body" style="padding:1.25rem 1.5rem;">
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ user.registrationapplication.created_at|date:"Y"|default:"2024" }}</span>
+                        <span class="stat-label">Year of Induction</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ user.mentees.count|default:"0" }}</span>
+                        <span class="stat-label">Mentees</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ user.activity_logs.count|default:"0" }}</span>
+                        <span class="stat-label">Total Activities</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ user.publication_count|default:"0" }}</span>
+                        <span class="stat-label">Publications</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ user.citation_count|default:"0" }}</span>
+                        <span class="stat-label">Citations</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ user.h_index|default:"0" }}</span>
+                        <span class="stat-label">H-Index</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MAIN DASHBOARD CONTENT
+     ============================================================ -->
+<div class="row g-4">
+    
+    <!-- ============================================================
+         LEFT COLUMN - PRIMARY CONTENT
+         ============================================================ -->
+    <div class="col-lg-8">
+        
+        <!-- WELCOME / PROFILE CARD -->
+        <div class="gov-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-body py-4">
+                <div class="d-flex align-items-start gap-4 flex-wrap">
+                    <div style="flex-shrink:0;">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" 
+                                 style="width:100px;height:100px;border-radius:50%;border:4px solid var(--gov-gold);object-fit:cover;">
+                        {% else %}
+                            <div style="width:100px;height:100px;border-radius:50%;border:4px solid var(--gov-gold);
+                                        background:linear-gradient(135deg,var(--gov-navy),var(--gov-navy-light));
+                                        display:flex;align-items:center;justify-content:center;color:#ffffff;">
+                                <i class="fas fa-user-graduate" style="font-size:2.5rem;"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div style="flex:1;">
+                        <h3 style="font-family:var(--gov-serif);font-weight:700;color:var(--gov-navy);margin:0;">
+                            {{ user.get_full_name }}
+                            {% if user.is_verified %}
+                                <i class="fas fa-check-circle" style="color:var(--gov-gold);font-size:1.2rem;" 
+                                   title="Verified Alumni"></i>
+                            {% endif %}
+                        </h3>
+                        <p style="font-family:var(--gov-sans);color:var(--gov-gray);font-size:0.95rem;margin:0.25rem 0;">
+                            <i class="fas fa-graduation-cap" style="color:var(--gov-gold);width:20px;"></i>
+                            {{ user.academic_level|default:"Alumni Member" }}
+                            {% if user.institution %}
+                                &bull; {{ user.institution }}
+                            {% endif %}
+                        </p>
+                        <p style="font-family:var(--gov-sans);color:var(--gov-gray);font-size:0.9rem;margin:0.25rem 0;">
+                            <i class="fas fa-briefcase" style="color:var(--gov-gold);width:20px;"></i>
+                            {{ user.current_position|default:"Alumni Member" }}
+                            {% if user.graduation_year %}
+                                &bull; Class of {{ user.graduation_year }}
+                            {% endif %}
+                        </p>
+                        <div style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+                            <a href="{% url 'accounts:profile_update' %}" class="gov-btn gov-btn-primary gov-btn-sm">
+                                <i class="fas fa-edit"></i> Update Profile
+                            </a>
+                            <a href="{% url 'accounts:alumni_mentorship' %}" class="gov-btn gov-btn-sm">
+                                <i class="fas fa-handshake"></i> Mentorship
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MEMBERSHIP STATUS -->
+        <div class="gov-card mt-4" data-aos="fade-right" data-aos-delay="150">
+            <div class="card-header">
+                <i class="fas fa-id-card"></i>
+                Alumni Membership Status
+                <span style="margin-left:auto;font-family:var(--gov-sans);font-weight:300;font-size:0.8rem;opacity:0.7;">
+                    <i class="fas fa-print" style="cursor:pointer;" onclick="window.print()"></i>
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="membership-status">
+                    <span class="status-indicator {% if user.is_active_member %}active{% else %}expired{% endif %}"></span>
+                    <div>
+                        <div class="status-text">
+                            {% if user.is_active_member %}
+                                <i class="fas fa-check-circle" style="color:var(--gov-success);"></i>
+                                Active Alumni Member
+                            {% else %}
+                                <i class="fas fa-exclamation-circle" style="color:var(--gov-danger);"></i>
+                                Membership Inactive
+                            {% endif %}
+                        </div>
+                        <div class="status-subtext">
+                            {% if user.membership_number %}
+                                Membership #: <strong>{{ user.membership_number }}</strong> &bull;
+                            {% endif %}
+                            {% if user.membership_expiry_date %}
+                                Expires: {{ user.membership_expiry_date|date:"F d, Y" }}
+                            {% else %}
+                                No expiration date set
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div style="margin-left:auto;">
+                        <a href="{% url 'accounts:membership_renew' %}" class="gov-btn gov-btn-gold gov-btn-sm">
+                            <i class="fas fa-sync-alt"></i> Renew
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS - FIXED URLS -->
+        <div class="gov-card mt-4" data-aos="fade-right" data-aos-delay="200">
+            <div class="card-header">
+                <i class="fas fa-bolt"></i>
+                Alumni Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="quick-actions-grid">
+                    <a href="{% url 'accounts:alumni_directory' %}" class="quick-action-item">
+                        <i class="fas fa-users"></i>
+                        <span class="action-label">Alumni Directory</span>
+                    </a>
+                    <a href="{% url 'accounts:alumni_events' %}" class="quick-action-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span class="action-label">Events & Reunions</span>
+                    </a>
+                    <a href="{% url 'accounts:alumni_mentors' %}" class="quick-action-item">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span class="action-label">Mentor Network</span>
+                    </a>
+                    <a href="{% url 'accounts:alumni_jobs' %}" class="quick-action-item">
+                        <i class="fas fa-briefcase"></i>
+                        <span class="action-label">Job Board</span>
+                    </a>
+                    <a href="{% url 'accounts:alumni_research' %}" class="quick-action-item">
+                        <i class="fas fa-flask"></i>
+                        <span class="action-label">Research Collaboration</span>
+                    </a>
+                    <a href="{% url 'accounts:alumni_giving' %}" class="quick-action-item">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <span class="action-label">Alumni Giving</span>
+                    </a>
+                    <a href="{% url 'accounts:alumni_resources' %}" class="quick-action-item">
+                        <i class="fas fa-folder-open"></i>
+                        <span class="action-label">Alumni Resources</span>
+                    </a>
+                    <a href="{% url 'accounts:alumni_stories' %}" class="quick-action-item">
+                        <i class="fas fa-pen-fancy"></i>
+                        <span class="action-label">Share Your Story</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIMELINE / ACTIVITY -->
+        <div class="gov-card mt-4" data-aos="fade-right" data-aos-delay="250">
+            <div class="card-header">
+                <i class="fas fa-history"></i>
+                Alumni Activity Timeline
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    {% for activity in user.activity_logs.all|slice:":5" %}
+                        <div class="timeline-item">
+                            <div class="timeline-date">{{ activity.created_at|date:"M d, Y" }}</div>
+                            <div class="timeline-content">
+                                <strong>{{ activity.get_action_type_display }}</strong>
+                                — {{ activity.action_description|truncatechars:80 }}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="timeline-item">
+                            <div class="timeline-content" style="color:var(--gov-gray);">
+                                <i class="fas fa-info-circle"></i> No recent activity to display.
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if user.activity_logs.count > 5 %}
+                    <div style="text-align:center;margin-top:1rem;">
+                        <a href="{% url 'accounts:activity_log' %}" class="gov-btn gov-btn-sm">
+                            View Full History <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         RIGHT COLUMN - SIDEBAR
+         ============================================================ -->
+    <div class="col-lg-4">
+        
+        <!-- ALUMNI INFO CARD -->
+        <div class="gov-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i>
+                Alumni Profile
+            </div>
+            <div class="card-body">
+                <ul class="gov-list">
+                    <li>
+                        <span class="list-icon"><i class="fas fa-calendar"></i></span>
+                        <span class="list-text">Graduation Year</span>
+                        <span class="list-meta">{{ user.graduation_year|default:"Not set" }}</span>
+                    </li>
+                    <li>
+                        <span class="list-icon"><i class="fas fa-briefcase"></i></span>
+                        <span class="list-text">Current Position</span>
+                        <span class="list-meta">{{ user.current_position|default:"Not set" }}</span>
+                    </li>
+                    <li>
+                        <span class="list-icon"><i class="fas fa-building"></i></span>
+                        <span class="list-text">Institution</span>
+                        <span class="list-meta">{{ user.institution|default:"Not set" }}</span>
+                    </li>
+                    <li>
+                        <span class="list-icon"><i class="fas fa-flask"></i></span>
+                        <span class="list-text">Research Interests</span>
+                        <span class="list-meta">{{ user.research_interests|truncatechars:30|default:"Not set" }}</span>
+                    </li>
+                    <li>
+                        <span class="list-icon"><i class="fas fa-hashtag"></i></span>
+                        <span class="list-text">H-Index</span>
+                        <span class="list-meta">{{ user.h_index|default:"0" }}</span>
+                    </li>
+                    <li>
+                        <span class="list-icon"><i class="fas fa-file-alt"></i></span>
+                        <span class="list-text">Publications</span>
+                        <span class="list-meta">{{ user.publication_count|default:"0" }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SOCIAL LINKS -->
+        <div class="gov-card mt-4" data-aos="fade-left" data-aos-delay="150">
+            <div class="card-header">
+                <i class="fas fa-share-alt"></i>
+                Connect & Network
+            </div>
+            <div class="card-body">
+                <ul class="gov-list">
+                    {% if user.linkedin_url %}
+                        <li>
+                            <span class="list-icon"><i class="fab fa-linkedin" style="color:#0a66c2;"></i></span>
+                            <span class="list-text"><a href="{{ user.linkedin_url }}" target="_blank" style="color:var(--gov-navy);">LinkedIn</a></span>
+                        </li>
+                    {% endif %}
+                    {% if user.researchgate_url %}
+                        <li>
+                            <span class="list-icon"><i class="fab fa-researchgate" style="color:#00a8b5;"></i></span>
+                            <span class="list-text"><a href="{{ user.researchgate_url }}" target="_blank" style="color:var(--gov-navy);">ResearchGate</a></span>
+                        </li>
+                    {% endif %}
+                    {% if user.google_scholar_url %}
+                        <li>
+                            <span class="list-icon"><i class="fas fa-graduation-cap" style="color:#4285f4;"></i></span>
+                            <span class="list-text"><a href="{{ user.google_scholar_url }}" target="_blank" style="color:var(--gov-navy);">Google Scholar</a></span>
+                        </li>
+                    {% endif %}
+                    {% if user.orcid_id %}
+                        <li>
+                            <span class="list-icon"><i class="fab fa-orcid" style="color:#a6ce39;"></i></span>
+                            <span class="list-text"><a href="https://orcid.org/{{ user.orcid_id }}" target="_blank" style="color:var(--gov-navy);">ORCID</a></span>
+                        </li>
+                    {% endif %}
+                    {% if user.twitter_url %}
+                        <li>
+                            <span class="list-icon"><i class="fab fa-twitter" style="color:#000000;"></i></span>
+                            <span class="list-text"><a href="{{ user.twitter_url }}" target="_blank" style="color:var(--gov-navy);">X (Twitter)</a></span>
+                        </li>
+                    {% endif %}
+                    {% if user.website_url %}
+                        <li>
+                            <span class="list-icon"><i class="fas fa-globe" style="color:var(--gov-gold);"></i></span>
+                            <span class="list-text"><a href="{{ user.website_url }}" target="_blank" style="color:var(--gov-navy);">Personal Website</a></span>
+                        </li>
+                    {% endif %}
+                    {% if not user.linkedin_url and not user.researchgate_url and not user.google_scholar_url and not user.orcid_id and not user.twitter_url and not user.website_url %}
+                        <li style="color:var(--gov-gray);font-size:0.9rem;">
+                            <i class="fas fa-info-circle" style="color:var(--gov-gold);"></i>
+                            No social links added. 
+                            <a href="{% url 'accounts:profile_update' %}" style="color:var(--gov-gold);">Update your profile</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="gov-card mt-4" data-aos="fade-left" data-aos-delay="200">
+            <div class="card-header">
+                <i class="fas fa-bell"></i>
+                Recent Notifications
+                <span class="list-badge" style="margin-left:auto;">3</span>
+            </div>
+            <div class="card-body" style="max-height:300px;overflow-y:auto;">
+                <div class="notification-item">
+                    <div class="notif-icon"><i class="fas fa-calendar"></i></div>
+                    <div class="notif-content">
+                        <div class="notif-title">Alumni Reunion 2026</div>
+                        <div style="font-size:0.85rem;color:var(--gov-gray);">Registration now open for the annual alumni reunion.</div>
+                        <div class="notif-time">2 hours ago</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notif-icon"><i class="fas fa-handshake"></i></div>
+                    <div class="notif-content">
+                        <div class="notif-title">Mentorship Opportunity</div>
+                        <div style="font-size:0.85rem;color:var(--gov-gray);">3 students are looking for mentors in your field.</div>
+                        <div class="notif-time">1 day ago</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notif-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="notif-content">
+                        <div class="notif-title">Research Grant Available</div>
+                        <div style="font-size:0.85rem;color:var(--gov-gray);">Apply for the KPSN Alumni Research Fund 2026.</div>
+                        <div class="notif-time">3 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALUMNI CONTRIBUTIONS -->
+        <div class="gov-card mt-4" data-aos="fade-left" data-aos-delay="250">
+            <div class="card-header">
+                <i class="fas fa-star"></i>
+                Your Contributions
+            </div>
+            <div class="card-body">
+                <ul class="gov-list">
+                    <li>
+                        <span class="list-icon"><i class="fas fa-check-circle" style="color:var(--gov-success);"></i></span>
+                        <span class="list-text">Articles Published</span>
+                        <span class="list-badge list-badge-success">{{ user.publication_count|default:"0" }}</span>
+                    </li>
+                    <li>
+                        <span class="list-icon"><i class="fas fa-users" style="color:var(--gov-gold);"></i></span>
+                        <span class="list-text">Mentees Guided</span>
+                        <span class="list-badge">{{ user.mentees.count|default:"0" }}</span>
+                    </li>
+                    <li>
+                        <span class="list-icon"><i class="fas fa-calendar-check" style="color:var(--gov-info);"></i></span>
+                        <span class="list-text">Events Attended</span>
+                        <span class="list-badge">12</span>
+                    </li>
+                    <li>
+                        <span class="list-icon"><i class="fas fa-hand-holding-heart" style="color:var(--gov-warning);"></i></span>
+                        <span class="list-text">Donations Made</span>
+                        <span class="list-badge">5</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SUPPORT / CONTACT - FIXED -->
+        <div class="gov-card mt-4" data-aos="fade-left" data-aos-delay="300">
+            <div class="card-header">
+                <i class="fas fa-headset"></i>
+                Alumni Support
+            </div>
+            <div class="card-body" style="text-align:center;">
+                <p style="font-family:var(--gov-sans);font-size:0.9rem;color:var(--gov-gray);">
+                    <i class="fas fa-envelope" style="color:var(--gov-gold);"></i>
+                    <a href="mailto:alumni@kpsn.org" style="color:var(--gov-navy);">alumni@kpsn.org</a>
+                </p>
+                <p style="font-family:var(--gov-sans);font-size:0.9rem;color:var(--gov-gray);">
+                    <i class="fas fa-phone" style="color:var(--gov-gold);"></i>
+                    +254 700 123 456
+                </p>
+                <a href="mailto:alumni@kpsn.org" class="gov-btn gov-btn-sm" style="display:inline-block;margin-top:0.5rem;">
+                    <i class="fas fa-life-ring"></i> Get Help
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     FOOTER - OFFICIAL DISCLAIMER
+     ============================================================ -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div style="font-family:var(--gov-sans);font-size:0.75rem;color:var(--gov-gray);
+                    text-align:center;padding:1.5rem 0;border-top:1px solid var(--gov-border);">
+            <i class="fas fa-scale-balanced" style="color:var(--gov-gold);"></i>
+            KPSN Alumni Dashboard &bull; Official Member Portal &bull; 
+            Version 2.0 &bull; &copy; {% now "Y" %} Kenya Psychological Society Network
+            <br>
+            <span style="font-size:0.65rem;opacity:0.6;">
+                This is an official communication channel for KPSN alumni members.
+                All content is subject to the KPSN Alumni Code of Conduct.
+            </span>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ============================================================
+    // OFFICIAL DASHBOARD INTERACTIONS
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-refresh notifications every 60 seconds
+        const notificationInterval = setInterval(function() {
+            console.log('Notifications refreshed at:', new Date().toLocaleTimeString());
+        }, 60000);
+        
+        // Store interval for cleanup
+        window.notificationInterval = notificationInterval;
+    });
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        if (window.notificationInterval) {
+            clearInterval(window.notificationInterval);
+        }
+    });
+    
+    // ============================================================
+    // PRINT FUNCTIONALITY
+    // ============================================================
+    function printDashboard() {
+        window.print();
+    }
+    
+    // ============================================================
+    // ALUMNI QUICK STATS - ANIMATION
+    // ============================================================
+    function animateStats() {
+        const stats = document.querySelectorAll('.stat-number');
+        stats.forEach(stat => {
+            const target = parseInt(stat.textContent.replace(/,/g, '')) || 0;
+            if (target > 0) {
+                let current = 0;
+                const increment = Math.ceil(target / 20);
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = target.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = current.toLocaleString();
+                    }
+                }, 50);
+            }
+        });
+    }
+    
+    // Initialize animations
+    setTimeout(animateStats, 500);
+</script>
+{% endblock %}

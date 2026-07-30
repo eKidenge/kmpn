@@ -1,0 +1,2 @@
+BUILD COMMAND: chmod +x build.sh && ./build.sh
+START COMMAND: gunicorn kmpn.wsgi:application

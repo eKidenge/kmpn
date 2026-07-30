@@ -1,0 +1,1451 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}KMPN - Kenya Masters and PhD Network{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       GOVERNMENT STYLE FONTS - PROFESSIONAL
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700;900&family=Source+Serif+Pro:wght@400;600;700&family=Cormorant+Garamond:wght@400;600;700&display=swap');
+    
+    :root {
+        --gov-serif: 'Playfair Display', 'Times New Roman', serif;
+        --gov-serif-alt: 'Merriweather', 'Georgia', serif;
+        --gov-serif-body: 'Source Serif Pro', 'Georgia', serif;
+        --gov-serif-heading: 'Cormorant Garamond', 'Georgia', serif;
+    }
+    
+    /* ============================================================
+       HERO SECTION - GOVERNMENT STYLE
+       ============================================================ */
+    .hero-section {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
+        padding: 80px 0;
+        position: relative;
+        overflow: hidden;
+        min-height: 450px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 700px;
+        height: 700px;
+        border-radius: 50%;
+        background: rgba(212, 168, 67, 0.04);
+        pointer-events: none;
+    }
+    
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -10%;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(212, 168, 67, 0.03);
+        pointer-events: none;
+    }
+    
+    .hero-section .hero-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+    }
+    
+    .hero-section .hero-badge {
+        display: inline-block;
+        background: rgba(212, 168, 67, 0.12);
+        color: var(--gold-color);
+        padding: 6px 20px;
+        border-radius: 0;
+        font-family: var(--gov-serif-alt);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        border: 1px solid rgba(212, 168, 67, 0.2);
+    }
+    
+    .hero-section .hero-title {
+        font-family: var(--gov-serif);
+        font-size: 3.2rem;
+        font-weight: 900;
+        color: var(--white);
+        line-height: 1.15;
+        margin-bottom: 18px;
+        letter-spacing: 0.5px;
+    }
+    
+    .hero-section .hero-title .gold-text {
+        color: var(--gold-color);
+        font-family: var(--gov-serif);
+        font-weight: 900;
+    }
+    
+    .hero-section .hero-subtitle {
+        font-family: var(--gov-serif-body);
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.85);
+        max-width: 680px;
+        line-height: 1.8;
+        margin: 0 auto 28px;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+    }
+    
+    .hero-section .hero-cta {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+    }
+    
+    .hero-section .hero-cta .btn {
+        padding: 12px 32px;
+        font-size: 0.9rem;
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .hero-section .hero-cta .btn-gold {
+        background: var(--gold-color);
+        color: var(--white);
+        border: 2px solid var(--gold-color);
+    }
+    
+    .hero-section .hero-cta .btn-gold:hover {
+        background: var(--gold-dark);
+        border-color: var(--gold-dark);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 168, 67, 0.3);
+    }
+    
+    .hero-section .hero-cta .btn-outline-gold {
+        background: transparent;
+        color: var(--gold-color);
+        border: 2px solid var(--gold-color);
+    }
+    
+    .hero-section .hero-cta .btn-outline-gold:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 168, 67, 0.3);
+    }
+    
+    .hero-section .hero-stats {
+        display: flex;
+        gap: 50px;
+        justify-content: center;
+        flex-wrap: wrap;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        padding-top: 24px;
+        margin-top: 10px;
+    }
+    
+    .hero-section .hero-stats .stat-item {
+        text-align: center;
+    }
+    
+    .hero-section .hero-stats .stat-number {
+        font-family: var(--gov-serif);
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--gold-color);
+        display: block;
+        line-height: 1.2;
+        letter-spacing: 0.5px;
+    }
+    
+    .hero-section .hero-stats .stat-label {
+        font-family: var(--gov-serif-alt);
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 700;
+    }
+    
+    /* ============================================================
+       STATS SECTION
+       ============================================================ */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 50px 0;
+        background: var(--cream-color);
+        border-bottom: 2px solid #e8e0d0;
+        text-align: center;
+    }
+    
+    .stats-grid .stat-card {
+        background: var(--white);
+        padding: 24px 20px;
+        text-align: center;
+        border: 1px solid #e8e0d0;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stats-grid .stat-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gold-color);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .stats-grid .stat-card:hover::after {
+        transform: scaleX(1);
+    }
+    
+    .stats-grid .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        border-color: var(--gold-color);
+    }
+    
+    .stats-grid .stat-number {
+        font-family: var(--gov-serif);
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--dark-blue);
+        display: block;
+        line-height: 1.2;
+        letter-spacing: 0.5px;
+    }
+    
+    .stats-grid .stat-number.gold {
+        color: var(--gold-color);
+    }
+    
+    .stats-grid .stat-number.navy {
+        color: var(--navy-blue);
+    }
+    
+    .stats-grid .stat-label {
+        font-family: var(--gov-serif-alt);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        margin-top: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 700;
+    }
+    
+    /* ============================================================
+       SECTION HEADERS
+       ============================================================ */
+    .section-header {
+        padding: 50px 0 25px;
+        border-bottom: 2px solid #e8e0d0;
+        margin-bottom: 35px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .section-header::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 2px;
+        background: var(--gold-color);
+    }
+    
+    .section-header h2 {
+        font-family: var(--gov-serif);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+    
+    .section-header h2 .gold-text {
+        color: var(--gold-color);
+    }
+    
+    .section-header p {
+        font-family: var(--gov-serif-body);
+        color: var(--gray-600);
+        font-size: 0.95rem;
+        margin-bottom: 0;
+        letter-spacing: 0.3px;
+    }
+    
+    .section-header .view-all {
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        color: var(--gold-color);
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-top: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .section-header .view-all:hover {
+        color: var(--gold-dark);
+        padding-left: 6px;
+        text-decoration: none;
+    }
+    
+    /* ============================================================
+       CONTENT CARDS
+       ============================================================ */
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        margin-bottom: 35px;
+    }
+    
+    .content-card {
+        background: var(--white);
+        border: 1px solid #e8e0d0;
+        padding: 24px;
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .content-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+    
+    .content-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .content-card:hover {
+        border-color: var(--gold-color);
+        box-shadow: 0 6px 25px rgba(0,0,0,0.06);
+        transform: translateY(-3px);
+    }
+    
+    .content-card .card-badge {
+        display: inline-block;
+        padding: 3px 14px;
+        font-family: var(--gov-serif-alt);
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 12px;
+        background: var(--cream-color);
+        color: var(--dark-blue);
+        border: 1px solid #e8e0d0;
+    }
+    
+    .content-card .card-badge.badge-gold {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+    }
+    
+    .content-card .card-badge.badge-navy {
+        background: var(--navy-blue);
+        color: var(--white);
+        border-color: var(--navy-blue);
+    }
+    
+    .content-card .card-badge.badge-forum {
+        background: #1a237e;
+        color: var(--white);
+        border-color: #1a237e;
+    }
+    
+    .content-card .card-title {
+        font-family: var(--gov-serif);
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        margin-bottom: 8px;
+        line-height: 1.3;
+    }
+    
+    .content-card .card-title a {
+        color: var(--dark-blue);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .content-card .card-title a:hover {
+        color: var(--gold-color);
+        text-decoration: none;
+    }
+    
+    .content-card .card-meta {
+        font-family: var(--gov-serif-body);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        margin-bottom: 10px;
+    }
+    
+    .content-card .card-meta i {
+        color: var(--gold-color);
+        width: 18px;
+    }
+    
+    .content-card .card-excerpt {
+        font-family: var(--gov-serif-body);
+        font-size: 0.9rem;
+        color: var(--gray-700);
+        line-height: 1.7;
+        margin-bottom: 14px;
+    }
+    
+    .content-card .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 14px;
+        border-top: 1px solid #f0ece0;
+        font-family: var(--gov-serif-body);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+    }
+    
+    .content-card .card-footer .btn-sm {
+        padding: 4px 16px;
+        font-size: 0.7rem;
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .btn-outline-gold {
+        background: transparent;
+        color: var(--gold-color);
+        border: 1px solid var(--gold-color);
+        padding: 6px 16px;
+        font-size: 0.75rem;
+        font-family: var(--gov-serif-alt);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+    }
+    
+    .btn-outline-gold:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        text-decoration: none;
+    }
+    
+    /* ============================================================
+       FORUM CARDS - SPECIAL
+       ============================================================ */
+    .forum-card {
+        background: var(--white);
+        border: 1px solid #e8e0d0;
+        padding: 20px 24px;
+        transition: all 0.3s ease;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .forum-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--gold-color);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .forum-card:hover::before {
+        transform: scaleY(1);
+    }
+    
+    .forum-card:hover {
+        border-color: var(--gold-color);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    
+    .forum-card .forum-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--cream-color);
+        border: 1px solid #e8e0d0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--gold-color);
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .forum-card:hover .forum-icon {
+        background: var(--gold-color);
+        color: var(--white);
+        border-color: var(--gold-color);
+    }
+    
+    .forum-card .forum-info {
+        flex: 1;
+    }
+    
+    .forum-card .forum-info h6 {
+        font-family: var(--gov-serif);
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        color: var(--dark-blue);
+    }
+    
+    .forum-card .forum-info h6 a {
+        color: var(--dark-blue);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .forum-card .forum-info h6 a:hover {
+        color: var(--gold-color);
+        text-decoration: none;
+    }
+    
+    .forum-card .forum-info .forum-meta {
+        font-family: var(--gov-serif-body);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+    }
+    
+    .forum-card .forum-info .forum-meta i {
+        color: var(--gold-color);
+        width: 16px;
+    }
+    
+    .forum-card .forum-link {
+        flex-shrink: 0;
+    }
+    
+    /* ============================================================
+       EVENT CARDS
+       ============================================================ */
+    .event-card {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 16px 20px;
+        background: var(--white);
+        border: 1px solid #e8e0d0;
+        transition: all 0.3s ease;
+        margin-bottom: 12px;
+    }
+    
+    .event-card:hover {
+        border-color: var(--gold-color);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        transform: translateX(4px);
+    }
+    
+    .event-card .event-date {
+        background: var(--gold-color);
+        color: var(--white);
+        padding: 8px 14px;
+        text-align: center;
+        min-width: 56px;
+        flex-shrink: 0;
+    }
+    
+    .event-card .event-date .day {
+        font-family: var(--gov-serif);
+        font-size: 1.3rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+    
+    .event-card .event-date .month {
+        font-family: var(--gov-serif-alt);
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        opacity: 0.9;
+        font-weight: 700;
+    }
+    
+    .event-card .event-info {
+        flex: 1;
+    }
+    
+    .event-card .event-info h6 {
+        font-family: var(--gov-serif);
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        color: var(--dark-blue);
+    }
+    
+    .event-card .event-info h6 a {
+        color: var(--dark-blue);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .event-card .event-info h6 a:hover {
+        color: var(--gold-color);
+        text-decoration: none;
+    }
+    
+    .event-card .event-info .event-location {
+        font-family: var(--gov-serif-body);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+    }
+    
+    .event-card .event-info .event-location i {
+        color: var(--gold-color);
+        width: 16px;
+    }
+    
+    .event-card .event-link {
+        flex-shrink: 0;
+    }
+    
+    /* ============================================================
+       TESTIMONIALS
+       ============================================================ */
+    .testimonial-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        padding: 35px 0;
+    }
+    
+    .testimonial-item {
+        background: var(--white);
+        border: 1px solid #e8e0d0;
+        padding: 24px;
+        transition: all 0.3s ease;
+        text-align: left;
+        position: relative;
+    }
+    
+    .testimonial-item::before {
+        content: '\201C';
+        font-family: var(--gov-serif);
+        font-size: 4rem;
+        color: var(--gold-color);
+        opacity: 0.15;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        line-height: 1;
+    }
+    
+    .testimonial-item:hover {
+        border-color: var(--gold-color);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    
+    .testimonial-item .quote {
+        font-family: var(--gov-serif-body);
+        font-style: italic;
+        font-size: 0.95rem;
+        color: var(--gray-700);
+        line-height: 1.8;
+        margin-bottom: 14px;
+        padding-left: 18px;
+        border-left: 3px solid var(--gold-color);
+    }
+    
+    .testimonial-item .author {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    
+    .testimonial-item .author .avatar {
+        width: 44px;
+        height: 44px;
+        background: var(--gold-color);
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .testimonial-item .author .name {
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--dark-blue);
+    }
+    
+    .testimonial-item .author .role {
+        font-family: var(--gov-serif-body);
+        font-size: 0.75rem;
+        color: var(--gray-600);
+    }
+    
+    /* ============================================================
+       PARTNERS
+       ============================================================ */
+    .partner-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 18px;
+        padding: 35px 0;
+    }
+    
+    .partner-item {
+        background: var(--white);
+        border: 1px solid #e8e0d0;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        filter: grayscale(100%);
+        opacity: 0.5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 90px;
+    }
+    
+    .partner-item:hover {
+        filter: grayscale(0);
+        opacity: 1;
+        border-color: var(--gold-color);
+        transform: scale(1.03);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    
+    .partner-item i {
+        font-size: 2.2rem;
+        color: var(--secondary-color);
+        margin-bottom: 6px;
+    }
+    
+    .partner-item .partner-name {
+        font-family: var(--gov-serif-alt);
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--dark-blue);
+        text-align: center;
+        line-height: 1.3;
+        letter-spacing: 0.3px;
+    }
+    
+    /* ============================================================
+       NEWSLETTER
+       ============================================================ */
+    .newsletter-box {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 100%);
+        padding: 50px;
+        text-align: center;
+        margin: 35px 0;
+        border: 1px solid rgba(212, 168, 67, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .newsletter-box::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(212, 168, 67, 0.03);
+        pointer-events: none;
+    }
+    
+    .newsletter-box h3 {
+        font-family: var(--gov-serif);
+        color: var(--white);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        letter-spacing: 0.5px;
+    }
+    
+    .newsletter-box h3 .gold-text {
+        color: var(--gold-color);
+    }
+    
+    .newsletter-box p {
+        font-family: var(--gov-serif-body);
+        color: rgba(255,255,255,0.7);
+        font-size: 0.95rem;
+        margin-bottom: 24px;
+        max-width: 520px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.7;
+    }
+    
+    .newsletter-box .form-inline {
+        display: flex;
+        gap: 12px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .newsletter-box .form-inline input {
+        flex: 1;
+        padding: 12px 18px;
+        border: 2px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.06);
+        color: var(--white);
+        font-family: var(--gov-serif-body);
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    
+    .newsletter-box .form-inline input::placeholder {
+        color: rgba(255,255,255,0.35);
+        font-family: var(--gov-serif-body);
+        font-style: italic;
+    }
+    
+    .newsletter-box .form-inline input:focus {
+        border-color: var(--gold-color);
+        outline: none;
+        background: rgba(255,255,255,0.1);
+    }
+    
+    .newsletter-box .form-inline .btn {
+        padding: 12px 28px;
+        font-size: 0.85rem;
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        border-radius: 0;
+    }
+    
+    .newsletter-box .newsletter-guarantee {
+        margin-top: 14px;
+        font-family: var(--gov-serif-body);
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.35);
+        letter-spacing: 0.3px;
+    }
+    
+    .newsletter-box .newsletter-guarantee i {
+        color: var(--gold-color);
+    }
+    
+    /* ============================================================
+       CTA BAR
+       ============================================================ */
+    .cta-bar {
+        background: var(--cream-color);
+        padding: 35px 0;
+        border-top: 2px solid #e8e0d0;
+        border-bottom: 2px solid #e8e0d0;
+        text-align: center;
+    }
+    
+    .cta-bar .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    
+    .cta-bar h4 {
+        font-family: var(--gov-serif);
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        margin-bottom: 4px;
+        letter-spacing: 0.3px;
+    }
+    
+    .cta-bar p {
+        font-family: var(--gov-serif-body);
+        color: var(--gray-600);
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+    
+    .cta-bar .btn-gold {
+        background: var(--gold-color);
+        color: var(--white);
+        border: 2px solid var(--gold-color);
+        padding: 12px 32px;
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+    }
+    
+    .cta-bar .btn-gold:hover {
+        background: var(--gold-dark);
+        border-color: var(--gold-dark);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 168, 67, 0.3);
+        text-decoration: none;
+    }
+    
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 992px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .content-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .testimonial-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .partner-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .hero-section .hero-title {
+            font-size: 2.5rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: 320px;
+            padding: 50px 0;
+        }
+        
+        .hero-section .hero-title {
+            font-size: 2rem;
+        }
+        
+        .hero-section .hero-subtitle {
+            font-size: 0.95rem;
+        }
+        
+        .hero-section .hero-stats {
+            gap: 24px;
+        }
+        
+        .hero-section .hero-stats .stat-number {
+            font-size: 1.5rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            padding: 30px 0;
+        }
+        
+        .stats-grid .stat-number {
+            font-size: 1.8rem;
+        }
+        
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .testimonial-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .partner-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .newsletter-box {
+            padding: 30px 20px;
+        }
+        
+        .newsletter-box .form-inline {
+            flex-direction: column;
+        }
+        
+        .newsletter-box .form-inline .btn {
+            width: 100%;
+        }
+        
+        .cta-bar .container {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .section-header {
+            padding: 30px 0 18px;
+        }
+        
+        .section-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .event-card {
+            flex-wrap: wrap;
+        }
+        
+        .forum-card {
+            flex-wrap: wrap;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .hero-section .hero-cta .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .hero-section .hero-stats {
+            gap: 14px;
+        }
+        
+        .partner-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================
+HERO SECTION - CENTERED
+============================================================ -->
+<section class="hero-section">
+    <div class="container hero-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="hero-badge">
+                    <i class="fas fa-certificate me-2"></i> Kenya's Premier Postgraduate Network
+                </div>
+                <h1 class="hero-title">
+                    <span class="gold-text">Kenya's</span> Premier Network for<br>
+                    Postgraduate Scholars
+                </h1>
+                <p class="hero-subtitle">
+                    Connect, collaborate, and advance your academic and research career with Kenya's 
+                    largest community of Master's and PhD students.
+                </p>
+                <div class="hero-cta">
+                    <a href="{% url 'accounts:register' %}" class="btn-gold">
+                        <i class="fas fa-user-plus me-2"></i> Join Now
+                    </a>
+                    <a href="{% url 'members:directory' %}" class="btn-outline-gold">
+                        <i class="fas fa-address-book me-2"></i> Explore Network
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_members|default:"0" }}</span>
+                        <span class="stat-label">Members</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_universities|default:"0" }}</span>
+                        <span class="stat-label">Universities</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_communities|default:"0" }}</span>
+                        <span class="stat-label">Communities</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_opportunities|default:"0" }}</span>
+                        <span class="stat-label">Opportunities</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+STATISTICS GRID - CENTERED
+============================================================ -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-number gold">{{ total_members|default:"0" }}</span>
+        <span class="stat-label">Members</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number navy">{{ total_universities|default:"0" }}</span>
+        <span class="stat-label">Universities</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ total_communities|default:"0" }}</span>
+        <span class="stat-label">Communities</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ total_opportunities|default:"0" }}</span>
+        <span class="stat-label">Opportunities</span>
+    </div>
+</div>
+
+<!-- ============================================================
+OPPORTUNITIES SECTION - CENTERED
+============================================================ -->
+<div class="container">
+    <div class="section-header">
+        <h2>Latest <span class="gold-text">Opportunities</span></h2>
+        <p>Discover scholarships, jobs, and research positions</p>
+        <a href="{% url 'opportunities:list' %}" class="view-all">
+            View All <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+    
+    <div class="content-grid">
+        {% if opportunities %}
+            {% for opportunity in opportunities|slice:":3" %}
+            <div class="content-card">
+                <span class="card-badge badge-gold">{{ opportunity.get_opportunity_type_display }}</span>
+                <h5 class="card-title">
+                    <a href="{% url 'opportunities:detail' opp_id=opportunity.id %}">{{ opportunity.title|truncatechars:60 }}</a>
+                </h5>
+                <div class="card-meta">
+                    <i class="fas fa-building"></i> {{ opportunity.organization_name }}
+                </div>
+                <div class="card-excerpt">{{ opportunity.description|truncatewords:20|striptags }}</div>
+                <div class="card-footer">
+                    <span><i class="fas fa-calendar-alt"></i> {{ opportunity.application_deadline|date:"M d, Y"|default:"N/A" }}</span>
+                    <a href="{% url 'opportunities:detail' opp_id=opportunity.id %}" class="btn-outline-gold">View</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="content-card" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+                <i class="fas fa-briefcase" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                <p class="text-muted mb-0" style="font-family: var(--gov-serif-body);">No opportunities available at the moment. Check back soon!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ============================================================
+FORUMS SECTION
+============================================================ -->
+<div class="container">
+    <div class="section-header">
+        <h2>Latest <span class="gold-text">Forum Discussions</span></h2>
+        <p>Engage in academic discussions and knowledge sharing</p>
+        <a href="{% url 'forums:list' %}" class="view-all">
+            View All <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+    
+    <div class="row">
+        {% if forum_threads %}
+            {% for thread in forum_threads|slice:":4" %}
+            <div class="col-md-6">
+                <div class="forum-card">
+                    <div class="forum-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="forum-info">
+                        <h6>
+                            <a href="{% url 'forums:thread_detail' thread_id=thread.id %}">{{ thread.title|truncatechars:55 }}</a>
+                        </h6>
+                        <div class="forum-meta">
+                            <i class="fas fa-user"></i> {{ thread.author.get_full_name|default:thread.author.username }}
+                            <span class="mx-1">·</span>
+                            <i class="fas fa-calendar-alt"></i> {{ thread.created_at|date:"M d, Y" }}
+                            <span class="mx-1">·</span>
+                            <i class="fas fa-comment"></i> {{ thread.reply_count|default:0 }}
+                        </div>
+                    </div>
+                    <div class="forum-link">
+                        <a href="{% url 'forums:thread_detail' thread_id=thread.id %}" class="btn-outline-gold">Read</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-4">
+                    <i class="fas fa-comments" style="font-size: 2.5rem; color: #ccc; margin-bottom: 0.5rem;"></i>
+                    <p class="text-muted mb-0" style="font-family: var(--gov-serif-body);">No forum discussions yet. Start a new thread!</p>
+                    <a href="{% url 'forums:create_thread' %}" class="btn-gold" style="display: inline-block;">
+                        <i class="fas fa-plus-circle me-2"></i> Create Thread
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ============================================================
+EVENTS SECTION - CENTERED
+============================================================ -->
+<div class="container">
+    <div class="section-header">
+        <h2>Upcoming <span class="gold-text">Events</span></h2>
+        <p>Webinars, conferences, and workshops</p>
+        <a href="{% url 'events:list' %}" class="view-all">
+            View All <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+    
+    {% if events %}
+        {% for event in events|slice:":4" %}
+        <div class="event-card">
+            <div class="event-date">
+                <div class="day">{{ event.start_date|date:"d" }}</div>
+                <div class="month">{{ event.start_date|date:"M" }}</div>
+            </div>
+            <div class="event-info">
+                <h6><a href="{% url 'events:detail' slug=event.slug %}">{{ event.title|truncatechars:60 }}</a></h6>
+                <div class="event-location">
+                    <i class="fas fa-{% if event.is_virtual %}wifi{% else %}map-marker-alt{% endif %}"></i>
+                    {{ event.venue|default:"Virtual" }}
+                    {% if event.city %} · {{ event.city }}{% endif %}
+                </div>
+            </div>
+            <div class="event-link">
+                <a href="{% url 'events:detail' slug=event.slug %}" class="btn-outline-gold">View</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-calendar-alt" style="font-size: 2.5rem; color: #ccc; margin-bottom: 0.5rem;"></i>
+            <p class="text-muted mb-0" style="font-family: var(--gov-serif-body);">No upcoming events. Stay tuned!</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- ============================================================
+COMMUNITIES SECTION - CENTERED
+============================================================ -->
+<div class="container">
+    <div class="section-header">
+        <h2>Active <span class="gold-text">Communities</span></h2>
+        <p>Join discipline-based research communities</p>
+        <a href="{% url 'communities:list' %}" class="view-all">
+            View All <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+    
+    <div class="content-grid">
+        {% if communities %}
+            {% for community in communities|slice:":3" %}
+            <div class="content-card">
+                <span class="card-badge badge-navy">{{ community.get_community_type_display }}</span>
+                <h5 class="card-title">
+                    <a href="{% url 'communities:detail' slug=community.slug %}">{{ community.name|truncatechars:40 }}</a>
+                </h5>
+                <div class="card-excerpt">{{ community.description|truncatewords:20|striptags }}</div>
+                <div class="card-footer">
+                    <span><i class="fas fa-users"></i> {{ community.member_count }} members</span>
+                    <a href="{% url 'communities:detail' slug=community.slug %}" class="btn-outline-gold">View</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="content-card" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+                <i class="fas fa-users" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                <p class="text-muted mb-0" style="font-family: var(--gov-serif-body);">No communities available. Be the first to create one!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ============================================================
+TESTIMONIALS SECTION - CENTERED
+============================================================ -->
+<div class="container">
+    <div class="section-header">
+        <h2>What <span class="gold-text">Members Say</span></h2>
+        <p>Real experiences from our community</p>
+    </div>
+    
+    <div class="testimonial-grid">
+        {% if testimonials %}
+            {% for testimonial in testimonials|slice:":3" %}
+            <div class="testimonial-item">
+                <div class="quote">"{{ testimonial.content|truncatewords:25 }}"</div>
+                <div class="author">
+                    <div class="avatar">{{ testimonial.author_initials|default:"M" }}</div>
+                    <div>
+                        <div class="name">{{ testimonial.author_name|default:"Member" }}</div>
+                        <div class="role">{{ testimonial.author_role|default:"Postgraduate Scholar" }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="testimonial-item" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                <i class="fas fa-quote-left" style="font-size: 2.5rem; color: #ccc; margin-bottom: 0.5rem;"></i>
+                <p class="text-muted mb-0" style="font-family: var(--gov-serif-body);">No testimonials yet. Join KMPN and share your experience!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ============================================================
+PARTNERS SECTION - CENTERED
+============================================================ -->
+<div class="container">
+    <div class="section-header">
+        <h2>Partner <span class="gold-text">Universities</span></h2>
+        <p>Collaborating with leading institutions</p>
+    </div>
+    
+    <div class="partner-grid">
+        {% if partners %}
+            {% for partner in partners %}
+            <div class="partner-item">
+                <i class="fas fa-university"></i>
+                <span class="partner-name">{{ partner.name|default:"University" }}</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="partner-item" style="grid-column: 1 / -1; padding: 30px;">
+                <i class="fas fa-university" style="font-size: 2rem; color: #ccc;"></i>
+                <p class="text-muted mb-0 mt-2" style="font-family: var(--gov-serif-body);">Partner universities coming soon</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ============================================================
+NEWSLETTER SECTION - CENTERED
+============================================================ -->
+<div class="container">
+    <div class="newsletter-box">
+        <h3>Subscribe to <span class="gold-text">Newsletter</span></h3>
+        <p>Get the latest opportunities, events, and resources delivered to your inbox.</p>
+        <form action="{% url 'newsletters:subscribe' %}" method="post" class="form-inline">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Enter your email address" required>
+            <button type="submit" class="btn-gold">
+                <i class="fas fa-paper-plane me-2"></i> Subscribe
+            </button>
+        </form>
+        <div class="newsletter-guarantee">
+            <i class="fas fa-lock me-1"></i> No spam. Unsubscribe anytime.
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+CTA BAR - CENTERED
+============================================================ -->
+<div class="cta-bar">
+    <div class="container">
+        <div>
+            <h4>Ready to join Kenya's premier postgraduate network?</h4>
+            <p>Become part of a community of scholars and unlock endless opportunities.</p>
+        </div>
+        <a href="{% url 'accounts:register' %}" class="btn-gold">
+            <i class="fas fa-user-plus me-2"></i> Join KMPN Today
+        </a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ============================================================
+    // COUNTER ANIMATION
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const stats = document.querySelectorAll('.stats-grid .stat-number');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const text = target.textContent;
+                    const number = parseInt(text.replace(/[^0-9]/g, ''));
+                    
+                    if (!isNaN(number) && number > 0) {
+                        animateCounter(target, number);
+                    }
+                    observer.unobserve(target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        stats.forEach(stat => observer.observe(stat));
+        
+        function animateCounter(element, target) {
+            const duration = 1500;
+            const steps = 40;
+            const increment = target / steps;
+            let current = 0;
+            let step = 0;
+            
+            const timer = setInterval(() => {
+                step++;
+                current += increment;
+                
+                if (step >= steps) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                element.textContent = Math.round(current);
+            }, duration / steps);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Verification Status - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--cream-color); min-height: 100vh;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="government-title" style="font-size: 2rem;">
+                    <i class="fas fa-check-circle text-gold me-2"></i> Verification Status
+                </h1>
+                
+                <div class="card-government mt-4">
+                    <div class="card-body">
+                        {% if member.verification_status == 'verified' %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Verified!</strong> Your membership has been verified.
+                            </div>
+                        {% elif member.verification_status == 'pending' %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-clock me-2"></i>
+                                <strong>Pending Review.</strong> Your verification request is being reviewed.
+                            </div>
+                        {% elif member.verification_status == 'rejected' %}
+                            <div class="alert alert-danger">
+                                <i class="fas fa-times-circle me-2"></i>
+                                <strong>Rejected.</strong> Your verification request was rejected.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Not Verified.</strong> Submit a verification request to get verified.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

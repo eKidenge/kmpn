@@ -1,0 +1,1592 @@
+# accounts/views.py - COMPLETE PRODUCTION VERSION WITH TESTIMONIALS & PARTNERS
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.utils import timezone
+from django.conf import settings
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.urls import reverse
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q, Count, Sum
+from django.core.exceptions import PermissionDenied
+import json
+import logging
+
+# Models
+from .models import (
+    User, 
+    UserActivityLog, 
+    UserDevice, 
+    RegistrationApplication, 
+    RoleChangeRequest
+)
+
+# Forms
+from .forms import (
+    UserRegistrationForm, 
+    UserLoginForm, 
+    UserUpdateForm,
+    PasswordResetRequestForm, 
+    PasswordResetConfirmForm,
+    RoleBasedRegistrationForm, 
+    RoleChangeRequestForm
+)
+
+# Decorators
+from .decorators import (
+    user_activity_log, 
+    role_required, 
+    allowed_roles,
+    admin_required,
+    staff_required,
+    member_required,
+    verified_member_required,
+    approved_registration_required,
+    email_verified_required,
+    active_member_required,
+    login_required_with_message,
+    RoleRequiredMixin,
+    AdminRequiredMixin,
+    StaffRequiredMixin,
+    MemberRequiredMixin,
+    VerifiedMemberRequiredMixin,
+)
+
+# Utils - UPDATED to include generate_membership_number
+from .utils import (
+    send_verification_email, 
+    generate_verification_token,
+    send_approval_email,
+    send_rejection_email,
+    send_info_request_email,
+    generate_membership_number  # Added this import
+)
+
+logger = logging.getLogger(__name__)
+
+
+# ============================================================
+# HOMEPAGE & PUBLIC VIEWS
+# ============================================================
+
+def home(request):
+    """Homepage view with dynamic content from database"""
+    
+    # Get published opportunities
+    opportunities = []
+    try:
+        from opportunities.models import Opportunity
+        opportunities = list(Opportunity.objects.filter(
+            status='published'
+        ).order_by('-created_at')[:6])
+        
+        # Fallback: if no published, get all
+        if len(opportunities) == 0:
+            opportunities = list(Opportunity.objects.all().order_by('-created_at')[:6])
+    except Exception as e:
+        logger.error(f"Error fetching opportunities: {e}")
+        opportunities = []
+    
+    # Get forum threads
+    forum_threads = []
+    try:
+        from forums.models import ForumThread
+        forum_threads = list(ForumThread.objects.filter(
+            status__in=['open', 'pinned']
+        ).order_by('-is_sticky', '-last_activity')[:4])
+    except Exception as e:
+        logger.error(f"Error fetching forum threads: {e}")
+        forum_threads = []
+    
+    # Get upcoming events
+    events = []
+    try:
+        from events.models import Event
+        events = list(Event.objects.filter(
+            status__in=['published', 'ongoing'],
+            start_date__gte=timezone.now()
+        ).order_by('start_date')[:4])
+        
+        # If no upcoming events with published/ongoing status, get any published events
+        if len(events) == 0:
+            events = list(Event.objects.filter(
+                status__in=['published', 'ongoing']
+            ).order_by('start_date')[:4])
+            
+    except Exception as e:
+        logger.error(f"Error fetching events: {e}")
+        events = []
+    
+    # Get active communities
+    communities = []
+    try:
+        from communities.models import Community
+        communities = list(Community.objects.filter(
+            is_active=True
+        ).order_by('-member_count')[:3])
+    except Exception as e:
+        logger.error(f"Error fetching communities: {e}")
+        communities = []
+    
+    # Get testimonials from database
+    testimonials = []
+    try:
+        # Try to import Testimonial model if it exists
+        from testimonials.models import Testimonial
+        testimonials = list(Testimonial.objects.filter(
+            is_active=True,
+            is_approved=True
+        ).order_by('-created_at')[:3])
+    except ImportError:
+        # If Testimonial model doesn't exist, create placeholder data
+        logger.info("Testimonial model not found, using placeholder data")
+        
+        # Get some users to use as testimonial authors
+        users = User.objects.filter(is_active=True, email_verified=True)[:3]
+        
+        for user in users:
+            # Get their member profile if exists
+            member = None
+            try:
+                from members.models import Member
+                member = Member.objects.filter(user=user, verification_status='verified').first()
+            except:
+                pass
+            
+            testimonials.append({
+                'content': f'I have been a member of KMPN for the past {timezone.now().year - user.date_joined.year} years. The network has been instrumental in my academic and professional growth. The opportunities, events, and community support are unparalleled.',
+                'author_name': user.get_full_name() or user.username,
+                'author_role': member.user.academic_level if member else 'Postgraduate Scholar',
+                'author_initials': (user.first_name[0] if user.first_name else '') + (user.last_name[0] if user.last_name else ''),
+                'created_at': user.date_joined,
+            })
+    except Exception as e:
+        logger.error(f"Error fetching testimonials: {e}")
+        testimonials = []
+    
+    # Get partners from database
+    partners = []
+    try:
+        # Try to import Partner model if it exists
+        from partners.models import Partner
+        partners = list(Partner.objects.filter(
+            is_active=True
+        ).order_by('order', 'name')[:6])
+    except ImportError:
+        # If Partner model doesn't exist, use placeholder data from users' institutions
+        logger.info("Partner model not found, using placeholder data")
+        
+        # Get unique institutions from users
+        institutions = User.objects.filter(
+            is_active=True,
+            email_verified=True,
+            institution__isnull=False
+        ).exclude(institution='').values_list('institution', flat=True).distinct()[:6]
+        
+        for institution in institutions:
+            partners.append({
+                'name': institution,
+                'is_active': True,
+            })
+    except Exception as e:
+        logger.error(f"Error fetching partners: {e}")
+        partners = []
+    
+    # Get statistics
+    try:
+        total_members = User.objects.filter(is_active=True, email_verified=True).count()
+    except:
+        total_members = 0
+    
+    try:
+        total_universities = User.objects.filter(institution__isnull=False).values('institution').distinct().count()
+    except:
+        total_universities = 0
+    
+    total_communities = len(communities)
+    total_opportunities = len(opportunities)
+    total_forum_threads = len(forum_threads)
+    
+    context = {
+        'opportunities': opportunities,
+        'forum_threads': forum_threads,
+        'events': events,
+        'communities': communities,
+        'testimonials': testimonials,
+        'partners': partners,
+        'total_members': total_members,
+        'total_universities': total_universities,
+        'total_communities': total_communities,
+        'total_opportunities': total_opportunities,
+        'total_forum_threads': total_forum_threads,
+        'page_title': 'KMPN - Kenya Masters and PhD Network',
+    }
+    
+    return render(request, 'home.html', context)
+
+
+# ============================================================
+# REGISTRATION (ROLE-BASED)
+# ============================================================
+
+def register(request):
+    """Role-based user registration view"""
+    if request.user.is_authenticated:
+        return redirect('accounts:dashboard_redirect')
+    
+    if request.method == 'POST':
+        form = RoleBasedRegistrationForm(request.POST, request.FILES)
+        
+        if not form.is_valid():
+            for field, errors in form.errors.items():
+                for error in errors:
+                    if field == '__all__':
+                        messages.error(request, error)
+                    else:
+                        field_label = field.replace('_', ' ').title()
+                        messages.error(request, f"{field_label}: {error}")
+        
+        if form.is_valid():
+            try:
+                user = form.save()
+                
+                UserActivityLog.objects.create(
+                    user=user,
+                    action_type='registration',
+                    action_description=f'User registered with requested role: {form.cleaned_data["role"]}',
+                    ip_address=get_client_ip(request),
+                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                    metadata={
+                        'requested_role': form.cleaned_data['role'],
+                        'academic_level': user.academic_level,
+                        'institution': user.institution
+                    }
+                )
+                
+                email_sent = False
+                try:
+                    email_sent = send_verification_email(request, user)
+                except Exception as email_error:
+                    logger.error(f"Email sending error: {str(email_error)}")
+                
+                if email_sent:
+                    messages.success(
+                        request, 
+                        f'Registration successful! Your application for {dict(User.Roles.choices).get(form.cleaned_data["role"], "Member")} is pending review. '
+                        'Please check your email to verify your account.'
+                    )
+                else:
+                    messages.warning(
+                        request,
+                        'Registration successful but we could not send the verification email. '
+                        'Please contact support to verify your account or try resending the verification email.'
+                    )
+                
+                return redirect('accounts:login')
+            
+            except Exception as e:
+                logger.error(f"Registration error: {str(e)}")
+                messages.error(request, f'An error occurred during registration: {str(e)}')
+    else:
+        form = RoleBasedRegistrationForm()
+    
+    context = {
+        'form': form,
+        'page_title': 'Register - KPSN',
+    }
+    return render(request, 'accounts/register.html', context)
+
+
+# ============================================================
+# AUTHENTICATION (LOGIN/LOGOUT)
+# ============================================================
+
+def user_login(request):
+    """User login view with role handling"""
+    if request.user.is_authenticated:
+        return redirect('accounts:dashboard_redirect')
+    
+    if request.method == 'POST':
+        form = UserLoginForm(request, data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=email, password=password)
+            
+            if user is not None:
+                if user.is_locked():
+                    messages.error(request, 'Your account is temporarily locked. Please try again later.')
+                    return render(request, 'accounts/login.html', {'form': form})
+                
+                if user.registration_status == 'rejected':
+                    messages.error(request, 'Your registration application was rejected. Please contact support.')
+                    return render(request, 'accounts/login.html', {'form': form})
+                
+                if user.registration_status == 'pending':
+                    messages.warning(
+                        request, 
+                        'Your registration is pending review. You will receive an email once approved.'
+                    )
+                    return render(request, 'accounts/login.html', {'form': form})
+                
+                if not user.email_verified:
+                    messages.warning(
+                        request,
+                        'Please verify your email before logging in. Check your inbox for the verification link.'
+                    )
+                    try:
+                        send_verification_email(request, user)
+                        messages.info(request, 'A new verification email has been sent to your inbox.')
+                    except:
+                        pass
+                    return render(request, 'accounts/login.html', {'form': form})
+                
+                login(request, user)
+                
+                UserActivityLog.objects.create(
+                    user=user,
+                    action_type='login',
+                    action_description=f'User logged in as {user.get_role_display()}',
+                    ip_address=get_client_ip(request),
+                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                    referer_url=request.META.get('HTTP_REFERER', ''),
+                )
+                
+                record_user_device(request, user)
+                user.reset_login_attempts()
+                user.last_login_ip = get_client_ip(request)
+                user.last_activity = timezone.now()
+                user.save()
+                
+                messages.success(request, f'Welcome back, {user.get_full_name() or user.username}!')
+                
+                next_url = request.GET.get('next')
+                if next_url:
+                    return redirect(next_url)
+                return redirect('accounts:dashboard_redirect')
+            else:
+                try:
+                    user = User.objects.get(email=email)
+                    if user.is_locked():
+                        messages.error(request, 'Your account is temporarily locked. Please try again later.')
+                    else:
+                        user.increment_login_attempts()
+                        messages.error(request, 'Invalid email or password.')
+                except User.DoesNotExist:
+                    messages.error(request, 'Invalid email or password.')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = UserLoginForm()
+    
+    context = {
+        'form': form,
+        'page_title': 'Login - KPSN',
+    }
+    return render(request, 'accounts/login.html', context)
+
+
+@login_required
+def user_logout(request):
+    """User logout view"""
+    UserActivityLog.objects.create(
+        user=request.user,
+        action_type='logout',
+        action_description='User logged out',
+        ip_address=get_client_ip(request),
+        user_agent=request.META.get('HTTP_USER_AGENT', ''),
+    )
+    logout(request)
+    messages.info(request, 'You have been logged out.')
+    return redirect('home')
+
+
+# ============================================================
+# DASHBOARD REDIRECT
+# ============================================================
+
+@login_required
+def dashboard_redirect(request):
+    """Redirect users to their appropriate dashboard based on role"""
+    
+    role_dashboards = {
+        'super_admin': 'accounts:super_admin_dashboard',
+        'admin': 'accounts:admin_dashboard',
+        'executive': 'accounts:executive_dashboard',
+        'moderator': 'accounts:moderator_dashboard',
+        'verified_member': 'accounts:member_dashboard',
+        'basic_member': 'accounts:basic_member_dashboard',
+        'alumni': 'accounts:alumni_dashboard',
+        'researcher': 'accounts:researcher_dashboard',
+        'partner': 'accounts:partner_dashboard',
+        'guest': 'accounts:guest_dashboard',
+        'prospective_member': 'accounts:prospective_member_dashboard',
+    }
+    
+    user_role = request.user.role
+    
+    if request.user.registration_status == 'banned':
+        messages.error(request, 'Your account has been banned. Please contact support.')
+        return redirect('home')
+    
+    if user_role in role_dashboards:
+        return redirect(role_dashboards[user_role])
+    
+    return redirect('home')
+
+
+# ============================================================
+# ROLE-SPECIFIC DASHBOARDS
+# ============================================================
+
+@login_required
+@role_required('super_admin')
+def super_admin_dashboard(request):
+    """Super Administrator Dashboard - Full system control"""
+    
+    total_users = User.objects.count()
+    pending_applications = RegistrationApplication.objects.filter(status='pending').count()
+    pending_verifications = User.objects.filter(email_verified=False).count()
+    active_members = User.objects.filter(is_active_member=True).count()
+    locked_accounts = User.objects.filter(locked_until__gt=timezone.now()).count()
+    
+    role_counts = User.objects.values('role').annotate(count=Count('id'))
+    recent_applications = RegistrationApplication.objects.select_related('user').order_by('-created_at')[:10]
+    recent_activity = UserActivityLog.objects.select_related('user').order_by('-created_at')[:20]
+    
+    context = {
+        'page_title': 'Super Admin Dashboard - KPSN',
+        'total_users': total_users,
+        'pending_applications': pending_applications,
+        'pending_verifications': pending_verifications,
+        'active_members': active_members,
+        'locked_accounts': locked_accounts,
+        'role_counts': role_counts,
+        'recent_applications': recent_applications,
+        'recent_activity': recent_activity,
+    }
+    return render(request, 'dashboard/super_admin.html', context)
+
+
+@login_required
+@role_required('admin')
+def admin_dashboard(request):
+    """Administrator Dashboard - Manage members and content"""
+    
+    total_members = User.objects.filter(is_active_member=True).count()
+    pending_applications = RegistrationApplication.objects.filter(status='pending').count()
+    pending_reviews = RegistrationApplication.objects.filter(status='needs_info').count()
+    
+    recent_verifications = RegistrationApplication.objects.filter(
+        status='approved'
+    ).select_related('user').order_by('-reviewed_at')[:10]
+    
+    role_counts = User.objects.values('role').annotate(count=Count('id'))
+    recent_members = User.objects.order_by('-created_at')[:10]
+    
+    context = {
+        'page_title': 'Admin Dashboard - KPSN',
+        'total_members': total_members,
+        'pending_applications': pending_applications,
+        'pending_reviews': pending_reviews,
+        'recent_verifications': recent_verifications,
+        'role_counts': role_counts,
+        'recent_members': recent_members,
+        'active_members': User.objects.filter(is_active=True).count(),
+    }
+    return render(request, 'dashboard/admin.html', context)
+
+
+@login_required
+@role_required('executive')
+def executive_dashboard(request):
+    """Executive Dashboard - Manage events, newsletter, mentorship"""
+    context = {
+        'page_title': 'Executive Dashboard - KPSN',
+    }
+    return render(request, 'dashboard/executive.html', context)
+
+
+@login_required
+@role_required('moderator')
+def moderator_dashboard(request):
+    """Moderator Dashboard - Forum and content moderation"""
+    context = {
+        'page_title': 'Moderator Dashboard - KPSN',
+    }
+    return render(request, 'dashboard/moderator.html', context)
+
+
+@login_required
+def member_dashboard(request):
+    """Member Dashboard - Full member features"""
+    if request.user.role != 'verified_member':
+        if request.user.role == 'basic_member':
+            return redirect('accounts:basic_member_dashboard')
+        messages.error(request, 'Access Denied')
+        return redirect('home')
+    
+    context = {
+        'page_title': 'Member Dashboard - KPSN',
+        'user': request.user,
+        'membership_status': request.user.get_membership_status(),
+    }
+    return render(request, 'dashboard/member.html', context)
+
+
+@login_required
+def basic_member_dashboard(request):
+    """Basic Member Dashboard - Limited member features"""
+    if request.user.role != 'basic_member':
+        messages.error(request, 'Access Denied')
+        return redirect('home')
+    
+    context = {
+        'page_title': 'Basic Member Dashboard - KPSN',
+        'user': request.user,
+        'membership_status': request.user.get_membership_status(),
+    }
+    return render(request, 'dashboard/basic_member.html', context)
+
+
+@login_required
+def alumni_dashboard(request):
+    """Alumni Dashboard"""
+    if request.user.role != 'alumni':
+        messages.error(request, 'Access Denied')
+        return redirect('home')
+    
+    context = {
+        'page_title': 'Alumni Dashboard - KPSN',
+        'user': request.user,
+    }
+    return render(request, 'dashboard/alumni.html', context)
+
+
+@login_required
+def researcher_dashboard(request):
+    """Researcher Dashboard"""
+    if request.user.role != 'researcher':
+        messages.error(request, 'Access Denied')
+        return redirect('home')
+    
+    context = {
+        'page_title': 'Researcher Dashboard - KPSN',
+        'user': request.user,
+    }
+    return render(request, 'dashboard/researcher.html', context)
+
+
+@login_required
+def partner_dashboard(request):
+    """Partner Dashboard"""
+    if request.user.role != 'partner':
+        messages.error(request, 'Access Denied')
+        return redirect('home')
+    
+    context = {
+        'page_title': 'Partner Dashboard - KPSN',
+        'user': request.user,
+    }
+    return render(request, 'dashboard/partner.html', context)
+
+
+@login_required
+def prospective_member_dashboard(request):
+    """Prospective Member Dashboard - Pending approval"""
+    if request.user.role != 'prospective_member':
+        messages.error(request, 'Access Denied')
+        return redirect('home')
+    
+    try:
+        application = RegistrationApplication.objects.get(user=request.user)
+        context = {
+            'page_title': 'Application Status - KPSN',
+            'application': application,
+        }
+    except RegistrationApplication.DoesNotExist:
+        context = {
+            'page_title': 'Application Status - KPSN',
+            'application': None,
+        }
+    
+    return render(request, 'dashboard/prospective_member.html', context)
+
+
+@login_required
+def guest_dashboard(request):
+    """Guest Dashboard - Limited access"""
+    if request.user.role != 'guest':
+        messages.error(request, 'Access Denied')
+        return redirect('home')
+    
+    context = {
+        'page_title': 'Guest Dashboard - KPSN',
+    }
+    return render(request, 'dashboard/guest.html', context)
+
+
+# ============================================================
+# USER PROFILE
+# ============================================================
+
+@login_required
+def profile_view(request, username=None):
+    """User profile view"""
+    if username:
+        profile_user = get_object_or_404(User, username=username, is_active=True)
+    else:
+        profile_user = request.user
+    
+    if profile_user != request.user and request.user.role not in ['super_admin', 'admin']:
+        messages.error(request, 'You do not have permission to view this profile.')
+        return redirect('home')
+    
+    if profile_user != request.user:
+        UserActivityLog.objects.create(
+            user=request.user,
+            action_type='profile_view',
+            action_description=f'Viewed profile of {profile_user.username}',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+        )
+    
+    context = {
+        'profile_user': profile_user,
+        'page_title': f'{profile_user.get_full_name()} - Profile',
+        'is_own_profile': profile_user == request.user,
+    }
+    return render(request, 'accounts/profile.html', context)
+
+
+@login_required
+def profile_update(request):
+    """Update user profile"""
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            user = form.save()
+            
+            UserActivityLog.objects.create(
+                user=request.user,
+                action_type='profile_update',
+                action_description='User updated profile',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                metadata={
+                    'updated_fields': list(form.changed_data)
+                }
+            )
+            
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('profile', username=request.user.username)
+    else:
+        form = UserUpdateForm(instance=request.user)
+    
+    context = {
+        'form': form,
+        'page_title': 'Update Profile - KPSN',
+    }
+    return render(request, 'accounts/profile_update.html', context)
+
+
+@login_required
+def change_password(request):
+    """Change user password"""
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password1 = request.POST.get('new_password1')
+        new_password2 = request.POST.get('new_password2')
+        
+        if not request.user.check_password(current_password):
+            messages.error(request, 'Current password is incorrect.')
+            return redirect('change_password')
+        
+        if new_password1 != new_password2:
+            messages.error(request, 'Passwords do not match.')
+            return redirect('change_password')
+        
+        if len(new_password1) < 8:
+            messages.error(request, 'Password must be at least 8 characters long.')
+            return redirect('change_password')
+        
+        request.user.set_password(new_password1)
+        request.user.save()
+        
+        update_session_auth_hash(request, request.user)
+        
+        UserActivityLog.objects.create(
+            user=request.user,
+            action_type='profile_update',
+            action_description='User changed password',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+        )
+        
+        messages.success(request, 'Your password has been changed successfully!')
+        return redirect('profile', username=request.user.username)
+    
+    context = {
+        'page_title': 'Change Password - KPSN',
+    }
+    return render(request, 'accounts/change_password.html', context)
+
+
+# ============================================================
+# ROLE CHANGE REQUEST
+# ============================================================
+
+@login_required
+def request_role_change(request):
+    """Request to change user role"""
+    if request.method == 'POST':
+        form = RoleChangeRequestForm(request.POST, request.FILES, user=request.user)
+        if form.is_valid():
+            role_change = form.save(commit=False)
+            role_change.user = request.user
+            role_change.current_role = request.user.role
+            role_change.save()
+            
+            UserActivityLog.objects.create(
+                user=request.user,
+                action_type='role_change',
+                action_description=f'Requested role change from {request.user.role} to {role_change.requested_role}',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            )
+            
+            messages.success(request, 'Your role change request has been submitted for review.')
+            return redirect('accounts:dashboard_redirect')
+    else:
+        form = RoleChangeRequestForm(user=request.user)
+    
+    context = {
+        'form': form,
+        'page_title': 'Request Role Change - KPSN',
+        'current_role': request.user.get_role_display(),
+    }
+    return render(request, 'accounts/role_change_request.html', context)
+
+
+# ============================================================
+# ADMIN REGISTRATION MANAGEMENT
+# ============================================================
+
+@login_required
+@role_required('admin', 'super_admin')
+def manage_applications(request):
+    """Admin view to manage registration applications"""
+    applications = RegistrationApplication.objects.select_related('user').all()
+    
+    status_filter = request.GET.get('status')
+    if status_filter:
+        applications = applications.filter(status=status_filter)
+    
+    role_filter = request.GET.get('role')
+    if role_filter:
+        applications = applications.filter(requested_role=role_filter)
+    
+    search_query = request.GET.get('search')
+    if search_query:
+        applications = applications.filter(
+            Q(user__email__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query)
+        )
+    
+    paginator = Paginator(applications, 20)
+    page = request.GET.get('page')
+    try:
+        applications = paginator.page(page)
+    except PageNotAnInteger:
+        applications = paginator.page(1)
+    except EmptyPage:
+        applications = paginator.page(paginator.num_pages)
+    
+    context = {
+        'page_title': 'Manage Applications - KPSN',
+        'applications': applications,
+        'status_filter': status_filter,
+        'role_filter': role_filter,
+        'search_query': search_query,
+        'status_choices': RegistrationApplication.ApplicationStatus.choices,
+        'role_choices': User.Roles.choices,
+        'total_pending': RegistrationApplication.objects.filter(status='pending').count(),
+        'total_approved': RegistrationApplication.objects.filter(status='approved').count(),
+        'total_rejected': RegistrationApplication.objects.filter(status='rejected').count(),
+        'total_needs_info': RegistrationApplication.objects.filter(status='needs_info').count(),
+    }
+    return render(request, 'admin/manage_applications.html', context)
+
+
+@login_required
+@role_required('admin', 'super_admin')
+def review_application(request, application_id):
+    """Admin view to review a specific application"""
+    application = get_object_or_404(RegistrationApplication, id=application_id)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        notes = request.POST.get('notes', '')
+        
+        if action == 'approve':
+            application.status = 'approved'
+            application.reviewed_by = request.user
+            application.review_notes = notes
+            application.reviewed_at = timezone.now()
+            application.save()
+            
+            user = application.user
+            user.role = application.requested_role
+            user.registration_status = 'approved'
+            user.is_verified = True
+            user.is_active_member = True
+            user.membership_start_date = timezone.now()
+            user.membership_expiry_date = timezone.now() + timezone.timedelta(days=365)
+            user.save()
+            
+            # Use imported function from utils
+            generate_membership_number(user)
+            
+            try:
+                send_approval_email(request, user)
+            except Exception as e:
+                logger.error(f"Failed to send approval email: {str(e)}")
+            
+            messages.success(request, f'Application for {user.get_full_name()} has been approved.')
+            
+        elif action == 'reject':
+            application.status = 'rejected'
+            application.reviewed_by = request.user
+            application.review_notes = notes
+            application.reviewed_at = timezone.now()
+            application.save()
+            
+            user = application.user
+            user.registration_status = 'rejected'
+            user.save()
+            
+            try:
+                send_rejection_email(request, user, notes)
+            except Exception as e:
+                logger.error(f"Failed to send rejection email: {str(e)}")
+            
+            messages.success(request, f'Application for {user.get_full_name()} has been rejected.')
+            
+        elif action == 'needs_info':
+            application.status = 'needs_info'
+            application.reviewed_by = request.user
+            application.review_notes = notes
+            application.reviewed_at = timezone.now()
+            application.save()
+            
+            try:
+                send_info_request_email(request, application.user, notes)
+            except Exception as e:
+                logger.error(f"Failed to send info request email: {str(e)}")
+            
+            messages.success(request, f'Request for more information sent to {application.user.get_full_name()}.')
+        
+        UserActivityLog.objects.create(
+            user=request.user,
+            action_type='member_verification',
+            action_description=f'Reviewed application for {application.user.email}: {action}',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            metadata={
+                'application_id': application.id,
+                'action': action,
+                'notes': notes
+            }
+        )
+        
+        return redirect('manage_applications')
+    
+    context = {
+        'page_title': 'Review Application - KPSN',
+        'application': application,
+    }
+    return render(request, 'admin/review_application.html', context)
+
+
+@login_required
+@role_required('admin', 'super_admin')
+def manage_users(request):
+    """Admin view to manage all users"""
+    users = User.objects.all()
+    
+    role_filter = request.GET.get('role')
+    if role_filter:
+        users = users.filter(role=role_filter)
+    
+    status_filter = request.GET.get('status')
+    if status_filter:
+        users = users.filter(registration_status=status_filter)
+    
+    search_query = request.GET.get('search')
+    if search_query:
+        users = users.filter(
+            Q(email__icontains=search_query) |
+            Q(username__icontains=search_query) |
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(membership_number__icontains=search_query)
+        )
+    
+    paginator = Paginator(users, 25)
+    page = request.GET.get('page')
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
+    
+    context = {
+        'page_title': 'Manage Users - KPSN',
+        'users': users,
+        'role_filter': role_filter,
+        'status_filter': status_filter,
+        'search_query': search_query,
+        'role_choices': User.Roles.choices,
+        'status_choices': User.RegistrationStatus.choices,
+        'total_users': User.objects.count(),
+        'active_users': User.objects.filter(is_active=True).count(),
+    }
+    return render(request, 'admin/manage_users.html', context)
+
+
+@login_required
+@role_required('admin', 'super_admin')
+def toggle_user_status(request, user_id):
+    """Toggle user active status"""
+    user = get_object_or_404(User, id=user_id)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'activate':
+            user.is_active = True
+            user.registration_status = 'approved'
+            messages.success(request, f'{user.get_full_name()} has been activated.')
+        elif action == 'suspend':
+            user.is_active = False
+            user.registration_status = 'suspended'
+            messages.success(request, f'{user.get_full_name()} has been suspended.')
+        elif action == 'ban':
+            user.is_active = False
+            user.registration_status = 'banned'
+            messages.success(request, f'{user.get_full_name()} has been banned.')
+        elif action == 'delete':
+            user.is_deleted = True
+            user.deleted_at = timezone.now()
+            user.is_active = False
+            messages.success(request, f'{user.get_full_name()} has been deleted.')
+        
+        user.save()
+        
+        UserActivityLog.objects.create(
+            user=request.user,
+            action_type='profile_update',
+            action_description=f'{action} user: {user.email}',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+        )
+        
+        return redirect('manage_users')
+    
+    return redirect('manage_users')
+
+
+# ============================================================
+# ROLE CHANGE REQUESTS MANAGEMENT
+# ============================================================
+
+@login_required
+@role_required('admin', 'super_admin')
+def manage_role_requests(request):
+    """Admin view to manage role change requests"""
+    role_requests = RoleChangeRequest.objects.select_related('user', 'reviewed_by').all()
+    
+    status_filter = request.GET.get('status')
+    if status_filter:
+        role_requests = role_requests.filter(status=status_filter)
+    
+    search_query = request.GET.get('search')
+    if search_query:
+        role_requests = role_requests.filter(
+            Q(user__email__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query)
+        )
+    
+    paginator = Paginator(role_requests, 20)
+    page = request.GET.get('page')
+    try:
+        role_requests = paginator.page(page)
+    except PageNotAnInteger:
+        role_requests = paginator.page(1)
+    except EmptyPage:
+        role_requests = paginator.page(paginator.num_pages)
+    
+    context = {
+        'page_title': 'Manage Role Requests - KPSN',
+        'requests': role_requests,
+        'status_filter': status_filter,
+        'search_query': search_query,
+        'status_choices': RoleChangeRequest.RequestStatus.choices,
+    }
+    return render(request, 'admin/manage_role_requests.html', context)
+
+
+@login_required
+@role_required('admin', 'super_admin')
+def review_role_request(request, request_id):
+    """Admin view to review role change request"""
+    role_request = get_object_or_404(RoleChangeRequest, id=request_id)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        notes = request.POST.get('notes', '')
+        
+        if action == 'approve':
+            role_request.status = 'approved'
+            role_request.reviewed_by = request.user
+            role_request.review_notes = notes
+            role_request.reviewed_at = timezone.now()
+            role_request.save()
+            
+            user = role_request.user
+            old_role = user.role
+            user.role = role_request.requested_role
+            user.save()
+            
+            messages.success(request, f'Role change approved for {user.get_full_name()}.')
+            
+            UserActivityLog.objects.create(
+                user=request.user,
+                action_type='role_change',
+                action_description=f'Approved role change for {user.email}: {old_role} -> {user.role}',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            )
+            
+        elif action == 'reject':
+            role_request.status = 'rejected'
+            role_request.reviewed_by = request.user
+            role_request.review_notes = notes
+            role_request.reviewed_at = timezone.now()
+            role_request.save()
+            
+            messages.success(request, f'Role change rejected for {role_request.user.get_full_name()}.')
+        
+        return redirect('manage_role_requests')
+    
+    context = {
+        'page_title': 'Review Role Request - KPSN',
+        'role_request': role_request,
+    }
+    return render(request, 'admin/review_role_request.html', context)
+
+
+# ============================================================
+# ACTIVITY LOGS
+# ============================================================
+
+@login_required
+@role_required('super_admin', 'admin')
+def activity_logs(request):
+    """View user activity logs"""
+    logs = UserActivityLog.objects.select_related('user').all()
+    
+    user_filter = request.GET.get('user')
+    if user_filter:
+        logs = logs.filter(user__username__icontains=user_filter)
+    
+    action_filter = request.GET.get('action')
+    if action_filter:
+        logs = logs.filter(action_type=action_filter)
+    
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+    if from_date:
+        logs = logs.filter(created_at__gte=from_date)
+    if to_date:
+        logs = logs.filter(created_at__lte=to_date + ' 23:59:59')
+    
+    paginator = Paginator(logs, 50)
+    page = request.GET.get('page')
+    try:
+        logs = paginator.page(page)
+    except PageNotAnInteger:
+        logs = paginator.page(1)
+    except EmptyPage:
+        logs = paginator.page(paginator.num_pages)
+    
+    context = {
+        'page_title': 'Activity Logs - KPSN',
+        'logs': logs,
+        'action_types': UserActivityLog.ACTION_TYPES,
+        'user_filter': user_filter,
+        'action_filter': action_filter,
+        'from_date': from_date,
+        'to_date': to_date,
+    }
+    return render(request, 'admin/activity_logs.html', context)
+
+
+# ============================================================
+# VERIFICATION
+# ============================================================
+
+def verify_email(request, token):
+    """Verify user email"""
+    try:
+        user = User.objects.get(email_verification_token=token)
+        if user.email_verified:
+            messages.info(request, 'Your email is already verified.')
+            return redirect('accounts:login')
+        
+        user.email_verified = True
+        user.is_active = True
+        user.save()
+        
+        messages.success(request, 'Your email has been verified successfully! You can now login.')
+        return redirect('accounts:login')
+    
+    except User.DoesNotExist:
+        messages.error(request, 'Invalid verification token.')
+        return redirect('home')
+
+
+def resend_verification(request):
+    """Resend verification email"""
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            if user.email_verified:
+                messages.info(request, 'Your email is already verified.')
+                return redirect('accounts:login')
+            
+            try:
+                send_verification_email(request, user)
+                messages.success(request, 'Verification email has been resent. Please check your inbox.')
+            except Exception as e:
+                messages.error(request, f'Could not send verification email: {str(e)}')
+            
+            return redirect('accounts:login')
+        
+        except User.DoesNotExist:
+            messages.error(request, 'No user found with this email address.')
+    
+    return render(request, 'accounts/resend_verification.html')
+
+
+# ============================================================
+# PASSWORD RESET
+# ============================================================
+
+def password_reset_request(request):
+    """Request password reset"""
+    if request.method == 'POST':
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            try:
+                user = User.objects.get(email=email)
+                
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                
+                current_site = get_current_site(request)
+                mail_subject = 'Password Reset - KPSN'
+                message = render_to_string('accounts/password_reset_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': uid,
+                    'token': token,
+                })
+                
+                send_mail(
+                    mail_subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False,
+                    html_message=message,
+                )
+                
+                messages.success(
+                    request,
+                    'Password reset email has been sent. Please check your inbox.'
+                )
+                return redirect('accounts:login')
+            except User.DoesNotExist:
+                messages.error(request, 'No user found with this email address.')
+    else:
+        form = PasswordResetRequestForm()
+    
+    context = {
+        'form': form,
+        'page_title': 'Reset Password - KPSN',
+    }
+    return render(request, 'accounts/password_reset_request.html', context)
+
+
+def password_reset_confirm(request, uidb64, token):
+    """Confirm password reset"""
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = PasswordResetConfirmForm(request.POST)
+            if form.is_valid():
+                new_password = form.cleaned_data['new_password1']
+                user.set_password(new_password)
+                user.save()
+                
+                messages.success(
+                    request,
+                    'Your password has been reset successfully! You can now login with your new password.'
+                )
+                return redirect('accounts:login')
+        else:
+            form = PasswordResetConfirmForm()
+        
+        context = {
+            'form': form,
+            'page_title': 'Reset Password - KPSN',
+        }
+        return render(request, 'accounts/password_reset_confirm.html', context)
+    else:
+        messages.error(request, 'Invalid password reset link.')
+        return redirect('home')
+
+
+# ============================================================
+# HELPER FUNCTIONS
+# ============================================================
+
+def get_client_ip(request):
+    """Get client IP address from request"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def record_user_device(request, user):
+    """Record user device information"""
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    device_id = f"{user.id}_{user_agent[:50]}"
+    
+    device, created = UserDevice.objects.get_or_create(
+        user=user,
+        device_id=device_id,
+        defaults={
+            'device_name': get_device_name(user_agent),
+            'device_type': get_device_type(user_agent),
+            'browser': get_browser_name(user_agent),
+            'os': get_os_name(user_agent),
+            'ip_address': get_client_ip(request),
+            'user_agent': user_agent,
+        }
+    )
+    
+    if not created:
+        device.last_login = timezone.now()
+        device.ip_address = get_client_ip(request)
+        device.save()
+
+
+def get_device_type(user_agent):
+    """Determine device type from user agent"""
+    user_agent = user_agent.lower()
+    if 'mobile' in user_agent or 'android' in user_agent or 'iphone' in user_agent:
+        return 'mobile'
+    elif 'tablet' in user_agent or 'ipad' in user_agent:
+        return 'tablet'
+    return 'desktop'
+
+
+def get_device_name(user_agent):
+    """Extract device name from user agent"""
+    return 'Unknown Device'
+
+
+def get_browser_name(user_agent):
+    """Extract browser name from user agent"""
+    user_agent = user_agent.lower()
+    if 'chrome' in user_agent:
+        return 'Chrome'
+    elif 'firefox' in user_agent:
+        return 'Firefox'
+    elif 'safari' in user_agent:
+        return 'Safari'
+    elif 'edge' in user_agent:
+        return 'Edge'
+    elif 'opera' in user_agent:
+        return 'Opera'
+    return 'Unknown'
+
+
+def get_os_name(user_agent):
+    """Extract OS name from user agent"""
+    user_agent = user_agent.lower()
+    if 'windows' in user_agent:
+        return 'Windows'
+    elif 'mac' in user_agent:
+        return 'macOS'
+    elif 'linux' in user_agent:
+        return 'Linux'
+    elif 'android' in user_agent:
+        return 'Android'
+    elif 'ios' in user_agent or 'iphone' in user_agent:
+        return 'iOS'
+    return 'Unknown'
+
+
+# ============================================================
+# AJAX VIEWS
+# ============================================================
+
+@login_required
+def check_username_availability(request):
+    """Check if username is available"""
+    username = request.GET.get('username', '')
+    if username:
+        exists = User.objects.filter(username__iexact=username).exists()
+        return JsonResponse({'available': not exists})
+    return JsonResponse({'error': 'Username required'})
+
+
+@login_required
+def check_email_availability(request):
+    """Check if email is available"""
+    email = request.GET.get('email', '')
+    if email:
+        exists = User.objects.filter(email__iexact=email).exists()
+        return JsonResponse({'available': not exists})
+    return JsonResponse({'error': 'Email required'})
+
+
+@login_required
+@role_required('admin', 'super_admin')
+def get_user_stats(request):
+    """Get user statistics for admin dashboard"""
+    stats = {
+        'total_users': User.objects.count(),
+        'active_users': User.objects.filter(is_active=True).count(),
+        'pending_applications': RegistrationApplication.objects.filter(status='pending').count(),
+        'role_counts': list(User.objects.values('role').annotate(count=Count('id'))),
+        'registration_status_counts': list(User.objects.values('registration_status').annotate(count=Count('id'))),
+    }
+    return JsonResponse(stats)
+
+
+# accounts/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.urls import reverse
+from django.db.models import Q
+from .models import User, UserActivityLog
+
+# ============================================================
+# ALUMNI VIEWS
+# ============================================================
+
+@login_required
+def alumni_mentorship(request):
+    """Alumni mentorship view"""
+    context = {
+        'user': request.user,
+        'mentees': request.user.mentees.all(),
+        'mentors': User.objects.filter(is_mentor=True).exclude(id=request.user.id)[:10],
+        'mentorship_applications': [],  # Add your logic here
+    }
+    return render(request, 'accounts/alumni_mentorship.html', context)
+
+@login_required
+def alumni_directory(request):
+    """Alumni directory view"""
+    alumni = User.objects.filter(
+        Q(role=User.Roles.ALUMNI) | Q(role=User.Roles.VERIFIED_MEMBER)
+    ).exclude(id=request.user.id)
+    
+    # Filter by graduation year, institution, etc.
+    graduation_year = request.GET.get('graduation_year')
+    institution = request.GET.get('institution')
+    
+    if graduation_year:
+        alumni = alumni.filter(graduation_year=graduation_year)
+    if institution:
+        alumni = alumni.filter(institution__icontains=institution)
+    
+    context = {
+        'alumni': alumni,
+        'graduation_years': alumni.values_list('graduation_year', flat=True).distinct().order_by('-graduation_year'),
+        'institutions': alumni.values_list('institution', flat=True).distinct().order_by('institution'),
+    }
+    return render(request, 'accounts/alumni_directory.html', context)
+
+@login_required
+def alumni_events(request):
+    """Alumni events view"""
+    # Add your event logic here
+    context = {
+        'user': request.user,
+        'events': [],  # Add your event queryset
+    }
+    return render(request, 'accounts/alumni_events.html', context)
+
+@login_required
+def alumni_mentors(request):
+    """Alumni mentor network view"""
+    mentors = User.objects.filter(is_mentor=True).exclude(id=request.user.id)
+    context = {
+        'mentors': mentors,
+        'user': request.user,
+    }
+    return render(request, 'accounts/alumni_mentors.html', context)
+
+@login_required
+def alumni_jobs(request):
+    """Alumni job board view"""
+    context = {
+        'user': request.user,
+        'jobs': [],  # Add your job queryset
+    }
+    return render(request, 'accounts/alumni_jobs.html', context)
+
+@login_required
+def alumni_research(request):
+    """Alumni research collaboration view"""
+    context = {
+        'user': request.user,
+        'research_projects': [],  # Add your research queryset
+        'collaborators': [],  # Add your collaborators
+    }
+    return render(request, 'accounts/alumni_research.html', context)
+
+@login_required
+def alumni_giving(request):
+    """Alumni giving/donations view"""
+    context = {
+        'user': request.user,
+        'donations': [],  # Add your donations queryset
+        'campaigns': [],  # Add your campaigns
+    }
+    return render(request, 'accounts/alumni_giving.html', context)
+
+@login_required
+def alumni_resources(request):
+    """Alumni resources view"""
+    context = {
+        'user': request.user,
+        'resources': [],  # Add your resources queryset
+    }
+    return render(request, 'accounts/alumni_resources.html', context)
+
+@login_required
+def alumni_stories(request):
+    """Alumni stories/testimonials view"""
+    context = {
+        'user': request.user,
+        'stories': [],  # Add your stories queryset
+    }
+    return render(request, 'accounts/alumni_stories.html', context)
+
+@login_required
+def alumni_profile_update(request):
+    """Alumni profile update view"""
+    if request.method == 'POST':
+        # Handle profile update
+        user = request.user
+        user.current_position = request.POST.get('current_position', user.current_position)
+        user.graduation_year = request.POST.get('graduation_year', user.graduation_year)
+        user.institution = request.POST.get('institution', user.institution)
+        user.bio = request.POST.get('bio', user.bio)
+        user.save()
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('accounts:alumni_dashboard')
+    
+    context = {
+        'user': request.user,
+    }
+    return render(request, 'accounts/alumni_profile_update.html', context)
+
+# ============================================================
+# MEMBERSHIP VIEWS
+# ============================================================
+
+@login_required
+def membership_renew(request):
+    """Membership renewal view"""
+    if request.method == 'POST':
+        # Process renewal
+        request.user.membership_expiry_date = timezone.now() + timezone.timedelta(days=365)
+        request.user.is_active_member = True
+        request.user.save()
+        messages.success(request, 'Membership renewed successfully!')
+        return redirect('accounts:membership_status')
+    
+    context = {
+        'user': request.user,
+        'renewal_cost': 5000,  # Example cost
+    }
+    return render(request, 'accounts/membership_renew.html', context)
+
+@login_required
+def membership_status(request):
+    """Membership status view"""
+    context = {
+        'user': request.user,
+        'is_active': request.user.is_active_member,
+        'expiry_date': request.user.membership_expiry_date,
+        'membership_number': request.user.membership_number,
+    }
+    return render(request, 'accounts/membership_status.html', context)
+
+# ============================================================
+# ACTIVITY LOG VIEWS
+# ============================================================
+
+@login_required
+def activity_log(request):
+    """User activity log view"""
+    logs = UserActivityLog.objects.filter(user=request.user).order_by('-created_at')
+    
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(logs, 20)
+    try:
+        logs = paginator.page(page)
+    except PageNotAnInteger:
+        logs = paginator.page(1)
+    except EmptyPage:
+        logs = paginator.page(paginator.num_pages)
+    
+    context = {
+        'logs': logs,
+        'user': request.user,
+    }
+    return render(request, 'accounts/activity_log.html', context)

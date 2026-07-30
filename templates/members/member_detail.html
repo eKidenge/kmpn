@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ member.user.get_full_name }} - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <!-- Profile Sidebar -->
+            <div class="col-lg-4">
+                <div class="card-government sticky-top" style="top: 100px;">
+                    <div class="card-body text-center">
+                        <!-- Profile Picture -->
+                        <div class="mb-3">
+                            {% if member.user.profile_picture %}
+                                <img src="{{ member.user.profile_picture.url }}" alt="{{ member.user.get_full_name }}" 
+                                     style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid var(--gold-color);">
+                            {% else %}
+                                <div style="width: 150px; height: 150px; border-radius: 50%; background: var(--gold-color); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 4rem; font-weight: 900;">
+                                    {{ member.user.get_full_name|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Name & Info -->
+                        <h4 class="mb-1">{{ member.user.get_full_name }}</h4>
+                        <p class="text-muted small">{{ member.user.username }}</p>
+                        
+                        {% if member.verification_status == 'verified' %}
+                            <span class="badge" style="background: var(--success-color); color: white; padding: 6px 12px;">
+                                <i class="fas fa-check-circle me-1"></i> Verified Member
+                            </span>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <!-- Contact Info -->
+                        <div class="text-start">
+                            <p class="mb-2">
+                                <i class="fas fa-university text-gold me-2" style="width: 20px;"></i>
+                                {{ member.user.institution|default:"N/A" }}
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-graduation-cap text-gold me-2" style="width: 20px;"></i>
+                                {{ member.user.get_degree_level_display|default:"N/A" }}
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-envelope text-gold me-2" style="width: 20px;"></i>
+                                <a href="mailto:{{ member.user.email }}" class="text-dark">{{ member.user.email }}</a>
+                            </p>
+                            {% if member.user.phone_number %}
+                            <p class="mb-2">
+                                <i class="fas fa-phone text-gold me-2" style="width: 20px;"></i>
+                                {{ member.user.phone_number }}
+                            </p>
+                            {% endif %}
+                            <p class="mb-2">
+                                <i class="fas fa-id-card text-gold me-2" style="width: 20px;"></i>
+                                <span class="small">Member #: {{ member.membership_number }}</span>
+                            </p>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Social Links -->
+                        <div class="text-start">
+                            <h6 class="mb-2">Connect</h6>
+                            <div class="d-flex gap-2">
+                                {% if member.user.linkedin_url %}
+                                    <a href="{{ member.user.linkedin_url }}" target="_blank" class="btn btn-sm" style="background: #0a66c2; color: white;">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                {% endif %}
+                                {% if member.user.researchgate_url %}
+                                    <a href="{{ member.user.researchgate_url }}" target="_blank" class="btn btn-sm" style="background: #00ccbb; color: white;">
+                                        <i class="fab fa-researchgate"></i>
+                                    </a>
+                                {% endif %}
+                                {% if member.user.google_scholar_url %}
+                                    <a href="{{ member.user.google_scholar_url }}" target="_blank" class="btn btn-sm" style="background: #4285f4; color: white;">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </a>
+                                {% endif %}
+                                {% if member.user.orcid_id %}
+                                    <a href="https://orcid.org/{{ member.user.orcid_id }}" target="_blank" class="btn btn-sm" style="background: #a6ce39; color: white;">
+                                        <i class="fab fa-orcid"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Actions -->
+                        <div class="d-grid gap-2">
+                            {% if can_follow %}
+                                <button class="btn-outline-gold" onclick="followMember({{ member.id }})">
+                                    <i class="fas fa-user-plus me-1"></i> Follow
+                                </button>
+                            {% endif %}
+                            <a href="{% url 'members:message' member_id=member.id %}" class="btn-navy">
+                                <i class="fas fa-envelope me-1"></i> Send Message
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Content -->
+            <div class="col-lg-8">
+                <!-- Bio -->
+                <div class="card-government mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-user me-2"></i> About</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if member.user.bio %}
+                            <p>{{ member.user.bio|linebreaks }}</p>
+                        {% else %}
+                            <p class="text-muted">No bio provided</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Research Interests -->
+                <div class="card-government mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-flask me-2"></i> Research Interests</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if member.user.research_interests %}
+                            {% for interest in member.user.research_interests|split:"," %}
+                                <span class="badge" style="background: var(--gold-color); color: white; padding: 6px 12px; margin: 3px;">
+                                    {{ interest|strip }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No research interests listed</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Skills & Expertise -->
+                <div class="card-government mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-cogs me-2"></i> Skills & Expertise</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% if member.skills %}
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold">Skills</h6>
+                                    {% for skill in member.skills %}
+                                        <span class="badge" style="background: var(--secondary-color); color: white; padding: 4px 10px; margin: 2px;">
+                                            {{ skill }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if member.expertise_areas %}
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold">Expertise Areas</h6>
+                                    {% for expertise in member.expertise_areas %}
+                                        <span class="badge" style="background: var(--navy-blue); color: white; padding: 4px 10px; margin: 2px;">
+                                            {{ expertise }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if not member.skills and not member.expertise_areas %}
+                            <p class="text-muted">No skills listed</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Publications -->
+                <div class="card-government mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> Publications</h5>
+                        <span class="text-white-50 ms-2">({{ total_publications }} total)</span>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if publications %}
+                            <div class="list-group list-group-flush">
+                                {% for pub in publications %}
+                                <div class="list-group-item">
+                                    <h6 class="mb-1">{{ pub.title }}</h6>
+                                    <p class="small text-muted mb-1">
+                                        <i class="fas fa-user me-1"></i> 
+                                        {% for author in pub.get_authors_list|slice:":3" %}
+                                            {{ author.author.get_full_name }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                        {% if pub.get_authors_list|length > 3 %}et al.{% endif %}
+                                    </p>
+                                    <p class="small text-muted mb-0">
+                                        <i class="fas fa-book me-1"></i> {{ pub.journal_name|default:"N/A" }}
+                                        {% if pub.publication_date %}({{ pub.publication_date.year }}){% endif %}
+                                        <span class="ms-2">
+                                            <i class="fas fa-quote-right me-1"></i> {{ pub.citation_count }} citations
+                                        </span>
+                                    </p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-muted mb-0">No publications listed</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Communities -->
+                <div class="card-government">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-users me-2"></i> Communities</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if communities %}
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for community_member in communities %}
+                                    <a href="{% url 'communities:detail' slug=community_member.community.slug %}" 
+                                       class="btn" style="background: var(--cream-color); border: 1px solid var(--gold-color);">
+                                        <i class="fas fa-users me-1"></i> {{ community_member.community.name }}
+                                        <span class="badge" style="background: var(--gold-color); color: white;">
+                                            {{ community_member.get_role_display }}
+                                        </span>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Not a member of any communities</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function followMember(memberId) {
+    fetch(`/members/${memberId}/follow/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.following) {
+            alert('You are now following this member!');
+        } else {
+            alert('You have unfollowed this member.');
+        }
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+{% endblock %}

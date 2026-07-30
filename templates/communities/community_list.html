@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Communities - KMPN{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700;900&family=Source+Serif+Pro:wght@400;600;700&display=swap');
+    
+    .government-title {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-subtitle {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 400;
+        color: #4a4a4a;
+        letter-spacing: 0.3px;
+    }
+    
+    .card-government {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+        position: relative;
+        height: 100%;
+    }
+    
+    .card-government::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+    }
+    
+    .card-government:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        border-color: var(--gold-color);
+    }
+    
+    .card-government .card-body {
+        padding: 1.5rem;
+    }
+    
+    .btn-gold-government {
+        background: var(--gold-color);
+        color: var(--white);
+        border: 2px solid var(--gold-color);
+        padding: 8px 20px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .btn-gold-government:hover {
+        background: var(--gold-dark);
+        border-color: var(--gold-dark);
+        color: var(--white);
+        text-decoration: none;
+    }
+    
+    .btn-outline-gold-government {
+        background: transparent;
+        color: var(--gold-color);
+        border: 2px solid var(--gold-color);
+        padding: 6px 16px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 600;
+        font-size: 0.7rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .btn-outline-gold-government:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section style="background: var(--cream-color); min-height: 100vh; padding: 60px 0;">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="government-title" style="font-size: 2.2rem;">
+                    <i class="fas fa-users text-gold me-2"></i> Communities
+                </h1>
+                <p class="government-subtitle" style="font-size: 1.05rem;">
+                    Join discipline-based communities to connect with fellow researchers and scholars
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'communities:create' %}" class="btn-gold-government">
+                    <i class="fas fa-plus-circle me-2"></i> Create Community
+                </a>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% if communities %}
+                {% for community in communities %}
+                <div class="col-md-4">
+                    <div class="card-government">
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--dark-blue);">
+                                <a href="{% url 'communities:detail' slug=community.slug %}" style="color: var(--dark-blue); text-decoration: none;">
+                                    {{ community.name }}
+                                </a>
+                            </h5>
+                            <p class="text-muted" style="font-family: 'Source Serif Pro', serif; font-size: 0.9rem;">
+                                {{ community.description|truncatewords:20 }}
+                            </p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: var(--gold-color); color: white; font-family: 'Merriweather', serif; font-weight: 700; font-size: 0.6rem; text-transform: uppercase;">
+                                    {{ community.get_community_type_display }}
+                                </span>
+                                <span class="badge" style="background: var(--navy-blue); color: white; font-family: 'Merriweather', serif; font-weight: 700; font-size: 0.6rem; text-transform: uppercase;">
+                                    {{ community.get_access_type_display }}
+                                </span>
+                            </div>
+                            <div class="mt-3">
+                                <span style="font-family: 'Source Serif Pro', serif; font-size: 0.85rem; color: #6c757d;">
+                                    <i class="fas fa-users me-1"></i> {{ community.member_count }} Members
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-users" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+                        <h3 style="font-family: 'Playfair Display', serif; color: var(--dark-blue);">No Communities</h3>
+                        <p style="font-family: 'Source Serif Pro', serif; color: #777;">Be the first to create a community!</p>
+                        <a href="{% url 'communities:create' %}" class="btn-gold-government mt-3">
+                            <i class="fas fa-plus-circle me-2"></i> Create Community
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

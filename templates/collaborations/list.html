@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Collaborations - KMPN{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="section-title">
+                    <i class="fas fa-handshake text-gold me-2"></i> Research Collaborations
+                </h1>
+                <p class="text-muted">Find research partners, collaborators, and mentorship opportunities</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'collaborations:create' %}" class="btn-gold">
+                    <i class="fas fa-plus-circle me-2"></i> New Collaboration
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background: var(--cream-color);">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="Search collaborations..." value="{{ search_query }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="type" class="form-control">
+                                    <option value="">All Types</option>
+                                    {% for type_value, type_label in collaboration_types %}
+                                        <option value="{{ type_value }}" {% if type_value == current_type %}selected{% endif %}>
+                                            {{ type_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="status" class="form-control">
+                                    <option value="">All Status</option>
+                                    {% for status_value, status_label in status_choices %}
+                                        <option value="{{ status_value }}" {% if status_value == current_status %}selected{% endif %}>
+                                            {{ status_label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn-gold w-100">
+                                    <i class="fas fa-filter me-2"></i> Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div class="row g-4">
+            {% if collaborations %}
+                {% for collaboration in collaborations %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card-government h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge" style="background: var(--secondary-color); color: white;">
+                                    {{ collaboration.get_collaboration_type_display }}
+                                </span>
+                                <span class="badge" style="background: var(--navy-blue); color: white;">
+                                    {{ collaboration.get_status_display }}
+                                </span>
+                            </div>
+                            <h5 class="mb-2">{{ collaboration.title|truncatechars:50 }}</h5>
+                            <p class="text-muted small mb-3">{{ collaboration.description|truncatewords:20|striptags }}</p>
+                            <div class="mb-2">
+                                <i class="fas fa-user text-gold me-1"></i>
+                                <small>By: {{ collaboration.requested_by.get_full_name }}</small>
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-calendar-alt text-gold me-1"></i>
+                                <small>{{ collaboration.created_at|date:"M d, Y" }}</small>
+                            </div>
+                            <div class="d-flex justify-content-between text-center mb-3">
+                                <div>
+                                    <div class="fw-bold">{{ collaboration.application_count }}</div>
+                                    <small class="text-muted">Applications</small>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ collaboration.view_count }}</div>
+                                    <small class="text-muted">Views</small>
+                                </div>
+                            </div>
+                            <a href="{% url 'collaborations:detail' collab_id=collaboration.id %}" class="btn-outline-gold w-100">
+                                <i class="fas fa-eye me-1"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-handshake fa-4x text-muted mb-3"></i>
+                        <h3>No collaborations found</h3>
+                        <p class="text-muted">Start a new research collaboration today!</p>
+                        <a href="{% url 'collaborations:create' %}" class="btn-gold">
+                            <i class="fas fa-plus-circle me-2"></i> Start Collaboration
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if collaborations.has_other_pages %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if collaborations.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ collaborations.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for num in collaborations.paginator.page_range %}
+                            {% if collaborations.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link" style="background: var(--gold-color); border-color: var(--gold-color);">
+                                        {{ num }}
+                                    </span>
+                                </li>
+                            {% elif num > collaborations.number|add:'-3' and num < collaborations.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if collaborations.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ collaborations.next_page_number }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

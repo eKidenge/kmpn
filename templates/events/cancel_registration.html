@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancel Registration - KMPN{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700&family=Source+Serif+Pro:wght@400;600;700&display=swap');
+    
+    .government-title {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-text {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-weight: 400;
+        line-height: 1.7;
+        color: #2d2d2d;
+    }
+    
+    .government-heading {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .card-government {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        position: relative;
+    }
+    
+    .card-government::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #dc3545, var(--gold-color));
+    }
+    
+    .card-government .card-body {
+        padding: 2rem;
+    }
+    
+    .btn-danger-government {
+        background: #dc3545;
+        color: white;
+        border: 2px solid #dc3545;
+        padding: 12px 32px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+    }
+    
+    .btn-danger-government:hover {
+        background: #c82333;
+        border-color: #bd2130;
+        color: white;
+    }
+    
+    .btn-outline-gold-government {
+        background: transparent;
+        color: var(--gold-color);
+        border: 2px solid var(--gold-color);
+        padding: 10px 24px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .btn-outline-gold-government:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        text-decoration: none;
+    }
+    
+    .event-meta {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.95rem;
+        color: #4a4a4a;
+        line-height: 1.8;
+    }
+    
+    .event-meta i {
+        color: var(--gold-color);
+        width: 24px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--cream-color); min-height: 100vh;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <div class="card-government">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #dc3545; margin-bottom: 1rem;"></i>
+                        
+                        <h2 class="government-title" style="font-size: 1.8rem;">Cancel Registration</h2>
+                        <p class="government-text" style="font-size: 1.05rem;">
+                            Are you sure you want to cancel your registration for:
+                        </p>
+                        
+                        <h4 class="government-heading" style="color: var(--dark-blue); margin: 1rem 0;">
+                            "{{ event.title }}"
+                        </h4>
+                        
+                        <div class="text-start event-meta" style="max-width: 400px; margin: 1rem auto;">
+                            <p><i class="fas fa-calendar-alt"></i> <strong>Date:</strong> {{ event.start_date|date:"M d, Y" }}</p>
+                            <p><i class="fas fa-clock"></i> <strong>Time:</strong> {{ event.start_date|date:"g:i A" }}</p>
+                            <p><i class="fas fa-{% if event.is_virtual %}wifi{% else %}map-marker-alt{% endif %}"></i> <strong>Location:</strong> {% if event.is_virtual %}Virtual{% else %}{{ event.venue|default:"TBD" }}{% endif %}</p>
+                            <p><i class="fas fa-user"></i> <strong>Status:</strong> {{ registration.get_attendance_status_display }}</p>
+                        </div>
+                        
+                        <p class="text-muted small" style="font-family: 'Source Serif Pro', serif;">
+                            <i class="fas fa-info-circle me-1"></i> This action cannot be undone.
+                        </p>
+                        
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn-danger-government">
+                                        <i class="fas fa-times me-2"></i> Yes, Cancel
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'events:detail' slug=event.slug %}" class="btn-outline-gold-government">
+                                        <i class="fas fa-arrow-left me-2"></i> Go Back
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

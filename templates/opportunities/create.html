@@ -1,0 +1,729 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Post Opportunity - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    .opportunity-wrapper {
+        padding: 60px 0 80px;
+        background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d0 50%, #f0ece0 100%);
+        min-height: 100vh;
+    }
+    
+    .opportunity-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        overflow: hidden;
+    }
+    
+    .opportunity-card .card-header {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
+        padding: 25px 30px;
+        border-bottom: 4px solid var(--gold-color);
+    }
+    
+    .opportunity-card .card-header h3 {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--white);
+        margin-bottom: 4px;
+    }
+    
+    .opportunity-card .card-header h3 .gold-text {
+        color: var(--gold-color);
+    }
+    
+    .opportunity-card .card-header p {
+        font-family: var(--font-secondary);
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 0;
+    }
+    
+    .opportunity-card .card-body {
+        padding: 35px 40px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-label {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--gray-800);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .form-label .field-icon {
+        color: var(--gold-color);
+        font-size: 0.8rem;
+        width: 16px;
+    }
+    
+    .form-label .required-star {
+        color: var(--danger-color);
+        margin-left: 2px;
+    }
+    
+    .form-control, .form-select {
+        border: 2px solid #d4c8b0;
+        border-radius: var(--radius-sm);
+        padding: 10px 15px;
+        font-family: var(--font-secondary);
+        font-size: 0.95rem;
+        transition: var(--transition-normal);
+        background: var(--white);
+        width: 100%;
+        color: var(--gray-800);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+        outline: none;
+    }
+    
+    .form-control.is-invalid {
+        border-color: var(--danger-color);
+    }
+    
+    .form-text {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        margin-top: 4px;
+    }
+    
+    .invalid-feedback {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--danger-color);
+        margin-top: 4px;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
+        color: var(--white);
+        border: none;
+        padding: 14px 30px;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1rem;
+        border-radius: var(--radius-sm);
+        transition: var(--transition-normal);
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+        color: var(--white);
+    }
+    
+    .btn-cancel {
+        background: var(--gray-200);
+        color: var(--gray-700);
+        border: none;
+        padding: 14px 30px;
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+        transition: var(--transition-normal);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .btn-cancel:hover {
+        background: var(--gray-300);
+        color: var(--gray-800);
+    }
+    
+    .section-divider {
+        border: none;
+        border-top: 2px solid var(--gray-200);
+        margin: 25px 0;
+    }
+    
+    @media (max-width: 768px) {
+        .opportunity-wrapper {
+            padding: 30px 0 50px;
+        }
+        .opportunity-card .card-body {
+            padding: 25px 20px;
+        }
+        .opportunity-card .card-header {
+            padding: 20px;
+        }
+        .opportunity-card .card-header h3 {
+            font-size: 1.4rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="opportunity-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="opportunity-card" data-aos="fade-up" data-aos-duration="800">
+                    
+                    <div class="card-header">
+                        <h3>
+                            <i class="fas fa-plus-circle me-2 gold-text"></i>
+                            Post <span class="gold-text">Opportunity</span>
+                        </h3>
+                        <p>Share a new opportunity with the KPSN community</p>
+                    </div>
+                    
+                    <div class="card-body">
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                {{ form.non_field_errors|join:", " }}
+                            </div>
+                        {% endif %}
+                        
+                        <form method="post" novalidate enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Basic Information -->
+                            <h6 class="mb-3" style="font-family:var(--font-heading);color:var(--dark-blue);">
+                                <i class="fas fa-info-circle text-gold me-2"></i> Basic Information
+                            </h6>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">
+                                    <i class="fas fa-heading field-icon"></i>
+                                    Title <span class="required-star">*</span>
+                                </label>
+                                <input type="text" name="{{ form.title.name }}" 
+                                       id="{{ form.title.id_for_label }}" 
+                                       class="form-control {% if form.title.errors %}is-invalid{% endif %}"
+                                       placeholder="Enter opportunity title"
+                                       value="{{ form.title.value|default:'' }}"
+                                       required>
+                                {% if form.title.errors %}
+                                    <div class="invalid-feedback">{{ form.title.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.opportunity_type.id_for_label }}" class="form-label">
+                                    <i class="fas fa-tag field-icon"></i>
+                                    Opportunity Type <span class="required-star">*</span>
+                                </label>
+                                <select name="{{ form.opportunity_type.name }}" 
+                                        id="{{ form.opportunity_type.id_for_label }}" 
+                                        class="form-select {% if form.opportunity_type.errors %}is-invalid{% endif %}"
+                                        required>
+                                    <option value="">Select Type</option>
+                                    <option value="scholarship" {% if form.opportunity_type.value == 'scholarship' %}selected{% endif %}>Scholarship</option>
+                                    <option value="phd_position" {% if form.opportunity_type.value == 'phd_position' %}selected{% endif %}>PhD Position</option>
+                                    <option value="masters_position" {% if form.opportunity_type.value == 'masters_position' %}selected{% endif %}>Master's Position</option>
+                                    <option value="postdoc" {% if form.opportunity_type.value == 'postdoc' %}selected{% endif %}>Postdoctoral Fellowship</option>
+                                    <option value="conference" {% if form.opportunity_type.value == 'conference' %}selected{% endif %}>Conference</option>
+                                    <option value="call_for_papers" {% if form.opportunity_type.value == 'call_for_papers' %}selected{% endif %}>Call for Papers</option>
+                                    <option value="grant" {% if form.opportunity_type.value == 'grant' %}selected{% endif %}>Grant</option>
+                                    <option value="job" {% if form.opportunity_type.value == 'job' %}selected{% endif %}>Job</option>
+                                    <option value="internship" {% if form.opportunity_type.value == 'internship' %}selected{% endif %}>Internship</option>
+                                    <option value="training" {% if form.opportunity_type.value == 'training' %}selected{% endif %}>Training/Workshop</option>
+                                    <option value="other" {% if form.opportunity_type.value == 'other' %}selected{% endif %}>Other</option>
+                                </select>
+                                {% if form.opportunity_type.errors %}
+                                    <div class="invalid-feedback">{{ form.opportunity_type.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">
+                                    <i class="fas fa-align-left field-icon"></i>
+                                    Description <span class="required-star">*</span>
+                                </label>
+                                <textarea name="{{ form.description.name }}" 
+                                          id="{{ form.description.id_for_label }}" 
+                                          class="form-control {% if form.description.errors %}is-invalid{% endif %}"
+                                          rows="6"
+                                          placeholder="Provide a detailed description of the opportunity"
+                                          required>{{ form.description.value|default:'' }}</textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Include details about the opportunity, benefits, and what makes it unique
+                                </div>
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback">{{ form.description.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <hr class="section-divider">
+                            
+                            <!-- Organization Details -->
+                            <h6 class="mb-3" style="font-family:var(--font-heading);color:var(--dark-blue);">
+                                <i class="fas fa-building text-gold me-2"></i> Organization Details
+                            </h6>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.organization_name.id_for_label }}" class="form-label">
+                                    <i class="fas fa-building field-icon"></i>
+                                    Organization Name <span class="required-star">*</span>
+                                </label>
+                                <input type="text" name="{{ form.organization_name.name }}" 
+                                       id="{{ form.organization_name.id_for_label }}" 
+                                       class="form-control {% if form.organization_name.errors %}is-invalid{% endif %}"
+                                       placeholder="Enter organization name"
+                                       value="{{ form.organization_name.value|default:'' }}"
+                                       required>
+                                {% if form.organization_name.errors %}
+                                    <div class="invalid-feedback">{{ form.organization_name.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.organization_website.id_for_label }}" class="form-label">
+                                    <i class="fas fa-globe field-icon"></i>
+                                    Organization Website
+                                </label>
+                                <input type="url" name="{{ form.organization_website.name }}" 
+                                       id="{{ form.organization_website.id_for_label }}" 
+                                       class="form-control"
+                                       placeholder="https://example.com"
+                                       value="{{ form.organization_website.value|default:'' }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.organization_logo.id_for_label }}" class="form-label">
+                                    <i class="fas fa-image field-icon"></i>
+                                    Organization Logo
+                                </label>
+                                <input type="file" name="{{ form.organization_logo.name }}" 
+                                       id="{{ form.organization_logo.id_for_label }}" 
+                                       class="form-control"
+                                       accept="image/*">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Upload the organization logo (optional)
+                                </div>
+                            </div>
+                            
+                            <hr class="section-divider">
+                            
+                            <!-- Location -->
+                            <h6 class="mb-3" style="font-family:var(--font-heading);color:var(--dark-blue);">
+                                <i class="fas fa-map-marker-alt text-gold me-2"></i> Location
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.location.id_for_label }}" class="form-label">
+                                            <i class="fas fa-location-dot field-icon"></i>
+                                            Location
+                                        </label>
+                                        <input type="text" name="{{ form.location.name }}" 
+                                               id="{{ form.location.id_for_label }}" 
+                                               class="form-control"
+                                               placeholder="City/Region"
+                                               value="{{ form.location.value|default:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.country.id_for_label }}" class="form-label">
+                                            <i class="fas fa-flag field-icon"></i>
+                                            Country
+                                        </label>
+                                        <input type="text" name="{{ form.country.name }}" 
+                                               id="{{ form.country.id_for_label }}" 
+                                               class="form-control"
+                                               placeholder="Country"
+                                               value="{{ form.country.value|default:'' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input type="checkbox" name="{{ form.is_remote.name }}" 
+                                       id="{{ form.is_remote.id_for_label }}" 
+                                       class="form-check-input"
+                                       {% if form.is_remote.value %}checked{% endif %}>
+                                <label class="form-check-label" for="{{ form.is_remote.id_for_label }}">
+                                    <i class="fas fa-wifi text-gold me-1"></i>
+                                    This is a remote opportunity
+                                </label>
+                            </div>
+                            
+                            <hr class="section-divider">
+                            
+                            <!-- Dates -->
+                            <h6 class="mb-3" style="font-family:var(--font-heading);color:var(--dark-blue);">
+                                <i class="fas fa-calendar-alt text-gold me-2"></i> Important Dates
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.application_deadline.id_for_label }}" class="form-label">
+                                            <i class="fas fa-calendar-times field-icon"></i>
+                                            Application Deadline <span class="required-star">*</span>
+                                        </label>
+                                        <input type="datetime-local" name="{{ form.application_deadline.name }}" 
+                                               id="{{ form.application_deadline.id_for_label }}" 
+                                               class="form-control {% if form.application_deadline.errors %}is-invalid{% endif %}"
+                                               value="{{ form.application_deadline.value|date:'Y-m-d\TH:i'|default:'' }}"
+                                               required>
+                                        {% if form.application_deadline.errors %}
+                                            <div class="invalid-feedback">{{ form.application_deadline.errors|join:", " }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.start_date.id_for_label }}" class="form-label">
+                                            <i class="fas fa-calendar-plus field-icon"></i>
+                                            Start Date
+                                        </label>
+                                        <input type="date" name="{{ form.start_date.name }}" 
+                                               id="{{ form.start_date.id_for_label }}" 
+                                               class="form-control"
+                                               value="{{ form.start_date.value|date:'Y-m-d'|default:'' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.end_date.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar-minus field-icon"></i>
+                                    End Date
+                                </label>
+                                <input type="date" name="{{ form.end_date.name }}" 
+                                       id="{{ form.end_date.id_for_label }}" 
+                                       class="form-control"
+                                       value="{{ form.end_date.value|date:'Y-m-d'|default:'' }}">
+                            </div>
+                            
+                            <hr class="section-divider">
+                            
+                            <!-- Financial Information -->
+                            <h6 class="mb-3" style="font-family:var(--font-heading);color:var(--dark-blue);">
+                                <i class="fas fa-money-bill-wave text-gold me-2"></i> Financial Information
+                            </h6>
+                            
+                            <div class="form-check">
+                                <input type="checkbox" name="{{ form.has_funding.name }}" 
+                                       id="{{ form.has_funding.id_for_label }}" 
+                                       class="form-check-input"
+                                       {% if form.has_funding.value %}checked{% endif %}>
+                                <label class="form-check-label" for="{{ form.has_funding.id_for_label }}">
+                                    <i class="fas fa-hand-holding-usd text-gold me-1"></i>
+                                    This opportunity has funding
+                                </label>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.funding_amount.id_for_label }}" class="form-label">
+                                            <i class="fas fa-coins field-icon"></i>
+                                            Funding Amount
+                                        </label>
+                                        <input type="number" step="0.01" name="{{ form.funding_amount.name }}" 
+                                               id="{{ form.funding_amount.id_for_label }}" 
+                                               class="form-control"
+                                               placeholder="0.00"
+                                               value="{{ form.funding_amount.value|default:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.currency.id_for_label }}" class="form-label">
+                                            <i class="fas fa-money-bill field-icon"></i>
+                                            Currency
+                                        </label>
+                                        <select name="{{ form.currency.name }}" 
+                                                id="{{ form.currency.id_for_label }}" 
+                                                class="form-select">
+                                            <option value="KES" {% if form.currency.value == 'KES' %}selected{% endif %}>KES</option>
+                                            <option value="USD" {% if form.currency.value == 'USD' %}selected{% endif %}>USD</option>
+                                            <option value="EUR" {% if form.currency.value == 'EUR' %}selected{% endif %}>EUR</option>
+                                            <option value="GBP" {% if form.currency.value == 'GBP' %}selected{% endif %}>GBP</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.funding_details.id_for_label }}" class="form-label">
+                                    <i class="fas fa-file-invoice field-icon"></i>
+                                    Funding Details
+                                </label>
+                                <textarea name="{{ form.funding_details.name }}" 
+                                          id="{{ form.funding_details.id_for_label }}" 
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="Provide details about the funding">{{ form.funding_details.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <hr class="section-divider">
+                            
+                            <!-- Eligibility -->
+                            <h6 class="mb-3" style="font-family:var(--font-heading);color:var(--dark-blue);">
+                                <i class="fas fa-user-check text-gold me-2"></i> Eligibility & Requirements
+                            </h6>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.eligibility_criteria.id_for_label }}" class="form-label">
+                                    <i class="fas fa-check-circle field-icon"></i>
+                                    Eligibility Criteria
+                                </label>
+                                <textarea name="{{ form.eligibility_criteria.name }}" 
+                                          id="{{ form.eligibility_criteria.id_for_label }}" 
+                                          class="form-control"
+                                          rows="4"
+                                          placeholder="Who is eligible to apply?">{{ form.eligibility_criteria.value|default:'' }}</textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Include academic level, field of study, nationality, etc.
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.required_qualifications.id_for_label }}" class="form-label">
+                                    <i class="fas fa-graduation-cap field-icon"></i>
+                                    Required Qualifications
+                                </label>
+                                <textarea name="{{ form.required_qualifications.name }}" 
+                                          id="{{ form.required_qualifications.id_for_label }}" 
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="List required qualifications">{{ form.required_qualifications.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.preferred_qualifications.id_for_label }}" class="form-label">
+                                    <i class="fas fa-star field-icon"></i>
+                                    Preferred Qualifications
+                                </label>
+                                <textarea name="{{ form.preferred_qualifications.name }}" 
+                                          id="{{ form.preferred_qualifications.id_for_label }}" 
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="List preferred qualifications">{{ form.preferred_qualifications.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <hr class="section-divider">
+                            
+                            <!-- Application -->
+                            <h6 class="mb-3" style="font-family:var(--font-heading);color:var(--dark-blue);">
+                                <i class="fas fa-file-alt text-gold me-2"></i> Application Details
+                            </h6>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.application_instructions.id_for_label }}" class="form-label">
+                                    <i class="fas fa-list-check field-icon"></i>
+                                    Application Instructions
+                                </label>
+                                <textarea name="{{ form.application_instructions.name }}" 
+                                          id="{{ form.application_instructions.id_for_label }}" 
+                                          class="form-control"
+                                          rows="4"
+                                          placeholder="How should applicants apply?">{{ form.application_instructions.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.application_url.id_for_label }}" class="form-label">
+                                            <i class="fas fa-link field-icon"></i>
+                                            Application URL
+                                        </label>
+                                        <input type="url" name="{{ form.application_url.name }}" 
+                                               id="{{ form.application_url.id_for_label }}" 
+                                               class="form-control"
+                                               placeholder="https://example.com/apply"
+                                               value="{{ form.application_url.value|default:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.application_email.id_for_label }}" class="form-label">
+                                            <i class="fas fa-envelope field-icon"></i>
+                                            Application Email
+                                        </label>
+                                        <input type="email" name="{{ form.application_email.name }}" 
+                                               id="{{ form.application_email.id_for_label }}" 
+                                               class="form-control"
+                                               placeholder="apply@example.com"
+                                               value="{{ form.application_email.value|default:'' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.required_documents.id_for_label }}" class="form-label">
+                                    <i class="fas fa-file-pdf field-icon"></i>
+                                    Required Documents
+                                </label>
+                                <input type="text" name="{{ form.required_documents.name }}" 
+                                       id="{{ form.required_documents.id_for_label }}" 
+                                       class="form-control"
+                                       placeholder="CV, Cover Letter, Transcripts (comma separated)"
+                                       value="{{ form.required_documents.value|default:'' }}">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    List required documents separated by commas
+                                </div>
+                            </div>
+                            
+                            <hr class="section-divider">
+                            
+                            <!-- Contact -->
+                            <h6 class="mb-3" style="font-family:var(--font-heading);color:var(--dark-blue);">
+                                <i class="fas fa-address-card text-gold me-2"></i> Contact Information
+                            </h6>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.contact_person.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user field-icon"></i>
+                                    Contact Person
+                                </label>
+                                <input type="text" name="{{ form.contact_person.name }}" 
+                                       id="{{ form.contact_person.id_for_label }}" 
+                                       class="form-control"
+                                       placeholder="Full name of contact person"
+                                       value="{{ form.contact_person.value|default:'' }}">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.contact_email.id_for_label }}" class="form-label">
+                                            <i class="fas fa-envelope field-icon"></i>
+                                            Contact Email
+                                        </label>
+                                        <input type="email" name="{{ form.contact_email.name }}" 
+                                               id="{{ form.contact_email.id_for_label }}" 
+                                               class="form-control"
+                                               placeholder="contact@example.com"
+                                               value="{{ form.contact_email.value|default:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.contact_phone.id_for_label }}" class="form-label">
+                                            <i class="fas fa-phone field-icon"></i>
+                                            Contact Phone
+                                        </label>
+                                        <input type="text" name="{{ form.contact_phone.name }}" 
+                                               id="{{ form.contact_phone.id_for_label }}" 
+                                               class="form-control"
+                                               placeholder="+254 700 000 000"
+                                               value="{{ form.contact_phone.value|default:'' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <hr class="section-divider">
+                            
+                            <!-- Tags & Disciplines -->
+                            <h6 class="mb-3" style="font-family:var(--font-heading);color:var(--dark-blue);">
+                                <i class="fas fa-tags text-gold me-2"></i> Tags & Disciplines
+                            </h6>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.tags.id_for_label }}" class="form-label">
+                                    <i class="fas fa-tag field-icon"></i>
+                                    Tags
+                                </label>
+                                <input type="text" name="{{ form.tags.name }}" 
+                                       id="{{ form.tags.id_for_label }}" 
+                                       class="form-control"
+                                       placeholder="research, climate, health (comma separated)"
+                                       value="{{ form.tags.value|default:'' }}">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Add relevant tags separated by commas
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.disciplines.id_for_label }}" class="form-label">
+                                    <i class="fas fa-bookmark field-icon"></i>
+                                    Disciplines
+                                </label>
+                                <input type="text" name="{{ form.disciplines.name }}" 
+                                       id="{{ form.disciplines.id_for_label }}" 
+                                       class="form-control"
+                                       placeholder="Computer Science, Public Health, Engineering (comma separated)"
+                                       value="{{ form.disciplines.value|default:'' }}">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Add relevant disciplines separated by commas
+                                </div>
+                            </div>
+                            
+                            <hr class="section-divider">
+                            
+                            <!-- Buttons -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn-submit">
+                                        <i class="fas fa-paper-plane me-2"></i> Publish Opportunity
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'opportunities:list' %}" class="btn-cancel">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                            
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set min date for deadline to now
+        const deadlineInput = document.querySelector('#{{ form.application_deadline.id_for_label }}');
+        if (deadlineInput) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            deadlineInput.setAttribute('min', minDateTime);
+        }
+    });
+</script>
+{% endblock %}

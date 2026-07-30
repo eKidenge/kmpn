@@ -1,0 +1,458 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Post - {{ community.name }} - KMPN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       GOVERNMENT STYLE FONTS
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700;900&family=Source+Serif+Pro:wght@400;600;700&family=Cormorant+Garamond:wght@400;600;700&display=swap');
+    
+    :root {
+        --gov-serif: 'Playfair Display', 'Times New Roman', serif;
+        --gov-serif-alt: 'Merriweather', 'Georgia', serif;
+        --gov-serif-body: 'Source Serif Pro', 'Georgia', serif;
+    }
+    
+    .government-title {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-subtitle {
+        font-family: var(--gov-serif-alt);
+        font-weight: 400;
+        color: #4a4a4a;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-text {
+        font-family: var(--gov-serif-body);
+        font-weight: 400;
+        line-height: 1.7;
+        color: #2d2d2d;
+    }
+    
+    .government-heading {
+        font-family: var(--gov-serif);
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-label {
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: #4a4a4a;
+    }
+    
+    .card-government {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        position: relative;
+    }
+    
+    .card-government::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+    }
+    
+    .card-government .card-body {
+        padding: 2rem;
+    }
+    
+    .form-control-government {
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        font-family: var(--gov-serif-body);
+        font-size: 0.95rem;
+        padding: 10px 14px;
+        background: var(--white);
+        transition: all 0.3s ease;
+        color: #2d2d2d;
+        width: 100%;
+    }
+    
+    .form-control-government:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        outline: none;
+    }
+    
+    .form-control-government::placeholder {
+        color: #999;
+        font-family: var(--gov-serif-body);
+        font-style: italic;
+    }
+    
+    select.form-control-government {
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='%234a4a4a' d='M6 7L0 0h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 36px;
+        cursor: pointer;
+    }
+    
+    textarea.form-control-government {
+        resize: vertical;
+        min-height: 200px;
+    }
+    
+    .btn-gold-government {
+        background: var(--gold-color);
+        color: var(--white);
+        border: 2px solid var(--gold-color);
+        padding: 12px 32px;
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+    }
+    
+    .btn-gold-government:hover {
+        background: var(--gold-dark);
+        border-color: var(--gold-dark);
+        color: var(--white);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(212, 168, 67, 0.3);
+    }
+    
+    .btn-outline-gold-government {
+        background: transparent;
+        color: var(--gold-color);
+        border: 2px solid var(--gold-color);
+        padding: 10px 24px;
+        font-family: var(--gov-serif-alt);
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .btn-outline-gold-government:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(212, 168, 67, 0.25);
+        text-decoration: none;
+    }
+    
+    .helptext {
+        font-family: var(--gov-serif-body);
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-style: italic;
+    }
+    
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .errorlist li {
+        font-family: var(--gov-serif-alt);
+        font-size: 0.85rem;
+        color: #dc3545;
+        padding: 4px 0;
+    }
+    
+    .alert-government {
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        padding: 1rem 1.5rem;
+        font-family: var(--gov-serif-body);
+        border-left: 4px solid;
+    }
+    
+    .alert-government-danger {
+        background: #f8d7da;
+        border-left-color: #dc3545;
+        color: #721c24;
+    }
+    
+    .alert-government-danger ul {
+        margin-bottom: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .alert-government-danger ul li {
+        padding: 2px 0;
+    }
+    
+    .checkbox-government {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 0;
+    }
+    
+    .checkbox-government input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--gold-color);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    
+    .checkbox-government label {
+        font-family: var(--gov-serif-body);
+        font-size: 0.95rem;
+        color: #2d2d2d;
+        cursor: pointer;
+        margin-bottom: 0;
+    }
+    
+    .community-info {
+        background: var(--cream-color);
+        padding: 15px 20px;
+        border: 1px solid #d4c9b0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .community-info .community-name {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 1.1rem;
+    }
+    
+    .community-info .community-meta {
+        font-family: var(--gov-serif-body);
+        font-size: 0.85rem;
+        color: var(--gray-600);
+    }
+    
+    .community-info .community-meta i {
+        color: var(--gold-color);
+        width: 18px;
+    }
+    
+    @media (max-width: 768px) {
+        .card-government .card-body {
+            padding: 1.5rem;
+        }
+        
+        .government-title {
+            font-size: 1.6rem;
+        }
+        
+        .btn-gold-government,
+        .btn-outline-gold-government {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section style="background: var(--cream-color); min-height: 100vh; padding: 60px 0;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- Header -->
+                <div class="mb-4">
+                    <h1 class="government-title" style="font-size: 2.2rem;">
+                        <i class="fas fa-plus-circle text-gold me-2"></i> Create Post
+                    </h1>
+                    <p class="government-subtitle" style="font-size: 1.05rem;">
+                        Share your knowledge and insights with the community
+                    </p>
+                </div>
+                
+                <!-- Community Info -->
+                <div class="community-info">
+                    <div class="community-name">
+                        <i class="fas fa-users text-gold me-2"></i> {{ community.name }}
+                    </div>
+                    <div class="community-meta">
+                        <i class="fas fa-users"></i> {{ community.member_count }} members
+                        <span class="mx-2">·</span>
+                        <i class="fas fa-lock"></i> {{ community.get_access_type_display }}
+                    </div>
+                </div>
+                
+                <!-- Form Card -->
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Non-field errors -->
+                            {% if form.non_field_errors %}
+                                <div class="alert-government alert-government-danger mb-4">
+                                    <ul>
+                                        {% for error in form.non_field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Title -->
+                            <div class="mb-3">
+                                <label for="{{ form.title.id_for_label }}" class="government-label form-label">
+                                    Title <span class="text-danger">*</span>
+                                </label>
+                                {{ form.title }}
+                                {% if form.title.help_text %}
+                                    <div class="helptext">{{ form.title.help_text }}</div>
+                                {% endif %}
+                                {% if form.title.errors %}
+                                    <div class="errorlist">{{ form.title.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Content -->
+                            <div class="mb-3">
+                                <label for="{{ form.content.id_for_label }}" class="government-label form-label">
+                                    Content <span class="text-danger">*</span>
+                                </label>
+                                {{ form.content }}
+                                {% if form.content.help_text %}
+                                    <div class="helptext">{{ form.content.help_text }}</div>
+                                {% endif %}
+                                {% if form.content.errors %}
+                                    <div class="errorlist">{{ form.content.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Post Type -->
+                            <div class="mb-3">
+                                <label for="{{ form.post_type.id_for_label }}" class="government-label form-label">
+                                    Post Type <span class="text-danger">*</span>
+                                </label>
+                                {{ form.post_type }}
+                                {% if form.post_type.help_text %}
+                                    <div class="helptext">{{ form.post_type.help_text }}</div>
+                                {% endif %}
+                                {% if form.post_type.errors %}
+                                    <div class="errorlist">{{ form.post_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Cover Image -->
+                            <div class="mb-3">
+                                <label for="{{ form.cover_image.id_for_label }}" class="government-label form-label">
+                                    Cover Image
+                                </label>
+                                {{ form.cover_image }}
+                                <div class="helptext">Recommended: 1200x630px</div>
+                                {% if form.cover_image.errors %}
+                                    <div class="errorlist">{{ form.cover_image.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Tags -->
+                            <div class="mb-3">
+                                <label for="id_tags" class="government-label form-label">
+                                    Tags
+                                </label>
+                                <input type="text" name="tags" id="id_tags" 
+                                       class="form-control form-control-government" 
+                                       placeholder="AI, Research, Machine Learning, Data Science"
+                                       value="{% if form.tags.value %}{% if form.tags.value is string %}{{ form.tags.value }}{% else %}{{ form.tags.value|join:', ' }}{% endif %}{% endif %}">
+                                <div class="helptext">Enter tags separated by commas (e.g., AI, Research, Machine Learning)</div>
+                                {% if form.tags.errors %}
+                                    <div class="errorlist">{{ form.tags.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Poll Options (if poll type) -->
+                            <div class="mb-3" id="poll-options" style="display: none;">
+                                <label class="government-label form-label">
+                                    Poll Options
+                                </label>
+                                <input type="text" name="poll_options" id="poll_options" 
+                                       class="form-control form-control-government" 
+                                       placeholder="Option 1, Option 2, Option 3">
+                                <div class="helptext">Enter poll options separated by commas</div>
+                            </div>
+                            
+                            <!-- Buttons -->
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn-gold-government">
+                                        <i class="fas fa-paper-plane me-2"></i> Publish Post
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'communities:detail' slug=community.slug %}" class="btn-outline-gold-government">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add government style to form controls
+        document.querySelectorAll('input:not([type="checkbox"]):not([type="file"]), select, textarea').forEach(function(el) {
+            if (!el.classList.contains('form-control-government')) {
+                el.classList.add('form-control-government');
+            }
+        });
+        
+        // Show/hide poll options based on post type
+        var postTypeSelect = document.querySelector('select[name="post_type"]');
+        var pollOptions = document.getElementById('poll-options');
+        
+        if (postTypeSelect) {
+            postTypeSelect.addEventListener('change', function() {
+                if (this.value === 'poll') {
+                    pollOptions.style.display = 'block';
+                } else {
+                    pollOptions.style.display = 'none';
+                }
+            });
+            
+            // Check initial value
+            if (postTypeSelect.value === 'poll') {
+                pollOptions.style.display = 'block';
+            }
+        }
+        
+        // Add placeholder to tags if not already set
+        var tagsInput = document.querySelector('input[name="tags"]');
+        if (tagsInput && !tagsInput.placeholder) {
+            tagsInput.placeholder = 'AI, Research, Machine Learning, Data Science';
+        }
+    });
+</script>
+{% endblock %}

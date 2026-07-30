@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register for {{ event.title }} - KMPN{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700&family=Source+Serif+Pro:wght@400;600;700&display=swap');
+    
+    .government-title {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--dark-blue);
+    }
+    
+    .government-subtitle {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 400;
+        color: #4a4a4a;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-text {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-weight: 400;
+        line-height: 1.7;
+        color: #2d2d2d;
+    }
+    
+    .government-heading {
+        font-family: 'Playfair Display', 'Times New Roman', serif;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .government-label {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: #4a4a4a;
+    }
+    
+    .card-government {
+        background: var(--white);
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        position: relative;
+    }
+    
+    .card-government::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gold-color), var(--navy-blue));
+    }
+    
+    .card-government .card-body {
+        padding: 2rem;
+    }
+    
+    .btn-gold-government {
+        background: var(--gold-color);
+        color: var(--white);
+        border: 2px solid var(--gold-color);
+        padding: 12px 32px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+    }
+    
+    .btn-gold-government:hover {
+        background: var(--gold-dark);
+        border-color: var(--gold-dark);
+        color: var(--white);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(212, 168, 67, 0.3);
+    }
+    
+    .btn-outline-gold-government {
+        background: transparent;
+        color: var(--gold-color);
+        border: 2px solid var(--gold-color);
+        padding: 10px 24px;
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .btn-outline-gold-government:hover {
+        background: var(--gold-color);
+        color: var(--white);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(212, 168, 67, 0.25);
+        text-decoration: none;
+    }
+    
+    .form-control-government {
+        border: 1px solid #d4c9b0;
+        border-radius: 0;
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.95rem;
+        padding: 10px 14px;
+        background: var(--white);
+        transition: all 0.3s ease;
+        color: #2d2d2d;
+        width: 100%;
+    }
+    
+    .form-control-government:focus {
+        border-color: var(--gold-color);
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        outline: none;
+    }
+    
+    .helptext {
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-style: italic;
+    }
+    
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .errorlist li {
+        font-family: 'Merriweather', 'Georgia', serif;
+        font-size: 0.85rem;
+        color: #dc3545;
+        padding: 4px 0;
+    }
+    
+    .event-info-box {
+        background: var(--cream-color);
+        border: 1px solid #d4c9b0;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .event-info-box p {
+        margin-bottom: 0.5rem;
+        font-family: 'Source Serif Pro', 'Georgia', serif;
+        font-size: 0.95rem;
+    }
+    
+    .event-info-box i {
+        color: var(--gold-color);
+        width: 24px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--cream-color); min-height: 100vh;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- Header -->
+                <div class="mb-4">
+                    <h1 class="government-title" style="font-size: 2rem;">
+                        <i class="fas fa-clipboard-check text-gold me-2"></i> Register for Event
+                    </h1>
+                    <p class="government-subtitle">
+                        Complete the form below to register for <strong>{{ event.title }}</strong>
+                    </p>
+                </div>
+                
+                <!-- Event Info -->
+                <div class="event-info-box">
+                    <h6 class="government-heading" style="color: var(--dark-blue);">
+                        <i class="fas fa-info-circle"></i> Event Details
+                    </h6>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Date:</strong> {{ event.start_date|date:"M d, Y" }}</p>
+                    <p><i class="fas fa-clock"></i> <strong>Time:</strong> {{ event.start_date|date:"g:i A" }} - {{ event.end_date|date:"g:i A" }}</p>
+                    <p><i class="fas fa-{% if event.is_virtual %}wifi{% else %}map-marker-alt{% endif %}"></i> <strong>Location:</strong> {% if event.is_virtual %}Virtual{% else %}{{ event.venue|default:"TBD" }}{% endif %}</p>
+                    <p><i class="fas fa-users"></i> <strong>Registered:</strong> {{ event.registration_count }} attendees</p>
+                    {% if event.max_attendees %}
+                        <p><i class="fas fa-chair"></i> <strong>Available Spots:</strong> {{ event.max_attendees|add:event.registration_count|add:"-" }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Registration Form -->
+                <div class="card-government">
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            {% for field in form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="government-label form-label">
+                                        {{ field.label }}
+                                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="helptext">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="errorlist">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn-gold-government">
+                                        <i class="fas fa-check-circle me-2"></i> Confirm Registration
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'events:detail' slug=event.slug %}" class="btn-outline-gold-government">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('input, select, textarea').forEach(function(el) {
+            if (!el.classList.contains('form-control-government')) {
+                el.classList.add('form-control-government');
+            }
+        });
+    });
+</script>
+{% endblock %}

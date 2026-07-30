@@ -1,0 +1,1213 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Researcher Dashboard - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       COMPLETE RESEARCHER DASHBOARD STYLES
+       ============================================================ */
+    
+    /* Reset and Base */
+    * {
+        box-sizing: border-box;
+    }
+    
+    .researcher-dashboard {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+    
+    /* ============================================================
+       HEADER / SEAL
+       ============================================================ */
+    .rd-header {
+        background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 40%, #2a3a5a 100%);
+        border-bottom: 5px solid #c9a84c;
+        padding: 30px 35px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        border-radius: 0;
+    }
+    
+    .rd-header::before {
+        content: '';
+        position: absolute;
+        top: -60%;
+        right: -5%;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.04);
+        pointer-events: none;
+    }
+    
+    .rd-header::after {
+        content: '';
+        position: absolute;
+        bottom: -40%;
+        left: -5%;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(74, 44, 106, 0.08);
+        pointer-events: none;
+    }
+    
+    .rd-header-content {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .rd-seal {
+        font-size: 3rem;
+        color: #c9a84c;
+        border: 3px solid #c9a84c;
+        border-radius: 50%;
+        padding: 18px;
+        width: 85px;
+        height: 85px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(201, 168, 76, 0.08);
+        flex-shrink: 0;
+    }
+    
+    .rd-title-section {
+        flex: 1;
+        min-width: 250px;
+    }
+    
+    .rd-title-section h1 {
+        font-family: 'Merriweather', serif;
+        font-weight: 900;
+        font-size: 2.4rem;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: 0.5px;
+        line-height: 1.2;
+    }
+    
+    .rd-title-section h1 .gold-text {
+        color: #c9a84c;
+    }
+    
+    .rd-title-section .rd-subtitle {
+        font-family: 'Inter', sans-serif;
+        font-weight: 300;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-top: 5px;
+    }
+    
+    .rd-title-section .rd-subtitle .star {
+        color: #c9a84c;
+    }
+    
+    .rd-badges {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-left: auto;
+    }
+    
+    .rd-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 18px;
+        font-family: 'Merriweather', serif;
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 2px solid #c9a84c;
+        background: linear-gradient(135deg, #4a2c6a, #1a2a4a);
+        color: #ffffff;
+        white-space: nowrap;
+    }
+    
+    .rd-badge.gold {
+        background: #c9a84c;
+        color: #0a1628;
+        border-color: #c9a84c;
+    }
+    
+    .rd-badge i {
+        font-size: 0.85rem;
+    }
+    
+    /* ============================================================
+       STAT CARDS
+       ============================================================ */
+    .rd-stat-card {
+        background: #ffffff;
+        border: 1px solid #d4c8b8;
+        padding: 22px 18px;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(10, 22, 40, 0.05);
+        position: relative;
+        overflow: hidden;
+        border-radius: 0;
+    }
+    
+    .rd-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #4a2c6a, #c9a84c);
+    }
+    
+    .rd-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(10, 22, 40, 0.12);
+        border-color: #c9a84c;
+    }
+    
+    .rd-stat-card .stat-icon {
+        font-size: 2rem;
+        color: #4a2c6a;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .rd-stat-card .stat-number {
+        font-family: 'Merriweather', serif;
+        font-size: 3rem;
+        font-weight: 900;
+        color: #0a1628;
+        display: block;
+        line-height: 1.1;
+    }
+    
+    .rd-stat-card .stat-label {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #6b7a8f;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 6px;
+    }
+    
+    .rd-stat-card .stat-trend {
+        display: inline-block;
+        padding: 3px 12px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        border-radius: 20px;
+        margin-top: 8px;
+    }
+    
+    .rd-stat-card .stat-trend.up {
+        background: rgba(45, 106, 79, 0.12);
+        color: #2d6a4f;
+    }
+    
+    .rd-stat-card .stat-trend.down {
+        background: rgba(139, 26, 26, 0.12);
+        color: #8b1a1a;
+    }
+    
+    .rd-stat-card .stat-trend.neutral {
+        background: rgba(184, 134, 11, 0.12);
+        color: #b8860b;
+    }
+    
+    /* ============================================================
+       CONTENT CARDS
+       ============================================================ */
+    .rd-content-card {
+        background: #ffffff;
+        border: 1px solid #d4c8b8;
+        box-shadow: 0 2px 8px rgba(10, 22, 40, 0.05);
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border-radius: 0;
+    }
+    
+    .rd-content-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #4a2c6a, #c9a84c);
+    }
+    
+    .rd-content-card:hover {
+        box-shadow: 0 8px 25px rgba(10, 22, 40, 0.1);
+        border-color: #c9a84c;
+    }
+    
+    .rd-content-card .card-header {
+        background: linear-gradient(135deg, #4a2c6a, #1a2a4a);
+        color: #ffffff;
+        padding: 16px 22px;
+        font-family: 'Merriweather', serif;
+        font-weight: 700;
+        border-bottom: 3px solid #c9a84c;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 60px;
+        flex-wrap: wrap;
+    }
+    
+    .rd-content-card .card-header i {
+        color: #c9a84c;
+        font-size: 1.3rem;
+    }
+    
+    .rd-content-card .card-header .badge {
+        margin-left: auto;
+        background: #c9a84c;
+        color: #0a1628;
+        padding: 3px 14px;
+        border-radius: 20px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .rd-content-card .card-body {
+        padding: 22px;
+    }
+    
+    /* ============================================================
+       QUICK ACTIONS
+       ============================================================ */
+    .rd-action {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 18px;
+        border: 1px solid #e8ecef;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #0a1628;
+        margin-bottom: 10px;
+        cursor: pointer;
+        background: #ffffff;
+    }
+    
+    .rd-action:last-child {
+        margin-bottom: 0;
+    }
+    
+    .rd-action:hover {
+        background: #f5f0e8;
+        border-color: #c9a84c;
+        text-decoration: none;
+        color: #0a1628;
+        transform: translateX(8px);
+        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
+    }
+    
+    .rd-action .action-icon {
+        width: 46px;
+        height: 46px;
+        background: #f5f0e8;
+        border: 2px solid #4a2c6a;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #4a2c6a;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .rd-action:hover .action-icon {
+        background: #4a2c6a;
+        color: #ffffff;
+        transform: scale(1.08);
+    }
+    
+    .rd-action .action-text {
+        flex: 1;
+    }
+    
+    .rd-action .action-title {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #0a1628;
+    }
+    
+    .rd-action .action-desc {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.82rem;
+        color: #6b7a8f;
+        margin-top: 2px;
+    }
+    
+    .rd-action .action-arrow {
+        color: #c9a84c;
+        font-size: 0.9rem;
+        opacity: 0.3;
+        transition: all 0.3s ease;
+    }
+    
+    .rd-action:hover .action-arrow {
+        opacity: 1;
+        transform: translateX(6px);
+    }
+    
+    /* ============================================================
+       TIMELINE
+       ============================================================ */
+    .rd-timeline {
+        position: relative;
+        padding-left: 30px;
+        max-height: 350px;
+        overflow-y: auto;
+    }
+    
+    .rd-timeline::-webkit-scrollbar {
+        width: 5px;
+    }
+    
+    .rd-timeline::-webkit-scrollbar-track {
+        background: #e8ecef;
+    }
+    
+    .rd-timeline::-webkit-scrollbar-thumb {
+        background: #c9a84c;
+        border-radius: 10px;
+    }
+    
+    .rd-timeline::before {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, #4a2c6a, #e8ecef);
+    }
+    
+    .rd-timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding-left: 18px;
+    }
+    
+    .rd-timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -26px;
+        top: 5px;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #4a2c6a;
+        border: 3px solid #ffffff;
+        box-shadow: 0 0 0 2px #4a2c6a;
+    }
+    
+    .rd-timeline-item .timeline-date {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.7rem;
+        color: #6b7a8f;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .rd-timeline-item .timeline-content {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        color: #0a1628;
+        margin-top: 3px;
+        line-height: 1.5;
+    }
+    
+    .rd-timeline-item .timeline-content strong {
+        color: #4a2c6a;
+    }
+    
+    /* ============================================================
+       RESEARCH TAGS
+       ============================================================ */
+    .rd-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 12px 0;
+    }
+    
+    .rd-tag {
+        background: #f5f0e8;
+        border: 1px solid #c9a84c;
+        padding: 6px 16px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: #0a1628;
+        transition: all 0.3s ease;
+        cursor: default;
+        border-radius: 0;
+    }
+    
+    .rd-tag:hover {
+        background: #c9a84c;
+        color: #ffffff;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 14px rgba(201, 168, 76, 0.35);
+    }
+    
+    .rd-tag i {
+        margin-right: 6px;
+        color: #c9a84c;
+        transition: all 0.3s ease;
+    }
+    
+    .rd-tag:hover i {
+        color: #ffffff;
+    }
+    
+    /* ============================================================
+       METRICS LIST
+       ============================================================ */
+    .rd-metrics {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .rd-metrics li {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #e8ecef;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .rd-metrics li:last-child {
+        border-bottom: none;
+    }
+    
+    .rd-metrics .metric-label {
+        font-size: 0.92rem;
+        color: #6b7a8f;
+    }
+    
+    .rd-metrics .metric-value {
+        font-family: 'Merriweather', serif;
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: #0a1628;
+    }
+    
+    .rd-metrics .metric-value .impact-star {
+        color: #c9a84c;
+        margin-right: 4px;
+    }
+    
+    .rd-metrics .metric-value.high {
+        color: #2d6a4f;
+    }
+    
+    .rd-metrics .metric-value.medium {
+        color: #b8860b;
+    }
+    
+    .rd-metrics .metric-value.low {
+        color: #6b7a8f;
+    }
+    
+    /* ============================================================
+       NOTIFICATIONS
+       ============================================================ */
+    .rd-notification {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid #e8ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .rd-notification:last-child {
+        border-bottom: none;
+    }
+    
+    .rd-notification:hover {
+        background: #f5f0e8;
+        padding-left: 8px;
+        padding-right: 8px;
+        margin: 0 -8px;
+    }
+    
+    .rd-notification .notif-icon {
+        color: #c9a84c;
+        font-size: 1.1rem;
+        margin-top: 2px;
+        width: 22px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+    
+    .rd-notification .notif-content {
+        flex: 1;
+    }
+    
+    .rd-notification .notif-title {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: #0a1628;
+    }
+    
+    .rd-notification .notif-text {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.82rem;
+        color: #6b7a8f;
+        margin-top: 2px;
+    }
+    
+    .rd-notification .notif-time {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.65rem;
+        color: #6b7a8f;
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .rd-btn {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 10px 24px;
+        border: 2px solid #c9a84c;
+        background: transparent;
+        color: #0a1628;
+        transition: all 0.3s ease;
+        font-size: 0.78rem;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 0;
+    }
+    
+    .rd-btn:hover {
+        background: #c9a84c;
+        color: #0a1628;
+        text-decoration: none;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+    }
+    
+    .rd-btn-primary {
+        background: #4a2c6a;
+        border-color: #4a2c6a;
+        color: #ffffff;
+    }
+    
+    .rd-btn-primary:hover {
+        background: #1a2a4a;
+        border-color: #1a2a4a;
+        color: #ffffff;
+        box-shadow: 0 6px 20px rgba(26, 42, 74, 0.3);
+    }
+    
+    .rd-btn-gold {
+        background: #c9a84c;
+        border-color: #c9a84c;
+        color: #0a1628;
+    }
+    
+    .rd-btn-gold:hover {
+        background: #a8872e;
+        border-color: #a8872e;
+        color: #ffffff;
+        box-shadow: 0 6px 20px rgba(168, 135, 46, 0.3);
+    }
+    
+    .rd-btn-sm {
+        padding: 6px 16px;
+        font-size: 0.68rem;
+    }
+    
+    .rd-btn-block {
+        display: block;
+        width: 100%;
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 16px; }
+    .mt-4 { margin-top: 24px; }
+    .mb-3 { margin-bottom: 16px; }
+    
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .rd-footer {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.78rem;
+        color: #6b7a8f;
+        text-align: center;
+        padding: 25px 0 15px;
+        border-top: 2px solid #d4c8b8;
+        margin-top: 35px;
+        width: 100%;
+    }
+    
+    .rd-footer i {
+        color: #c9a84c;
+    }
+    
+    .rd-footer .footer-divider {
+        color: #d4c8b8;
+        margin: 0 8px;
+    }
+    
+    .rd-footer .footer-small {
+        font-size: 0.7rem;
+        opacity: 0.6;
+        display: block;
+        margin-top: 6px;
+    }
+    
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 992px) {
+        .rd-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .rd-badges {
+            margin-left: 0;
+            justify-content: center;
+        }
+        
+        .rd-title-section h1 {
+            font-size: 2rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .rd-header {
+            padding: 20px;
+        }
+        
+        .rd-seal {
+            width: 65px;
+            height: 65px;
+            font-size: 2.2rem;
+            padding: 12px;
+        }
+        
+        .rd-title-section h1 {
+            font-size: 1.6rem;
+        }
+        
+        .rd-title-section .rd-subtitle {
+            font-size: 0.75rem;
+        }
+        
+        .rd-stat-card .stat-number {
+            font-size: 2.2rem;
+        }
+        
+        .rd-content-card .card-header {
+            font-size: 0.9rem;
+            padding: 14px 18px;
+        }
+        
+        .rd-action {
+            padding: 12px 14px;
+        }
+        
+        .rd-action .action-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 1rem;
+        }
+        
+        .rd-action .action-title {
+            font-size: 0.88rem;
+        }
+        
+        .rd-action .action-desc {
+            font-size: 0.75rem;
+        }
+        
+        .rd-timeline {
+            max-height: 280px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .rd-header {
+            padding: 15px;
+        }
+        
+        .rd-seal {
+            width: 50px;
+            height: 50px;
+            font-size: 1.6rem;
+            padding: 8px;
+        }
+        
+        .rd-title-section h1 {
+            font-size: 1.3rem;
+        }
+        
+        .rd-title-section .rd-subtitle {
+            font-size: 0.65rem;
+        }
+        
+        .rd-badge {
+            font-size: 0.55rem;
+            padding: 4px 10px;
+        }
+        
+        .rd-stat-card {
+            padding: 15px 12px;
+        }
+        
+        .rd-stat-card .stat-number {
+            font-size: 1.8rem;
+        }
+        
+        .rd-stat-card .stat-label {
+            font-size: 0.7rem;
+        }
+        
+        .rd-content-card .card-body {
+            padding: 14px;
+        }
+        
+        .rd-tag {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+        }
+        
+        .rd-metrics .metric-label {
+            font-size: 0.8rem;
+        }
+        
+        .rd-metrics .metric-value {
+            font-size: 0.95rem;
+        }
+        
+        .rd-notification .notif-title {
+            font-size: 0.82rem;
+        }
+        
+        .rd-notification .notif-text {
+            font-size: 0.75rem;
+        }
+        
+        .rd-btn {
+            padding: 6px 14px;
+            font-size: 0.65rem;
+        }
+        
+        .rd-footer {
+            font-size: 0.65rem;
+            padding: 15px 0 10px;
+        }
+    }
+    
+    /* ============================================================
+       PRINT STYLES
+       ============================================================ */
+    @media print {
+        .rd-stat-card,
+        .rd-content-card {
+            break-inside: avoid;
+            box-shadow: none;
+            border-color: #000;
+        }
+        
+        .rd-stat-card:hover,
+        .rd-content-card:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .rd-btn {
+            border: 1px solid #000;
+            color: #000;
+        }
+        
+        .rd-btn-primary {
+            background: #000;
+            color: #fff;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_title %}
+<div class="rd-header">
+    <div class="rd-header-content">
+        <div class="rd-seal">
+            <i class="fas fa-microscope"></i>
+        </div>
+        <div class="rd-title-section">
+            <h1>
+                <span class="gold-text">Researcher</span> Dashboard
+                <span style="font-size:0.9rem;font-weight:300;color:rgba(255,255,255,0.35);letter-spacing:0.1em;">
+                    — RESEARCH PORTAL
+                </span>
+            </h1>
+            <div class="rd-subtitle">
+                Kenya Psychological Society Network <span class="star">★</span> Research Division
+                <span style="color:rgba(255,255,255,0.3);margin:0 6px;">|</span> Official Research Portal
+            </div>
+        </div>
+        <div class="rd-badges">
+            <span class="rd-badge">
+                <i class="fas fa-flask"></i> Researcher
+            </span>
+            {% if user.is_verified %}
+            <span class="rd-badge gold">
+                <i class="fas fa-shield-alt"></i> Verified
+            </span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- ============================================================
+     STATISTICS ROW
+     ============================================================ -->
+<div class="row g-3 g-md-4 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="rd-stat-card">
+            <span class="stat-icon"><i class="fas fa-file-alt"></i></span>
+            <span class="stat-number">{{ user.publication_count|default:0 }}</span>
+            <div class="stat-label">Publications</div>
+            <span class="stat-trend up"><i class="fas fa-arrow-up"></i> 3 new</span>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="rd-stat-card">
+            <span class="stat-icon"><i class="fas fa-quote-right"></i></span>
+            <span class="stat-number">{{ user.citation_count|default:0 }}</span>
+            <div class="stat-label">Citations</div>
+            <span class="stat-trend up"><i class="fas fa-arrow-up"></i> 28 new</span>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="rd-stat-card">
+            <span class="stat-icon"><i class="fas fa-chart-line"></i></span>
+            <span class="stat-number">{{ user.h_index|default:0 }}</span>
+            <div class="stat-label">H-Index</div>
+            <span class="stat-trend up"><i class="fas fa-arrow-up"></i> +2</span>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="rd-stat-card">
+            <span class="stat-icon"><i class="fas fa-handshake"></i></span>
+            <span class="stat-number">{{ user.mentees.count|default:0 }}</span>
+            <div class="stat-label">Collaborations</div>
+            <span class="stat-trend neutral"><i class="fas fa-minus"></i> Growing</span>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<div class="row g-3 g-md-4">
+    
+    <!-- ============================================================
+         LEFT COLUMN
+         ============================================================ -->
+    <div class="col-lg-8">
+        
+        <!-- QUICK ACTIONS -->
+        <div class="rd-content-card">
+            <div class="card-header">
+                <i class="fas fa-bolt"></i>
+                Research Actions
+                <span class="badge">Quick Access</span>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'accounts:profile_update' %}" class="rd-action">
+                    <div class="action-icon"><i class="fas fa-user-edit"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Update Research Profile</div>
+                        <div class="action-desc">Add publications, update research interests</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:alumni_research' %}" class="rd-action">
+                    <div class="action-icon"><i class="fas fa-search"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Find Collaborators</div>
+                        <div class="action-desc">Connect with researchers in your field</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:alumni_resources' %}" class="rd-action">
+                    <div class="action-icon"><i class="fas fa-flask"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Research Resources</div>
+                        <div class="action-desc">Access research tools and databases</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:activity_log' %}" class="rd-action">
+                    <div class="action-icon"><i class="fas fa-history"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Research Activity</div>
+                        <div class="action-desc">View your research timeline</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:alumni_directory' %}" class="rd-action">
+                    <div class="action-icon"><i class="fas fa-users"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Researcher Directory</div>
+                        <div class="action-desc">Browse researchers and their work</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- RESEARCH TIMELINE -->
+        <div class="rd-content-card mt-3 mt-md-4">
+            <div class="card-header">
+                <i class="fas fa-history"></i>
+                Research Timeline
+                <span class="badge">Recent Activity</span>
+            </div>
+            <div class="card-body">
+                <div class="rd-timeline">
+                    {% for activity in user.activity_logs.all|slice:":5" %}
+                        <div class="rd-timeline-item">
+                            <div class="timeline-date">{{ activity.created_at|date:"M d, Y" }}</div>
+                            <div class="timeline-content">
+                                <strong>{{ activity.get_action_type_display }}</strong>
+                                — {{ activity.action_description|truncatechars:80 }}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="rd-timeline-item">
+                            <div class="timeline-content" style="color:#6b7a8f;">
+                                <i class="fas fa-info-circle"></i> No research activity recorded yet.
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if user.activity_logs.count > 5 %}
+                    <div class="text-center mt-3">
+                        <a href="{% url 'accounts:activity_log' %}" class="rd-btn rd-btn-sm">
+                            <i class="fas fa-arrow-right"></i> View Full History
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         RIGHT COLUMN - SIDEBAR
+         ============================================================ -->
+    <div class="col-lg-4">
+        
+        <!-- RESEARCH INTERESTS -->
+        <div class="rd-content-card">
+            <div class="card-header">
+                <i class="fas fa-tags"></i>
+                Research Interests
+                <span class="badge">{{ user.research_keywords|length|default:0 }}</span>
+            </div>
+            <div class="card-body">
+                {% if user.research_interests or user.research_keywords %}
+                    <p style="font-family:'Inter',sans-serif;color:#6b7a8f;font-size:0.92rem;margin-bottom:12px;">
+                        {{ user.research_interests|default:"Research interests in psychology" }}
+                    </p>
+                    <div class="rd-tags">
+                        {% if user.research_keywords %}
+                            {% for keyword in user.research_keywords %}
+                                <span class="rd-tag">
+                                    <i class="fas fa-hashtag"></i> {{ keyword }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="rd-tag"><i class="fas fa-brain"></i> Clinical Psychology</span>
+                            <span class="rd-tag"><i class="fas fa-users"></i> Community Mental Health</span>
+                            <span class="rd-tag"><i class="fas fa-chart-bar"></i> Psychometrics</span>
+                            <span class="rd-tag"><i class="fas fa-hand-holding-heart"></i> Trauma & Recovery</span>
+                        {% endif %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'accounts:profile_update' %}" class="rd-btn rd-btn-sm">
+                            <i class="fas fa-edit"></i> Update Interests
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="fas fa-info-circle" style="color:#e8ecef;font-size:2.5rem;"></i>
+                        <p style="font-family:'Inter',sans-serif;color:#6b7a8f;margin-top:10px;">
+                            No research interests listed
+                        </p>
+                        <a href="{% url 'accounts:profile_update' %}" class="rd-btn rd-btn-gold rd-btn-sm rd-btn-block">
+                            <i class="fas fa-plus"></i> Add Research Interests
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- RESEARCH METRICS -->
+        <div class="rd-content-card mt-3 mt-md-4">
+            <div class="card-header">
+                <i class="fas fa-chart-pie"></i>
+                Research Metrics
+            </div>
+            <div class="card-body">
+                <ul class="rd-metrics">
+                    <li>
+                        <span class="metric-label">Total Publications</span>
+                        <span class="metric-value">{{ user.publication_count|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="metric-label">Total Citations</span>
+                        <span class="metric-value">{{ user.citation_count|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="metric-label">H-Index</span>
+                        <span class="metric-value">{{ user.h_index|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="metric-label">Collaborations</span>
+                        <span class="metric-value">{{ user.mentees.count|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="metric-label">Research Impact</span>
+                        <span class="metric-value high">
+                            <i class="fas fa-star impact-star"></i>
+                            {% if user.h_index > 10 %}High{% elif user.h_index > 5 %}Medium{% else %}Growing{% endif %}
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RECENT NOTIFICATIONS -->
+        <div class="rd-content-card mt-3 mt-md-4">
+            <div class="card-header">
+                <i class="fas fa-bell"></i>
+                Recent Notifications
+                <span class="badge">3</span>
+            </div>
+            <div class="card-body" style="max-height:280px;overflow-y:auto;">
+                <div class="rd-notification">
+                    <span class="notif-icon"><i class="fas fa-file-alt"></i></span>
+                    <div class="notif-content">
+                        <div class="notif-title">New Citation Alert</div>
+                        <div class="notif-text">Your research has been cited in a new publication.</div>
+                        <div class="notif-time">2 hours ago</div>
+                    </div>
+                </div>
+                <div class="rd-notification">
+                    <span class="notif-icon"><i class="fas fa-handshake"></i></span>
+                    <div class="notif-content">
+                        <div class="notif-title">Collaboration Request</div>
+                        <div class="notif-text">A researcher wants to collaborate on a project.</div>
+                        <div class="notif-time">1 day ago</div>
+                    </div>
+                </div>
+                <div class="rd-notification">
+                    <span class="notif-icon"><i class="fas fa-grant"></i></span>
+                    <div class="notif-content">
+                        <div class="notif-title">Grant Opportunity</div>
+                        <div class="notif-text">New research funding available.</div>
+                        <div class="notif-time">3 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<div class="rd-footer">
+    <i class="fas fa-microscope"></i>
+    KPSN Researcher Dashboard <span class="footer-divider">•</span> Official Research Portal
+    <span class="footer-divider">•</span> Version 2.0
+    <span class="footer-divider">•</span> &copy; {% now "Y" %} Kenya Psychological Society Network
+    <span class="footer-small">
+        <i class="fas fa-flask" style="color:#c9a84c;"></i>
+        Advancing psychological research in Kenya through collaboration and innovation.
+    </span>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Researcher Dashboard loaded');
+        
+        // Animate stats on load
+        const stats = document.querySelectorAll('.stat-number');
+        stats.forEach(stat => {
+            const target = parseInt(stat.textContent.replace(/,/g, '')) || 0;
+            if (target > 0) {
+                let current = 0;
+                const increment = Math.ceil(target / 20);
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = target.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = current.toLocaleString();
+                    }
+                }, 50);
+            }
+        });
+    });
+</script>
+{% endblock %}

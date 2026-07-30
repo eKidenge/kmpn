@@ -1,0 +1,1469 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Super Admin Dashboard - KPSN{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================================
+       SUPER ADMIN DASHBOARD - GOVERNMENT STYLE
+       ============================================================ */
+    
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+Pro:wght@400;600;700;900&family=Roboto+Slab:wght@300;400;600;700&display=swap');
+    
+    :root {
+        --gold-color: #c9a84c;
+        --gold-dark: #a8893a;
+        --gold-light: #e6d4a0;
+        --dark-blue: #0a1a2a;
+        --primary-color: #0a2a4a;
+        --navy-blue: #1a3a5a;
+        --cream-color: #faf8f0;
+        --cream-dark: #f0ece0;
+        --white: #ffffff;
+        --gray-50: #f9f9f9;
+        --gray-100: #f8f8f8;
+        --gray-200: #f0f0f0;
+        --gray-300: #e0e0e0;
+        --gray-400: #c0c0c0;
+        --gray-500: #a0a0a0;
+        --gray-600: #808080;
+        --gray-700: #606060;
+        --gray-800: #404040;
+        --gray-900: #202020;
+        --success-color: #1a7a4a;
+        --success-light: #e8f5e9;
+        --danger-color: #8a1a1a;
+        --danger-light: #fbe9e7;
+        --warning-color: #b8860b;
+        --warning-light: #fff8e1;
+        --info-color: #1a5a7a;
+        --info-light: #e3f2fd;
+        --font-heading: 'Playfair Display', 'Georgia', serif;
+        --font-primary: 'Merriweather', 'Times New Roman', serif;
+        --font-secondary: 'Inter', 'Arial', sans-serif;
+        --font-serif-pro: 'Source Serif Pro', 'Georgia', serif;
+        --font-slab: 'Roboto Slab', 'Georgia', serif;
+        --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 15px rgba(0,0,0,0.10);
+        --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+        --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
+        --shadow-2xl: 0 30px 80px rgba(0,0,0,0.20);
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 20px;
+        --radius-full: 9999px;
+        --transition-fast: 0.15s ease;
+        --transition-normal: 0.3s ease;
+        --transition-slow: 0.5s ease;
+        --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
+    /* ============================================================
+       STAT CARDS
+       ============================================================ */
+    .stat-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border-left: 6px solid var(--gold-color);
+        box-shadow: var(--shadow-sm);
+        padding: 24px 26px;
+        transition: var(--transition-normal);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.03);
+        pointer-events: none;
+        transition: var(--transition-normal);
+    }
+    
+    .stat-card:hover {
+        box-shadow: var(--shadow-xl);
+        transform: translateY(-6px) scale(1.01);
+        border-left-color: var(--gold-dark);
+    }
+    
+    .stat-card:hover::before {
+        transform: scale(1.2);
+        opacity: 0.5;
+    }
+    
+    .stat-card .stat-icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+    
+    .stat-card .stat-icon {
+        font-size: 2.4rem;
+        color: var(--gold-color);
+        opacity: 0.8;
+        transition: var(--transition-normal);
+    }
+    
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1) rotate(-5deg);
+        opacity: 1;
+    }
+    
+    .stat-card .stat-trend {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-family: var(--font-secondary);
+        letter-spacing: 0.3px;
+    }
+    
+    .stat-card .stat-trend.up {
+        color: var(--success-color);
+        background: var(--success-light);
+    }
+    
+    .stat-card .stat-trend.down {
+        color: var(--danger-color);
+        background: var(--danger-light);
+    }
+    
+    .stat-card .stat-trend.neutral {
+        color: var(--gray-600);
+        background: var(--gray-200);
+    }
+    
+    .stat-card .stat-number {
+        font-family: var(--font-heading);
+        font-size: 2.8rem;
+        font-weight: 900;
+        color: var(--dark-blue);
+        display: block;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        margin-bottom: 2px;
+    }
+    
+    .stat-card .stat-number .stat-suffix {
+        font-size: 1.2rem;
+        font-weight: 400;
+        color: var(--gray-500);
+        margin-left: 4px;
+    }
+    
+    .stat-card .stat-label {
+        font-family: var(--font-secondary);
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 2px;
+    }
+    
+    .stat-card .stat-progress {
+        margin-top: 10px;
+        height: 4px;
+        background: var(--gray-200);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+    }
+    
+    .stat-card .stat-progress .stat-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--gold-color), var(--gold-dark));
+        border-radius: var(--radius-full);
+        transition: width 1.5s ease;
+    }
+    
+    .stat-card .stat-progress .stat-progress-bar.green {
+        background: linear-gradient(90deg, var(--success-color), #2e7d32);
+    }
+    
+    .stat-card .stat-progress .stat-progress-bar.blue {
+        background: linear-gradient(90deg, var(--info-color), #0d47a1);
+    }
+    
+    .stat-card .stat-progress .stat-progress-bar.purple {
+        background: linear-gradient(90deg, #7b1fa2, #9c27b0);
+    }
+    
+    .stat-card .stat-progress .stat-progress-bar.orange {
+        background: linear-gradient(90deg, #e65100, #f57c00);
+    }
+    
+    .stat-card .stat-progress .stat-progress-bar.red {
+        background: linear-gradient(90deg, var(--danger-color), #c62828);
+    }
+    
+    /* ============================================================
+       DASHBOARD CARDS
+       ============================================================ */
+    .dashboard-card {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(201, 168, 76, 0.12);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-normal);
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .dashboard-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-4px);
+    }
+    
+    .dashboard-card .card-header {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
+        padding: 16px 22px;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--white);
+        font-size: 1.05rem;
+        border-bottom: 3px solid var(--gold-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dashboard-card .card-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.05);
+        pointer-events: none;
+    }
+    
+    .dashboard-card .card-header .header-icon {
+        color: var(--gold-color);
+        margin-right: 12px;
+        font-size: 1.1rem;
+    }
+    
+    .dashboard-card .card-header .header-badge {
+        background: var(--gold-color);
+        color: var(--white);
+        padding: 2px 14px;
+        border-radius: var(--radius-full);
+        font-family: var(--font-secondary);
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .dashboard-card .card-header .header-badge.danger {
+        background: var(--danger-color);
+    }
+    
+    .dashboard-card .card-header .header-badge.success {
+        background: var(--success-color);
+    }
+    
+    .dashboard-card .card-header .header-badge.warning {
+        background: var(--warning-color);
+    }
+    
+    .dashboard-card .card-header .header-badge.info {
+        background: var(--info-color);
+    }
+    
+    .dashboard-card .card-body {
+        padding: 20px 22px;
+    }
+    
+    .dashboard-card .card-footer {
+        background: var(--cream-color);
+        border-top: 1px solid #e8e0d0;
+        padding: 12px 22px;
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+    }
+    
+    .dashboard-card .card-footer a {
+        color: var(--gold-color);
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition-normal);
+    }
+    
+    .dashboard-card .card-footer a:hover {
+        color: var(--gold-dark);
+        text-decoration: underline;
+    }
+    
+    /* ============================================================
+       ROLE BADGE
+       ============================================================ */
+    .role-badge {
+        display: inline-block;
+        background: rgba(201, 168, 76, 0.12);
+        color: var(--gold-dark);
+        padding: 3px 12px;
+        border-radius: var(--radius-full);
+        font-family: var(--font-secondary);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* ============================================================
+       QUICK ACTIONS
+       ============================================================ */
+    .quick-action {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--gray-200);
+        transition: var(--transition-normal);
+        text-decoration: none;
+        color: var(--gray-700);
+        background: var(--white);
+        margin-bottom: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .quick-action::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: transparent;
+        transition: var(--transition-normal);
+    }
+    
+    .quick-action:last-child {
+        margin-bottom: 0;
+    }
+    
+    .quick-action:hover {
+        border-color: var(--gold-color);
+        background: rgba(201, 168, 76, 0.04);
+        color: var(--gold-dark);
+        text-decoration: none;
+        transform: translateX(6px);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .quick-action:hover::before {
+        background: var(--gold-color);
+    }
+    
+    .quick-action .action-icon {
+        font-size: 1.1rem;
+        color: var(--gold-color);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(201, 168, 76, 0.08);
+        border-radius: var(--radius-full);
+        flex-shrink: 0;
+        transition: var(--transition-normal);
+    }
+    
+    .quick-action:hover .action-icon {
+        background: var(--gold-color);
+        color: var(--white);
+        transform: scale(1.05);
+    }
+    
+    .quick-action .action-text {
+        flex: 1;
+    }
+    
+    .quick-action .action-text .action-title {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--gray-800);
+    }
+    
+    .quick-action .action-text .action-desc {
+        font-family: var(--font-secondary);
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        margin-top: 1px;
+    }
+    
+    .quick-action .action-arrow {
+        color: var(--gray-400);
+        transition: var(--transition-normal);
+        font-size: 0.9rem;
+    }
+    
+    .quick-action:hover .action-arrow {
+        color: var(--gold-color);
+        transform: translateX(6px);
+    }
+    
+    /* ============================================================
+       ACTIVITY ITEMS
+       ============================================================ */
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--gray-200);
+        transition: var(--transition-fast);
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-item:hover {
+        background: rgba(201, 168, 76, 0.03);
+        margin: 0 -16px;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+    }
+    
+    .activity-item .activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.8rem;
+        transition: var(--transition-normal);
+    }
+    
+    .activity-item:hover .activity-icon {
+        transform: scale(1.05);
+    }
+    
+    .activity-item .activity-icon.icon-login {
+        background: var(--info-light);
+        color: var(--info-color);
+    }
+    
+    .activity-item .activity-icon.icon-registration {
+        background: var(--success-light);
+        color: var(--success-color);
+    }
+    
+    .activity-item .activity-icon.icon-profile {
+        background: var(--warning-light);
+        color: var(--warning-color);
+    }
+    
+    .activity-item .activity-icon.icon-role {
+        background: #f3e5f5;
+        color: #7b1fa2;
+    }
+    
+    .activity-item .activity-icon.icon-event {
+        background: #fce4ec;
+        color: #c62828;
+    }
+    
+    .activity-item .activity-icon.icon-system {
+        background: #e0f7fa;
+        color: #00695c;
+    }
+    
+    .activity-item .activity-content {
+        flex: 1;
+    }
+    
+    .activity-item .activity-content .activity-text {
+        font-family: var(--font-secondary);
+        font-size: 0.85rem;
+        color: var(--gray-700);
+        margin-bottom: 2px;
+        line-height: 1.4;
+    }
+    
+    .activity-item .activity-content .activity-text strong {
+        color: var(--dark-blue);
+        font-weight: 600;
+    }
+    
+    .activity-item .activity-content .activity-text .text-gold {
+        color: var(--gold-color);
+        font-weight: 600;
+    }
+    
+    .activity-item .activity-content .activity-time {
+        font-family: var(--font-secondary);
+        font-size: 0.7rem;
+        color: var(--gray-500);
+    }
+    
+    /* ============================================================
+       BADGES
+       ============================================================ */
+    .badge {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: var(--radius-full);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    
+    .badge.badge-warning {
+        background: var(--warning-light);
+        color: var(--warning-color);
+    }
+    
+    .badge.badge-success {
+        background: var(--success-light);
+        color: var(--success-color);
+    }
+    
+    .badge.badge-danger {
+        background: var(--danger-light);
+        color: var(--danger-color);
+    }
+    
+    .badge.badge-info {
+        background: var(--info-light);
+        color: var(--info-color);
+    }
+    
+    /* ============================================================
+       MODULE GRID
+       ============================================================ */
+    .module-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+    }
+    
+    .module-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 18px 14px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--gray-200);
+        transition: var(--transition-normal);
+        text-decoration: none;
+        color: var(--gray-700);
+        background: var(--white);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .module-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: transparent;
+        transition: var(--transition-normal);
+    }
+    
+    .module-item:hover {
+        border-color: var(--gold-color);
+        background: rgba(201, 168, 76, 0.04);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        text-decoration: none;
+        color: var(--gold-dark);
+    }
+    
+    .module-item:hover::before {
+        background: var(--gold-color);
+    }
+    
+    .module-item .module-icon {
+        font-size: 2rem;
+        color: var(--gold-color);
+        margin-bottom: 6px;
+        transition: var(--transition-normal);
+    }
+    
+    .module-item:hover .module-icon {
+        transform: scale(1.1) translateY(-2px);
+    }
+    
+    .module-item .module-name {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--gray-800);
+    }
+    
+    .module-item .module-count {
+        font-family: var(--font-secondary);
+        font-size: 0.65rem;
+        color: var(--gray-500);
+        background: var(--gray-200);
+        padding: 2px 10px;
+        border-radius: var(--radius-full);
+        margin-top: 4px;
+        transition: var(--transition-normal);
+    }
+    
+    .module-item:hover .module-count {
+        background: rgba(201, 168, 76, 0.15);
+        color: var(--gold-dark);
+    }
+    
+    .module-item.featured {
+        border-color: var(--gold-color);
+        border-width: 2px;
+        background: rgba(201, 168, 76, 0.04);
+    }
+    
+    .module-item.featured::before {
+        background: var(--gold-color);
+    }
+    
+    .module-item.system {
+        border-color: var(--danger-color);
+        border-width: 2px;
+        background: rgba(138, 26, 26, 0.04);
+    }
+    
+    .module-item.system::before {
+        background: var(--danger-color);
+    }
+    
+    .module-item.system:hover {
+        border-color: var(--danger-color);
+        background: rgba(138, 26, 26, 0.06);
+        color: var(--danger-color);
+    }
+    
+    .module-item.system .module-icon {
+        color: var(--danger-color);
+    }
+    
+    /* ============================================================
+       SCROLLBAR
+       ============================================================ */
+    .activity-scroll {
+        max-height: 350px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+    
+    .activity-scroll::-webkit-scrollbar {
+        width: 5px;
+    }
+    
+    .activity-scroll::-webkit-scrollbar-track {
+        background: var(--gray-200);
+        border-radius: var(--radius-full);
+    }
+    
+    .activity-scroll::-webkit-scrollbar-thumb {
+        background: var(--gold-color);
+        border-radius: var(--radius-full);
+    }
+    
+    .activity-scroll::-webkit-scrollbar-thumb:hover {
+        background: var(--gold-dark);
+    }
+    
+    /* ============================================================
+       EMPTY STATE
+       ============================================================ */
+    .empty-state {
+        text-align: center;
+        padding: 30px 20px;
+    }
+    
+    .empty-state .empty-icon {
+        font-size: 3rem;
+        color: var(--gray-300);
+        margin-bottom: 12px;
+    }
+    
+    .empty-state .empty-title {
+        font-family: var(--font-secondary);
+        color: var(--gray-500);
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    
+    .empty-state .empty-desc {
+        font-family: var(--font-secondary);
+        color: var(--gray-400);
+        font-size: 0.8rem;
+    }
+    
+    /* ============================================================
+       SYSTEM HEALTH
+       ============================================================ */
+    .health-card {
+        text-align: center;
+        padding: 16px 12px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--gray-200);
+        transition: var(--transition-normal);
+        height: 100%;
+    }
+    
+    .health-card:hover {
+        border-color: var(--gold-color);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .health-card .health-icon {
+        font-size: 2rem;
+        margin-bottom: 4px;
+    }
+    
+    .health-card .health-icon.green { color: var(--success-color); }
+    .health-card .health-icon.blue { color: var(--info-color); }
+    .health-card .health-icon.orange { color: var(--warning-color); }
+    .health-card .health-icon.red { color: var(--danger-color); }
+    
+    .health-card .health-number {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--dark-blue);
+    }
+    
+    .health-card .health-label {
+        font-family: var(--font-secondary);
+        font-size: 0.7rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 1199px) {
+        .stat-card .stat-number {
+            font-size: 2.4rem;
+        }
+        .module-grid {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        }
+    }
+    
+    @media (max-width: 991px) {
+        .stat-card .stat-number {
+            font-size: 2.2rem;
+        }
+        .stat-card .stat-icon {
+            font-size: 2rem;
+        }
+        .module-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .stat-card {
+            padding: 18px 20px;
+        }
+        .stat-card .stat-number {
+            font-size: 2rem;
+        }
+        .stat-card .stat-label {
+            font-size: 0.7rem;
+        }
+        .dashboard-card .card-header {
+            font-size: 0.9rem;
+            padding: 14px 18px;
+        }
+        .quick-action {
+            padding: 10px 14px;
+        }
+        .quick-action .action-icon {
+            width: 34px;
+            height: 34px;
+            font-size: 0.9rem;
+        }
+        .quick-action .action-text .action-title {
+            font-size: 0.8rem;
+        }
+        .module-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        }
+        .module-item {
+            padding: 14px 10px;
+        }
+        .module-item .module-icon {
+            font-size: 1.6rem;
+        }
+        .module-item .module-name {
+            font-size: 0.75rem;
+        }
+        .health-card .health-number {
+            font-size: 1.4rem;
+        }
+    }
+    
+    @media (max-width: 575px) {
+        .stat-card {
+            padding: 14px 16px;
+        }
+        .stat-card .stat-number {
+            font-size: 1.6rem;
+        }
+        .stat-card .stat-icon {
+            font-size: 1.6rem;
+        }
+        .stat-card .stat-trend {
+            font-size: 0.6rem;
+            padding: 2px 8px;
+        }
+        .dashboard-card .card-body {
+            padding: 14px;
+        }
+        .activity-item .activity-content .activity-text {
+            font-size: 0.8rem;
+        }
+        .module-grid {
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 8px;
+        }
+        .module-item {
+            padding: 10px 6px;
+        }
+        .module-item .module-icon {
+            font-size: 1.3rem;
+        }
+        .module-item .module-name {
+            font-size: 0.65rem;
+        }
+        .health-card .health-number {
+            font-size: 1.2rem;
+        }
+        .health-card .health-icon {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Super Admin</span> Dashboard
+{% endblock %}
+
+{% block breadcrumb %}Super Admin Dashboard{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- ============================================
+STATISTICS CARDS
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon-wrapper">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <span class="stat-trend neutral">All Time</span>
+            </div>
+            <span class="stat-number">{{ total_users|default:0 }}</span>
+            <div class="stat-label">Total Users</div>
+            <div class="stat-progress"><div class="stat-progress-bar" style="width:100%;"></div></div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon-wrapper">
+                <div class="stat-icon"><i class="fas fa-user-clock"></i></div>
+                <span class="stat-trend up"><i class="fas fa-arrow-up me-1"></i> Needs Review</span>
+            </div>
+            <span class="stat-number">{{ pending_applications|default:0 }}</span>
+            <div class="stat-label">Pending Applications</div>
+            <div class="stat-progress"><div class="stat-progress-bar blue" style="width:{{ pending_applications_percent|default:0 }}%;"></div></div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-icon-wrapper">
+                <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                <span class="stat-trend neutral">Awaiting Email</span>
+            </div>
+            <span class="stat-number">{{ pending_verifications|default:0 }}</span>
+            <div class="stat-label">Pending Verifications</div>
+            <div class="stat-progress"><div class="stat-progress-bar orange" style="width:{{ pending_verifications_percent|default:0 }}%;"></div></div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+            <div class="stat-icon-wrapper">
+                <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                <span class="stat-trend up"><i class="fas fa-arrow-up me-1"></i> Active</span>
+            </div>
+            <span class="stat-number">{{ active_members|default:0 }}</span>
+            <div class="stat-label">Active Members</div>
+            <div class="stat-progress"><div class="stat-progress-bar green" style="width:{{ active_members_percent|default:0 }}%;"></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+SYSTEM HEALTH MONITORING - SUPER ADMIN ONLY
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="card-header">
+                <span>
+                    <i class="fas fa-heartbeat header-icon" style="color:#ff6b6b;"></i>
+                    System Health
+                </span>
+                <span class="header-badge success">All Systems Operational</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3 col-6">
+                        <div class="health-card">
+                            <div class="health-icon green"><i class="fas fa-database"></i></div>
+                            <div class="health-number">{{ db_size|default:"2.4" }} MB</div>
+                            <div class="health-label">Database Size</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="health-card">
+                            <div class="health-icon blue"><i class="fas fa-clock"></i></div>
+                            <div class="health-number">{{ uptime|default:"3h 12m" }}</div>
+                            <div class="health-label">Uptime</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="health-card">
+                            <div class="health-icon orange"><i class="fas fa-users"></i></div>
+                            <div class="health-number">{{ online_users|default:"12" }}</div>
+                            <div class="health-label">Online Users</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="health-card">
+                            <div class="health-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="health-number">{{ system_errors|default:"0" }}</div>
+                            <div class="health-label">System Errors</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+ROLE COUNTS & QUICK ACTIONS
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-chart-pie header-icon"></i>
+                Users by Role
+                <span class="header-badge">Distribution</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for role in role_counts %}
+                        <div class="col-6 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span style="font-family:var(--font-secondary);font-size:0.85rem;color:var(--gray-700);">
+                                    <i class="fas fa-user me-1" style="color:var(--gold-color);"></i>
+                                    {{ role.role|title }}
+                                </span>
+                                <span class="role-badge">{{ role.count }}</span>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <div class="empty-state">
+                                <div class="empty-icon"><i class="fas fa-chart-pie"></i></div>
+                                <div class="empty-title">No user data available</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="dashboard-card" data-aos="fade-left" data-aos-delay="100">
+            <div class="card-header">
+                <i class="fas fa-bolt header-icon"></i>
+                Quick Actions
+                <span class="header-badge">Tools</span>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'accounts:manage_applications' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-user-plus"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Review Applications</div>
+                        <div class="action-desc">Approve or reject pending registrations</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:manage_users' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-users-cog"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Manage Users</div>
+                        <div class="action-desc">View, edit, or suspend user accounts</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:manage_role_requests' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Role Change Requests</div>
+                        <div class="action-desc">Review and approve role changes</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:activity_logs' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-history"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Activity Logs</div>
+                        <div class="action-desc">View system audit trail</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'admin:index' %}" class="quick-action" style="border-color:var(--gold-color);">
+                    <div class="action-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Django Admin</div>
+                        <div class="action-desc">Full system administration</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+PLATFORM MANAGEMENT - FULL ADMIN ACCESS
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="card-header">
+                <span>
+                    <i class="fas fa-cogs header-icon"></i>
+                    Platform Management
+                </span>
+                <span class="header-badge">Full Access</span>
+            </div>
+            <div class="card-body">
+                <div class="module-grid">
+                    <a href="{% url 'communities:list' %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-users"></i></div>
+                        <div class="module-name">Communities</div>
+                        <span class="module-count">View All</span>
+                    </a>
+                    <a href="{% url 'events:list' %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="module-name">Events</div>
+                        <span class="module-count">View All</span>
+                    </a>
+                    <a href="{% url 'opportunities:list' %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-briefcase"></i></div>
+                        <div class="module-name">Opportunities</div>
+                        <span class="module-count">View All</span>
+                    </a>
+                    <a href="{% url 'resources:list' %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-book"></i></div>
+                        <div class="module-name">Resources</div>
+                        <span class="module-count">View All</span>
+                    </a>
+                    <a href="{% url 'forums:list' %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-comments"></i></div>
+                        <div class="module-name">Forums</div>
+                        <span class="module-count">View All</span>
+                    </a>
+                    <a href="{% url 'members:directory' %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-user-tie"></i></div>
+                        <div class="module-name">Members</div>
+                        <span class="module-count">Directory</span>
+                    </a>
+                    <a href="{% url 'profiles:view' username=request.user.username %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-id-card"></i></div>
+                        <div class="module-name">My Profile</div>
+                        <span class="module-count">View</span>
+                    </a>
+                    <a href="{% url 'collaborations:list' %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-handshake"></i></div>
+                        <div class="module-name">Collaborations</div>
+                        <span class="module-count">View All</span>
+                    </a>
+                    <a href="{% url 'payments:list' %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-credit-card"></i></div>
+                        <div class="module-name">Payments</div>
+                        <span class="module-count">View All</span>
+                    </a>
+                    <a href="{% url 'newsletters:list' %}" class="module-item">
+                        <div class="module-icon"><i class="fas fa-newspaper"></i></div>
+                        <div class="module-name">Newsletters</div>
+                        <span class="module-count">Manage</span>
+                    </a>
+                    <a href="{% url 'analytics:dashboard' %}" class="module-item featured">
+                        <div class="module-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="module-name">Analytics</div>
+                        <span class="module-count">Dashboard</span>
+                    </a>
+                    <a href="{% url 'admin:index' %}" class="module-item featured">
+                        <div class="module-icon"><i class="fas fa-user-cog"></i></div>
+                        <div class="module-name">Django Admin</div>
+                        <span class="module-count">Full Access</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+SYSTEM SETTINGS - SUPER ADMIN ONLY
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="card-header">
+                <span>
+                    <i class="fas fa-shield-alt header-icon"></i>
+                    Security Controls
+                </span>
+                <span class="header-badge danger">Restricted</span>
+            </div>
+            <div class="card-body">
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-user-lock"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Manage Roles</div>
+                        <div class="action-desc">Assign or change user roles</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-ban"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">IP Whitelist</div>
+                        <div class="action-desc">Manage allowed IP addresses</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-key"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">API Keys</div>
+                        <div class="action-desc">Generate and manage API keys</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-database"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Backup & Restore</div>
+                        <div class="action-desc">Manage system backups</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="250">
+            <div class="card-header">
+                <span>
+                    <i class="fas fa-envelope header-icon"></i>
+                    Email Settings
+                </span>
+                <span class="header-badge danger">Restricted</span>
+            </div>
+            <div class="card-body">
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-cog"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">SMTP Configuration</div>
+                        <div class="action-desc">Configure email server settings</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Email Templates</div>
+                        <div class="action-desc">Customize system email templates</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-history"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Email Logs</div>
+                        <div class="action-desc">View all sent emails</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="card-header">
+                <span>
+                    <i class="fas fa-code header-icon"></i>
+                    System Configuration
+                </span>
+                <span class="header-badge danger">Restricted</span>
+            </div>
+            <div class="card-body">
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-sliders-h"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">System Settings</div>
+                        <div class="action-desc">Configure system-wide settings</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-globe"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Regional Settings</div>
+                        <div class="action-desc">Configure region and localization</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-credit-card"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Payment Gateway</div>
+                        <div class="action-desc">Configure payment settings</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="#" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-file-export"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Export System Data</div>
+                        <div class="action-desc">Export all system data</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+AUDIT LOGS - SUPER ADMIN ONLY
+============================================ -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="350">
+            <div class="card-header">
+                <span>
+                    <i class="fas fa-clipboard-list header-icon"></i>
+                    System Audit Logs
+                </span>
+                <span class="header-badge danger">Restricted</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table" style="font-family:var(--font-secondary);font-size:0.85rem;">
+                        <thead>
+                            <tr style="background:var(--cream-color);">
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>IP Address</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in audit_logs|slice:":5" %}
+                                <tr>
+                                    <td><strong>{{ log.user.get_full_name|default:log.user.username }}</strong></td>
+                                    <td>{{ log.action_description }}</td>
+                                    <td>{{ log.ip_address|default:"-" }}</td>
+                                    <td>{{ log.created_at|timesince }} ago</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3">No audit logs available</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end mt-2">
+                    <a href="{% url 'accounts:activity_logs' %}" class="text-gold" style="font-weight:600;text-decoration:none;">
+                        View Full Audit Trail <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+QUICK CREATE & ANALYTICS
+============================================ -->
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="card-header">
+                <span>
+                    <i class="fas fa-plus-circle header-icon"></i>
+                    Quick Create
+                </span>
+                <span class="header-badge">New</span>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'events:create' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-calendar-plus"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Create Event</div>
+                        <div class="action-desc">Schedule a new event</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'opportunities:create' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-briefcase"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Post Opportunity</div>
+                        <div class="action-desc">Share a new opportunity</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'communities:create' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-users"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Create Community</div>
+                        <div class="action-desc">Start a new community</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'newsletters:create' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-newspaper"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Create Newsletter</div>
+                        <div class="action-desc">Send a newsletter</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="250">
+            <div class="card-header">
+                <span>
+                    <i class="fas fa-chart-bar header-icon"></i>
+                    Analytics
+                </span>
+                <span class="header-badge">Insights</span>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'analytics:overview' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-chart-pie"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Platform Overview</div>
+                        <div class="action-desc">View platform analytics</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'analytics:users' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-users"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">User Analytics</div>
+                        <div class="action-desc">User activity reports</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'members:statistics' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Member Statistics</div>
+                        <div class="action-desc">View member stats</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="card-header">
+                <span>
+                    <i class="fas fa-cog header-icon"></i>
+                    System Admin
+                </span>
+                <span class="header-badge danger">Restricted</span>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'members:manage_verifications' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Verification Requests</div>
+                        <div class="action-desc">Review verification requests</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'profiles:edit' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-user-edit"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Edit Profile</div>
+                        <div class="action-desc">Update your profile</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'notifications:preferences' %}" class="quick-action">
+                    <div class="action-icon"><i class="fas fa-bell"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Notification Preferences</div>
+                        <div class="action-desc">Manage your notifications</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'admin:index' %}" class="quick-action" style="border-color:var(--gold-color);">
+                    <div class="action-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Django Admin Panel</div>
+                        <div class="action-desc">Full system administration</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
