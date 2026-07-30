@@ -3011,3 +3011,62 @@ Traceback (most recent call last):
     raise NoReverseMatch(msg)
 django.urls.exceptions.NoReverseMatch: Reverse for 'profile_update' not found. 'profile_update' is not a valid view function or pattern name.
 ERROR 2026-07-30 12:18:00,086 log 5312 7548 "GET /accounts/dashboard/partner/ HTTP/1.1" 500 214858
+WARNING 2026-07-30 16:40:25,682 log 2180 11572 Not Found: /favicon.ico
+WARNING 2026-07-30 16:40:25,765 log 2180 11572 "GET /favicon.ico HTTP/1.1" 404 5301
+ERROR 2026-07-30 16:52:15,947 log 2180 1220 You're accessing the development server over HTTPS, but it only supports HTTP.
+ERROR 2026-07-30 16:52:16,033 log 2180 12300 You're accessing the development server over HTTPS, but it only supports HTTP.
+ERROR 2026-07-30 16:52:16,427 log 2180 7292 You're accessing the development server over HTTPS, but it only supports HTTP.
+ERROR 2026-07-30 16:52:16,429 log 2180 2516 You're accessing the development server over HTTPS, but it only supports HTTP.
+WARNING 2026-07-30 17:09:13,334 log 5604 7224 The request's session was deleted before the request completed. The user may have logged out in a concurrent request, for example.: /admin/login/
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\sessions\backends\db.py", line 127, in save
+    obj.save(
+    ~~~~~~~~^
+        force_insert=must_create, force_update=not must_create, using=using
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\CS\venv\Lib\site-packages\django\db\models\base.py", line 874, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\CS\venv\Lib\site-packages\django\db\models\base.py", line 966, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "C:\Users\CS\venv\Lib\site-packages\django\db\models\base.py", line 1122, in _save_table
+    raise self.NotUpdated("Forced update did not affect any rows.")
+django.contrib.sessions.models.Session.NotUpdated: Forced update did not affect any rows.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\sessions\middleware.py", line 60, in process_response
+    request.session.save()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\sessions\backends\db.py", line 136, in save
+    raise UpdateError
+django.contrib.sessions.backends.base.UpdateError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\CS\venv\Lib\site-packages\django\utils\deprecation.py", line 311, in __call__
+    response = self.process_response(request, response)
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\sessions\middleware.py", line 62, in process_response
+    raise SessionInterrupted(
+    ...<3 lines>...
+    )
+django.contrib.sessions.exceptions.SessionInterrupted: The request's session was deleted before the request completed. The user may have logged out in a concurrent request, for example.
+WARNING 2026-07-30 17:34:47,615 log 224 5376 Forbidden (CSRF token from POST incorrect.): /accounts/login/
+WARNING 2026-07-30 17:34:49,451 log 224 5376 "POST /accounts/login/ HTTP/1.1" 403 2503

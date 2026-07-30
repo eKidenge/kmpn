@@ -1,8 +1,8 @@
 # accounts/utils.py
-
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def generate_verification_token():
     """Generate a unique verification token"""
-    return str(uuid.uuid4())
+    return uuid.uuid4()
 
 
 def generate_membership_number(user):
@@ -59,20 +59,37 @@ def generate_membership_number(user):
 
 def send_verification_email(request, user):
     """
-    Send email verification link to user
+    Send email verification link to user using UUID token
     Returns: bool - True if email sent successfully, False otherwise
     """
     try:
+        # Generate UUID token if not exists
+        if not user.email_verification_token:
+            user.email_verification_token = uuid.uuid4()
+            user.save()
+        
+        # Get the current site domain
         current_site = get_current_site(request)
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        domain = current_site.domain
+        
+        # For local development, use the request host
+        if request:
+            domain = request.get_host()
+        
+        # Determine protocol
+        protocol = 'https' if request.is_secure() else 'http'
+        
+        # Build verification URL using UUID
+        verification_url = reverse('accounts:verify_email', kwargs={'token': user.email_verification_token})
+        full_url = f"{protocol}://{domain}{verification_url}"
         
         subject = 'Verify Your Email - KPSN'
         message = render_to_string('emails/verify_email.html', {
             'user': user,
-            'domain': current_site.domain,
-            'uid': uid,
-            'token': token,
+            'verification_url': full_url,
+            'domain': domain,
+            'protocol': protocol,
+            'site_name': 'KPSN',
         })
         
         send_mail(
@@ -81,7 +98,7 @@ def send_verification_email(request, user):
             settings.DEFAULT_FROM_EMAIL,
             [user.email],
             fail_silently=False,
-            html_message=message,  # Send as HTML
+            html_message=message,
         )
         logger.info(f"Verification email sent to {user.email}")
         return True
@@ -98,11 +115,16 @@ def send_approval_email(request, user):
     """
     try:
         current_site = get_current_site(request)
+        domain = current_site.domain
+        if request:
+            domain = request.get_host()
+        
         subject = 'Registration Approved - KPSN'
-        message = render_to_string('emails/registration_approved.html', {
+        message = render_to_string('email/registration_approved.html', {
             'user': user,
-            'domain': current_site.domain,
+            'domain': domain,
             'membership_number': user.membership_number,
+            'site_name': 'KPSN',
         })
         
         send_mail(
@@ -128,11 +150,16 @@ def send_rejection_email(request, user, notes=None):
     """
     try:
         current_site = get_current_site(request)
+        domain = current_site.domain
+        if request:
+            domain = request.get_host()
+        
         subject = 'Registration Update - KPSN'
         message = render_to_string('emails/registration_rejected.html', {
             'user': user,
-            'domain': current_site.domain,
+            'domain': domain,
             'notes': notes,
+            'site_name': 'KPSN',
         })
         
         send_mail(
@@ -158,11 +185,16 @@ def send_info_request_email(request, user, notes=None):
     """
     try:
         current_site = get_current_site(request)
+        domain = current_site.domain
+        if request:
+            domain = request.get_host()
+        
         subject = 'Additional Information Required - KPSN'
         message = render_to_string('emails/registration_info_request.html', {
             'user': user,
-            'domain': current_site.domain,
+            'domain': domain,
             'notes': notes,
+            'site_name': 'KPSN',
         })
         
         send_mail(
@@ -188,12 +220,20 @@ def send_password_reset_email(request, user, token, uid):
     """
     try:
         current_site = get_current_site(request)
+        domain = current_site.domain
+        if request:
+            domain = request.get_host()
+        
+        protocol = 'https' if request.is_secure() else 'http'
+        
         subject = 'Password Reset - KPSN'
-        message = render_to_string('accounts/password_reset_email.html', {
+        message = render_to_string('emails/password_reset_email.html', {
             'user': user,
-            'domain': current_site.domain,
+            'domain': domain,
+            'protocol': protocol,
             'uid': uid,
             'token': token,
+            'site_name': 'KPSN',
         })
         
         send_mail(
@@ -219,10 +259,15 @@ def send_welcome_email(request, user):
     """
     try:
         current_site = get_current_site(request)
+        domain = current_site.domain
+        if request:
+            domain = request.get_host()
+        
         subject = 'Welcome to KPSN!'
         message = render_to_string('emails/welcome.html', {
             'user': user,
-            'domain': current_site.domain,
+            'domain': domain,
+            'site_name': 'KPSN',
         })
         
         send_mail(
@@ -248,10 +293,15 @@ def send_newsletter_email(request, user, subject, content):
     """
     try:
         current_site = get_current_site(request)
+        domain = current_site.domain
+        if request:
+            domain = request.get_host()
+        
         message = render_to_string('emails/newsletter.html', {
             'user': user,
-            'domain': current_site.domain,
+            'domain': domain,
             'content': content,
+            'site_name': 'KPSN',
         })
         
         send_mail(
@@ -277,10 +327,15 @@ def send_notification_email(request, user, subject, content):
     """
     try:
         current_site = get_current_site(request)
+        domain = current_site.domain
+        if request:
+            domain = request.get_host()
+        
         message = render_to_string('emails/notification.html', {
             'user': user,
-            'domain': current_site.domain,
+            'domain': domain,
             'content': content,
+            'site_name': 'KPSN',
         })
         
         send_mail(
@@ -301,15 +356,22 @@ def send_notification_email(request, user, subject, content):
 
 def generate_verification_url(request, user):
     """
-    Generate email verification URL for user
+    Generate email verification URL for user using UUID
     Returns: str - The full verification URL
     """
-    current_site = get_current_site(request)
-    token = default_token_generator.make_token(user)
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
-    protocol = 'https' if request.is_secure() else 'http'
+    if not user.email_verification_token:
+        user.email_verification_token = uuid.uuid4()
+        user.save()
     
-    return f"{protocol}://{current_site.domain}/accounts/verify-email/{uid}/{token}/"
+    current_site = get_current_site(request)
+    domain = current_site.domain
+    if request:
+        domain = request.get_host()
+    
+    protocol = 'https' if request.is_secure() else 'http'
+    verification_url = reverse('accounts:verify_email', kwargs={'token': user.email_verification_token})
+    
+    return f"{protocol}://{domain}{verification_url}"
 
 
 def generate_password_reset_url(request, user):
@@ -321,8 +383,11 @@ def generate_password_reset_url(request, user):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     protocol = 'https' if request.is_secure() else 'http'
+    domain = current_site.domain
+    if request:
+        domain = request.get_host()
     
-    return f"{protocol}://{current_site.domain}/accounts/password-reset/{uid}/{token}/"
+    return f"{protocol}://{domain}/accounts/password-reset/confirm/{uid}/{token}/"
 
 
 # Legacy aliases for backward compatibility

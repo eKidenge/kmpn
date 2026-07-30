@@ -3,70 +3,913 @@
 
 {% block title %}Moderator Dashboard - KPSN{% endblock %}
 
-{% block dashboard_title %}
-    <span class="gold-text">Moderator</span> Dashboard
+{% block extra_css %}
+<style>
+    /* ============================================================
+       GOVERNMENT-STYLE TYPOGRAPHY
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    :root {
+        --gov-serif: 'Merriweather', 'Times New Roman', serif;
+        --gov-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        --gov-mono: 'JetBrains Mono', 'Courier New', monospace;
+        
+        /* Government Color Palette */
+        --gov-navy: #0a1628;
+        --gov-navy-light: #1a2a4a;
+        --gov-gold: #c9a84c;
+        --gov-gold-light: #e8d5a3;
+        --gov-gold-dark: #a8872e;
+        --gov-cream: #f5f0e8;
+        --gov-gray: #6b7a8f;
+        --gov-gray-light: #e8ecef;
+        --gov-border: #d4c8b8;
+        --gov-success: #2d6a4f;
+        --gov-warning: #b8860b;
+        --gov-danger: #8b1a1a;
+        --gov-info: #1a3a5c;
+        --gov-purple: #4a2c6a;
+        --gov-teal: #1a5c5c;
+        
+        /* KPSN Brand Colors */
+        --dark-blue: #0a1628;
+        --gold-color: #c9a84c;
+    }
+
+    /* ============================================================
+       MODERATOR HEADER
+       ============================================================ */
+    .moderator-header {
+        background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 40%, #2a3a5a 100%);
+        border-bottom: 5px solid #c9a84c;
+        padding: 30px 35px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+    
+    .moderator-header::before {
+        content: '';
+        position: absolute;
+        top: -60%;
+        right: -5%;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.04);
+        pointer-events: none;
+    }
+    
+    .moderator-header-content {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .moderator-seal {
+        font-size: 2.8rem;
+        color: #c9a84c;
+        border: 3px solid #c9a84c;
+        border-radius: 50%;
+        padding: 18px;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(201, 168, 76, 0.08);
+        flex-shrink: 0;
+    }
+    
+    .moderator-title-section {
+        flex: 1;
+        min-width: 250px;
+    }
+    
+    .moderator-title-section h1 {
+        font-family: 'Merriweather', serif;
+        font-weight: 900;
+        font-size: 2.2rem;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: 0.5px;
+        line-height: 1.2;
+    }
+    
+    .moderator-title-section h1 .gold-text {
+        color: #c9a84c;
+    }
+    
+    .moderator-title-section .moderator-subtitle {
+        font-family: 'Inter', sans-serif;
+        font-weight: 300;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-top: 5px;
+    }
+    
+    .moderator-title-section .moderator-subtitle .star {
+        color: #c9a84c;
+    }
+    
+    .moderator-badges {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-left: auto;
+    }
+    
+    .moderator-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 18px;
+        font-family: 'Merriweather', serif;
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 2px solid #c9a84c;
+        background: linear-gradient(135deg, #4a2c6a, #1a2a4a);
+        color: #ffffff;
+        white-space: nowrap;
+    }
+    
+    .moderator-badge.gold {
+        background: #c9a84c;
+        color: #0a1628;
+        border-color: #c9a84c;
+    }
+    
+    .moderator-badge i {
+        font-size: 0.85rem;
+    }
+
+    /* ============================================================
+       MODERATOR STAT CARDS
+       ============================================================ */
+    .moderator-stat-card {
+        background: #ffffff;
+        border: 1px solid var(--gov-border);
+        border-radius: 0;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(10, 22, 40, 0.06);
+        text-align: center;
+        height: 100%;
+    }
+
+    .moderator-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gov-purple), var(--gov-gold));
+    }
+
+    .moderator-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(10, 22, 40, 0.12);
+        border-color: var(--gov-gold);
+    }
+
+    .moderator-stat-card .stat-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--gov-cream), #ffffff);
+        border: 2px solid var(--gov-purple);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.5rem;
+        color: var(--gov-purple);
+        transition: all 0.3s ease;
+    }
+
+    .moderator-stat-card:hover .stat-icon-wrapper {
+        background: var(--gov-purple);
+        color: #ffffff;
+        transform: scale(1.05);
+    }
+
+    .moderator-stat-card .stat-number {
+        font-family: var(--gov-serif);
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--gov-navy);
+        display: block;
+        line-height: 1.2;
+    }
+
+    .moderator-stat-card .stat-label {
+        font-family: var(--gov-sans);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--gov-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 0.25rem;
+    }
+
+    .moderator-stat-card .stat-change {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        font-family: var(--gov-mono);
+        border-radius: 20px;
+        margin-top: 0.5rem;
+    }
+
+    .moderator-stat-card .stat-change.warning {
+        background: rgba(184, 134, 11, 0.1);
+        color: var(--gov-warning);
+    }
+
+    .moderator-stat-card .stat-change.danger {
+        background: rgba(139, 26, 26, 0.1);
+        color: var(--gov-danger);
+    }
+
+    .moderator-stat-card .stat-change.success {
+        background: rgba(45, 106, 79, 0.1);
+        color: var(--gov-success);
+    }
+
+    /* ============================================================
+       MODERATOR CARDS
+       ============================================================ */
+    .moderator-card {
+        background: #ffffff;
+        border: 1px solid var(--gov-border);
+        border-radius: 0;
+        box-shadow: 0 4px 12px rgba(10, 22, 40, 0.06);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .moderator-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gov-purple), var(--gov-gold));
+    }
+
+    .moderator-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(10, 22, 40, 0.1);
+        border-color: var(--gov-gold);
+    }
+
+    .moderator-card .card-header {
+        background: linear-gradient(135deg, var(--gov-purple), var(--gov-navy-light));
+        color: #ffffff;
+        padding: 1rem 1.5rem;
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        border-bottom: 3px solid var(--gov-gold);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        letter-spacing: 0.03em;
+        min-height: 60px;
+        flex-wrap: wrap;
+    }
+
+    .moderator-card .card-header i {
+        color: var(--gov-gold);
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .moderator-card .card-header .header-badge {
+        margin-left: auto;
+        background: var(--gov-gold);
+        color: var(--gov-navy);
+        padding: 0.2rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        font-family: var(--gov-sans);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+    .moderator-card .card-body {
+        padding: 1.5rem;
+        font-family: var(--gov-sans);
+    }
+
+    /* ============================================================
+       MODERATOR QUICK ACTIONS
+       ============================================================ */
+    .moderator-action {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--gov-gray-light);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: var(--gov-navy);
+        margin-bottom: 0.5rem;
+    }
+
+    .moderator-action:last-child {
+        margin-bottom: 0;
+    }
+
+    .moderator-action:hover {
+        background: var(--gov-cream);
+        border-color: var(--gov-gold);
+        text-decoration: none;
+        color: var(--gov-navy);
+        transform: translateX(4px);
+    }
+
+    .moderator-action .action-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gov-cream);
+        border: 2px solid var(--gov-purple);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gov-purple);
+        font-size: 1rem;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .moderator-action:hover .action-icon {
+        background: var(--gov-purple);
+        color: #ffffff;
+    }
+
+    .moderator-action .action-text {
+        flex: 1;
+    }
+
+    .moderator-action .action-title {
+        font-family: var(--gov-sans);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--gov-navy);
+    }
+
+    .moderator-action .action-desc {
+        font-family: var(--gov-sans);
+        font-size: 0.8rem;
+        color: var(--gov-gray);
+    }
+
+    .moderator-action .action-arrow {
+        color: var(--gov-gold);
+        font-size: 0.8rem;
+        opacity: 0.5;
+        transition: all 0.3s ease;
+    }
+
+    .moderator-action:hover .action-arrow {
+        opacity: 1;
+        transform: translateX(4px);
+    }
+
+    /* ============================================================
+       MODERATOR REPORT LIST
+       ============================================================ */
+    .report-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .report-list::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .report-list::-webkit-scrollbar-track {
+        background: var(--gov-gray-light);
+    }
+
+    .report-list::-webkit-scrollbar-thumb {
+        background: var(--gov-gold);
+    }
+
+    .report-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--gov-gray-light);
+        transition: all 0.3s ease;
+    }
+
+    .report-item:last-child {
+        border-bottom: none;
+    }
+
+    .report-item:hover {
+        background: var(--gov-cream);
+        padding-left: 1rem;
+    }
+
+    .report-item .report-priority {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .report-item .report-priority.high {
+        background: var(--gov-danger);
+        box-shadow: 0 0 0 3px rgba(139, 26, 26, 0.2);
+    }
+
+    .report-item .report-priority.medium {
+        background: var(--gov-warning);
+        box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.2);
+    }
+
+    .report-item .report-priority.low {
+        background: var(--gov-info);
+        box-shadow: 0 0 0 3px rgba(26, 58, 92, 0.2);
+    }
+
+    .report-item .report-content {
+        flex: 1;
+    }
+
+    .report-item .report-content .report-title {
+        font-family: var(--gov-sans);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--gov-navy);
+    }
+
+    .report-item .report-content .report-meta {
+        font-family: var(--gov-sans);
+        font-size: 0.8rem;
+        color: var(--gov-gray);
+    }
+
+    .report-item .report-time {
+        font-family: var(--gov-mono);
+        font-size: 0.7rem;
+        color: var(--gov-gray);
+        white-space: nowrap;
+    }
+
+    .report-item .report-badge {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.6rem;
+        font-weight: 700;
+        font-family: var(--gov-sans);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-radius: 20px;
+    }
+
+    .report-item .report-badge.pending {
+        background: rgba(184, 134, 11, 0.15);
+        color: var(--gov-warning);
+    }
+
+    .report-item .report-badge.resolved {
+        background: rgba(45, 106, 79, 0.15);
+        color: var(--gov-success);
+    }
+
+    .report-item .report-badge.in-progress {
+        background: rgba(26, 58, 92, 0.15);
+        color: var(--gov-info);
+    }
+
+    /* ============================================================
+       ACTIVITY FEED
+       ============================================================ */
+    .activity-feed {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .activity-feed::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .activity-feed::-webkit-scrollbar-track {
+        background: var(--gov-gray-light);
+    }
+
+    .activity-feed::-webkit-scrollbar-thumb {
+        background: var(--gov-gold);
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--gov-gray-light);
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-item .activity-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.8rem;
+    }
+
+    .activity-item .activity-icon.icon-report {
+        background: rgba(139, 26, 26, 0.12);
+        color: var(--gov-danger);
+    }
+
+    .activity-item .activity-icon.icon-moderate {
+        background: rgba(74, 44, 106, 0.12);
+        color: var(--gov-purple);
+    }
+
+    .activity-item .activity-icon.icon-ban {
+        background: rgba(184, 134, 11, 0.12);
+        color: var(--gov-warning);
+    }
+
+    .activity-item .activity-icon.icon-approve {
+        background: rgba(45, 106, 79, 0.12);
+        color: var(--gov-success);
+    }
+
+    .activity-item .activity-content {
+        flex: 1;
+    }
+
+    .activity-item .activity-content .activity-text {
+        font-family: var(--gov-sans);
+        font-size: 0.9rem;
+        color: var(--gov-navy);
+    }
+
+    .activity-item .activity-content .activity-text strong {
+        color: var(--gov-purple);
+    }
+
+    .activity-item .activity-content .activity-time {
+        font-family: var(--gov-mono);
+        font-size: 0.7rem;
+        color: var(--gov-gray);
+    }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .gov-btn {
+        font-family: var(--gov-sans);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.6rem 1.5rem;
+        border: 2px solid var(--gov-gold);
+        background: transparent;
+        color: var(--gov-navy);
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .gov-btn:hover {
+        border-color: var(--gov-gold-dark);
+        color: var(--gov-navy);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.2);
+        text-decoration: none;
+    }
+
+    .gov-btn-primary {
+        background: var(--gov-purple);
+        border-color: var(--gov-purple);
+        color: #ffffff;
+    }
+
+    .gov-btn-primary:hover {
+        background: var(--gov-navy-light);
+        border-color: var(--gov-navy-light);
+        color: #ffffff;
+    }
+
+    .gov-btn-gold {
+        background: var(--gov-gold);
+        border-color: var(--gov-gold);
+        color: var(--gov-navy);
+    }
+
+    .gov-btn-gold:hover {
+        background: var(--gov-gold-dark);
+        border-color: var(--gov-gold-dark);
+        color: #ffffff;
+    }
+
+    .gov-btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.7rem;
+    }
+
+    .gov-btn-block {
+        display: block;
+        width: 100%;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 16px; }
+    .mt-4 { margin-top: 24px; }
+    .mb-3 { margin-bottom: 16px; }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+        .moderator-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .moderator-badges {
+            margin-left: 0;
+            justify-content: center;
+        }
+
+        .moderator-title-section h1 {
+            font-size: 1.6rem;
+        }
+
+        .moderator-seal {
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            padding: 12px;
+        }
+
+        .moderator-stat-card .stat-number {
+            font-size: 2rem;
+        }
+
+        .moderator-card .card-header {
+            font-size: 0.9rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .moderator-action {
+            padding: 0.5rem 0.75rem;
+        }
+
+        .moderator-action .action-icon {
+            width: 34px;
+            height: 34px;
+            font-size: 0.9rem;
+        }
+
+        .moderator-action .action-title {
+            font-size: 0.85rem;
+        }
+
+        .moderator-action .action-desc {
+            font-size: 0.7rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .moderator-header {
+            padding: 15px;
+        }
+
+        .moderator-title-section h1 {
+            font-size: 1.3rem;
+        }
+
+        .moderator-title-section .moderator-subtitle {
+            font-size: 0.65rem;
+        }
+
+        .moderator-seal {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            padding: 10px;
+        }
+
+        .moderator-badge {
+            font-size: 0.55rem;
+            padding: 4px 10px;
+        }
+
+        .moderator-stat-card {
+            padding: 1rem;
+        }
+
+        .moderator-stat-card .stat-number {
+            font-size: 1.6rem;
+        }
+
+        .moderator-stat-card .stat-label {
+            font-size: 0.65rem;
+        }
+
+        .moderator-card .card-body {
+            padding: 1rem;
+        }
+
+        .report-item {
+            flex-wrap: wrap;
+        }
+
+        .gov-btn {
+            padding: 0.4rem 1rem;
+            font-size: 0.65rem;
+        }
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .moderator-footer {
+        font-family: var(--gov-sans);
+        font-size: 0.78rem;
+        color: var(--gov-gray);
+        text-align: center;
+        padding: 25px 0 15px;
+        border-top: 2px solid var(--gov-border);
+        margin-top: 35px;
+        width: 100%;
+    }
+
+    .moderator-footer i {
+        color: var(--gov-gold);
+    }
+
+    .moderator-footer .footer-divider {
+        color: var(--gov-border);
+        margin: 0 8px;
+    }
+
+    .moderator-footer .footer-small {
+        font-size: 0.7rem;
+        opacity: 0.6;
+        display: block;
+        margin-top: 6px;
+    }
+</style>
 {% endblock %}
 
-{% block breadcrumb %}Moderator Dashboard{% endblock %}
+{% block dashboard_title %}
+<div class="moderator-header">
+    <div class="moderator-header-content">
+        <div class="moderator-seal">
+            <i class="fas fa-gavel"></i>
+        </div>
+        <div class="moderator-title-section">
+            <h1>
+                <span class="gold-text">Moderator</span> Dashboard
+                <span style="font-size:0.9rem;font-weight:300;color:rgba(255,255,255,0.35);letter-spacing:0.1em;">
+                    — MODERATION CENTER
+                </span>
+            </h1>
+            <div class="moderator-subtitle">
+                Kenya Psychological Society Network <span class="star">★</span> Community Moderation
+                <span style="color:rgba(255,255,255,0.3);margin:0 6px;">|</span> Official Moderation Portal
+            </div>
+        </div>
+        <div class="moderator-badges">
+            <span class="moderator-badge">
+                <i class="fas fa-gavel"></i> Moderator
+            </span>
+            <span class="moderator-badge gold">
+                <i class="fas fa-shield-alt"></i> Trusted
+            </span>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
 {% block dashboard_content %}
 
-<div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
-            <div class="stat-icon"><i class="fas fa-flag"></i></div>
-            <span class="stat-number">0</span>
+<!-- ============================================================
+     STATISTICS ROW
+     ============================================================ -->
+<div class="row g-3 g-md-4 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="moderator-stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon-wrapper">
+                <i class="fas fa-flag"></i>
+            </div>
+            <span class="stat-number">{{ reports_count|default:0 }}</span>
             <div class="stat-label">Reports</div>
+            <span class="stat-change warning"><i class="fas fa-clock"></i> 3 pending</span>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
-            <div class="stat-icon"><i class="fas fa-comments"></i></div>
-            <span class="stat-number">0</span>
+    <div class="col-6 col-lg-3">
+        <div class="moderator-stat-card" data-aos="fade-up" data-aos-delay="150">
+            <div class="stat-icon-wrapper">
+                <i class="fas fa-comments"></i>
+            </div>
+            <span class="stat-number">{{ forum_posts|default:0 }}</span>
             <div class="stat-label">Forum Posts</div>
+            <span class="stat-change success"><i class="fas fa-check"></i> 12 approved</span>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
-            <div class="stat-icon"><i class="fas fa-user-slash"></i></div>
-            <span class="stat-number">0</span>
+    <div class="col-6 col-lg-3">
+        <div class="moderator-stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon-wrapper">
+                <i class="fas fa-user-slash"></i>
+            </div>
+            <span class="stat-number">{{ suspended_users|default:0 }}</span>
             <div class="stat-label">Suspended Users</div>
+            <span class="stat-change danger"><i class="fas fa-exclamation-circle"></i> 2 active</span>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
-            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
-            <span class="stat-number">0</span>
+    <div class="col-6 col-lg-3">
+        <div class="moderator-stat-card" data-aos="fade-up" data-aos-delay="250">
+            <div class="stat-icon-wrapper">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <span class="stat-number">{{ flagged_content|default:0 }}</span>
             <div class="stat-label">Flagged Content</div>
+            <span class="stat-change warning"><i class="fas fa-clock"></i> Needs review</span>
         </div>
     </div>
 </div>
 
-<div class="row g-4">
-    <div class="col-md-6">
-        <div class="dashboard-card" data-aos="fade-right" data-aos-delay="100">
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<div class="row g-3 g-md-4">
+    
+    <!-- ============================================================
+         LEFT COLUMN
+         ============================================================ -->
+    <div class="col-lg-8">
+        
+        <!-- QUICK ACTIONS -->
+        <div class="moderator-card" data-aos="fade-right" data-aos-delay="100">
             <div class="card-header">
-                <i class="fas fa-bolt header-icon"></i>
+                <i class="fas fa-bolt"></i>
                 Moderation Actions
+                <span class="header-badge">Quick Access</span>
             </div>
             <div class="card-body">
-                <a href="#" class="quick-action">
+                <a href="{% url 'admin_panel:reports' %}" class="moderator-action">
                     <div class="action-icon"><i class="fas fa-flag"></i></div>
                     <div class="action-text">
                         <div class="action-title">Review Reports</div>
-                        <div class="action-desc">Check reported content</div>
+                        <div class="action-desc">Check and moderate reported content</div>
                     </div>
                     <i class="fas fa-chevron-right action-arrow"></i>
                 </a>
-                <a href="#" class="quick-action">
+                <a href="{% url 'forums:moderate' %}" class="moderator-action">
                     <div class="action-icon"><i class="fas fa-comment-slash"></i></div>
                     <div class="action-text">
                         <div class="action-title">Moderate Forums</div>
-                        <div class="action-desc">Review forum posts</div>
+                        <div class="action-desc">Review forum posts and discussions</div>
                     </div>
                     <i class="fas fa-chevron-right action-arrow"></i>
                 </a>
-                <a href="#" class="quick-action">
+                <a href="{% url 'admin_panel:user_management' %}" class="moderator-action">
                     <div class="action-icon"><i class="fas fa-user-slash"></i></div>
                     <div class="action-text">
                         <div class="action-title">Manage Bans</div>
@@ -74,21 +917,216 @@
                     </div>
                     <i class="fas fa-chevron-right action-arrow"></i>
                 </a>
+                <a href="{% url 'admin_panel:content_moderation' %}" class="moderator-action">
+                    <div class="action-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Content Moderation</div>
+                        <div class="action-desc">Review and approve content</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+                <a href="{% url 'accounts:activity_logs' %}" class="moderator-action">
+                    <div class="action-icon"><i class="fas fa-history"></i></div>
+                    <div class="action-text">
+                        <div class="action-title">Moderation Logs</div>
+                        <div class="action-desc">View moderation activity history</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- REPORTS LIST -->
+        <div class="moderator-card mt-3 mt-md-4" data-aos="fade-right" data-aos-delay="150">
+            <div class="card-header">
+                <i class="fas fa-flag"></i>
+                Recent Reports
+                <span class="header-badge">{{ reports_count|default:0 }} total</span>
+            </div>
+            <div class="card-body">
+                <ul class="report-list">
+                    <li class="report-item">
+                        <span class="report-priority high"></span>
+                        <div class="report-content">
+                            <div class="report-title">Inappropriate content in forum</div>
+                            <div class="report-meta">Reported by <strong>John Doe</strong> • 3 hours ago</div>
+                        </div>
+                        <span class="report-badge pending">Pending</span>
+                        <span class="report-time">Today</span>
+                    </li>
+                    <li class="report-item">
+                        <span class="report-priority medium"></span>
+                        <div class="report-content">
+                            <div class="report-title">Spam comment on resource</div>
+                            <div class="report-meta">Reported by <strong>Jane Smith</strong> • 5 hours ago</div>
+                        </div>
+                        <span class="report-badge in-progress">In Progress</span>
+                        <span class="report-time">Today</span>
+                    </li>
+                    <li class="report-item">
+                        <span class="report-priority low"></span>
+                        <div class="report-content">
+                            <div class="report-title">Duplicate content in events</div>
+                            <div class="report-meta">Reported by <strong>Admin</strong> • 1 day ago</div>
+                        </div>
+                        <span class="report-badge resolved">Resolved</span>
+                        <span class="report-time">Yesterday</span>
+                    </li>
+                    <li class="report-item">
+                        <span class="report-priority high"></span>
+                        <div class="report-content">
+                            <div class="report-title">Harassment in community</div>
+                            <div class="report-meta">Reported by <strong>Sarah Mwangi</strong> • 2 days ago</div>
+                        </div>
+                        <span class="report-badge pending">Pending</span>
+                        <span class="report-time">2 days ago</span>
+                    </li>
+                </ul>
+                <div class="text-center mt-3">
+                    <a href="{% url 'admin_panel:reports' %}" class="gov-btn gov-btn-sm">
+                        <i class="fas fa-arrow-right"></i> View All Reports
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="dashboard-card" data-aos="fade-left" data-aos-delay="100">
+
+    <!-- ============================================================
+         RIGHT COLUMN - SIDEBAR
+         ============================================================ -->
+    <div class="col-lg-4">
+        
+        <!-- MODERATOR INFO -->
+        <div class="moderator-card" data-aos="fade-left" data-aos-delay="100">
             <div class="card-header">
-                <i class="fas fa-clock header-icon"></i>
-                Recent Activity
+                <i class="fas fa-user-cog"></i>
+                Moderator Info
             </div>
-            <div class="card-body text-center py-4">
-                <i class="fas fa-inbox" style="font-size:3rem;color:var(--gold-color);opacity:0.3;"></i>
-                <p class="text-muted mt-2">No recent moderation activity</p>
+            <div class="card-body">
+                <ul class="moderator-info-list" style="list-style:none;padding:0;margin:0;">
+                    <li style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gov-gray-light);">
+                        <span style="font-family:var(--gov-sans);font-size:0.9rem;color:var(--gov-gray);">Username</span>
+                        <span style="font-family:var(--gov-serif);font-weight:600;color:var(--gov-navy);">{{ user.username }}</span>
+                    </li>
+                    <li style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gov-gray-light);">
+                        <span style="font-family:var(--gov-sans);font-size:0.9rem;color:var(--gov-gray);">Role</span>
+                        <span style="font-family:var(--gov-serif);font-weight:600;color:var(--gov-purple);">Community Moderator</span>
+                    </li>
+                    <li style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gov-gray-light);">
+                        <span style="font-family:var(--gov-sans);font-size:0.9rem;color:var(--gov-gray);">Member Since</span>
+                        <span style="font-family:var(--gov-serif);font-weight:600;color:var(--gov-navy);">{{ user.date_joined|date:"M d, Y" }}</span>
+                    </li>
+                    <li style="display:flex;justify-content:space-between;padding:8px 0;">
+                        <span style="font-family:var(--gov-sans);font-size:0.9rem;color:var(--gov-gray);">Actions Taken</span>
+                        <span style="font-family:var(--gov-serif);font-weight:600;color:var(--gov-success);">{{ actions_taken|default:0 }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="moderator-card mt-3 mt-md-4" data-aos="fade-left" data-aos-delay="150">
+            <div class="card-header">
+                <i class="fas fa-clock"></i>
+                Recent Activity
+                <span class="header-badge">Live</span>
+            </div>
+            <div class="card-body">
+                <div class="activity-feed">
+                    <div class="activity-item">
+                        <span class="activity-icon icon-report"><i class="fas fa-flag"></i></span>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>New report</strong> received from John Doe</div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-icon icon-moderate"><i class="fas fa-check"></i></span>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Approved</strong> 5 forum posts</div>
+                            <div class="activity-time">4 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-icon icon-ban"><i class="fas fa-user-slash"></i></span>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Suspended</strong> user: james.kim</div>
+                            <div class="activity-time">1 day ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-icon icon-approve"><i class="fas fa-check-circle"></i></span>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Resolved</strong> 3 reports</div>
+                            <div class="activity-time">2 days ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODERATION GUIDELINES -->
+        <div class="moderator-card mt-3 mt-md-4" data-aos="fade-left" data-aos-delay="200">
+            <div class="card-header">
+                <i class="fas fa-book"></i>
+                Guidelines
+                <span class="header-badge">Reference</span>
+            </div>
+            <div class="card-body" style="font-family:var(--gov-sans);font-size:0.85rem;color:var(--gov-gray);">
+                <ul style="padding-left:1.2rem;margin:0;">
+                    <li style="margin-bottom:6px;">✓ Be fair and consistent in all decisions</li>
+                    <li style="margin-bottom:6px;">✓ Review all reports within 24 hours</li>
+                    <li style="margin-bottom:6px;">✓ Document all moderation actions</li>
+                    <li style="margin-bottom:6px;">✓ Follow KPSN Community Guidelines</li>
+                    <li style="margin-bottom:0;">✓ Escalate serious violations to Admin</li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
 
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<div class="moderator-footer">
+    <i class="fas fa-gavel"></i>
+    KPSN Moderator Dashboard <span class="footer-divider">•</span> Official Moderation Center
+    <span class="footer-divider">•</span> Version 2.0
+    <span class="footer-divider">•</span> &copy; {% now "Y" %} Kenya Psychological Society Network
+    <span class="footer-small">
+        <i class="fas fa-shield-alt" style="color:#c9a84c;"></i>
+        Fair and consistent moderation for a safe community.
+    </span>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate stats on load
+        const stats = document.querySelectorAll('.stat-number');
+        stats.forEach(stat => {
+            const target = parseInt(stat.textContent.replace(/,/g, '')) || 0;
+            if (target > 0) {
+                let current = 0;
+                const increment = Math.ceil(target / 20);
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = target.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = current.toLocaleString();
+                    }
+                }, 50);
+            }
+        });
+
+        // Auto-refresh every 60 seconds
+        setInterval(function() {
+            console.log('Moderator dashboard refreshed at:', new Date().toLocaleTimeString());
+        }, 60000);
+    });
+</script>
 {% endblock %}
