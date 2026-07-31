@@ -1,0 +1,58 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Alumni Mentorship - KPSN{% endblock %}
+
+{% block dashboard_title %}
+    <span class="gold-text">Alumni</span> Mentorship
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h3>Alumni Mentorship Program</h3>
+            <p>Connect with mentors and mentees in the KPSN community.</p>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user-graduate"></i> Your Mentees
+                </div>
+                <div class="card-body">
+                    {% if mentees %}
+                        {% for mentee in mentees %}
+                            <div class="mentee-item">
+                                {{ mentee.get_full_name }}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">You don't have any mentees yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chalkboard-teacher"></i> Available Mentors
+                </div>
+                <div class="card-body">
+                    {% if mentors %}
+                        {% for mentor in mentors %}
+                            <div class="mentor-item">
+                                {{ mentor.get_full_name }}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No mentors available at this time.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
