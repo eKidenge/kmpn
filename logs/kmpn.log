@@ -3070,3 +3070,5 @@ Traceback (most recent call last):
 django.contrib.sessions.exceptions.SessionInterrupted: The request's session was deleted before the request completed. The user may have logged out in a concurrent request, for example.
 WARNING 2026-07-30 17:34:47,615 log 224 5376 Forbidden (CSRF token from POST incorrect.): /accounts/login/
 WARNING 2026-07-30 17:34:49,451 log 224 5376 "POST /accounts/login/ HTTP/1.1" 403 2503
+WARNING 2026-07-31 10:08:35,265 log 9472 2284 Not Found: /favicon.ico
+WARNING 2026-07-31 10:08:35,365 log 9472 2284 "GET /favicon.ico HTTP/1.1" 404 5301

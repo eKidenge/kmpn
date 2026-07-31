@@ -12,6 +12,17 @@ import uuid
 import random
 import string
 import logging
+import os
+
+# Try to import Brevo SDK
+try:
+    import sib_api_v3_sdk
+    from sib_api_v3_sdk.rest import ApiException
+    BREVO_AVAILABLE = True
+except ImportError:
+    BREVO_AVAILABLE = False
+    sib_api_v3_sdk = None
+    ApiException = None
 
 logger = logging.getLogger(__name__)
 
@@ -57,11 +68,86 @@ def generate_membership_number(user):
         return fallback_number
 
 
+def send_verification_email_brevo(request, user):
+    """
+    Send verification email using Brevo API
+    Returns: bool - True if email sent successfully, False otherwise
+    """
+    if not BREVO_AVAILABLE:
+        logger.warning("Brevo SDK not available")
+        return False
+    
+    try:
+        # Get API key from environment
+        api_key = os.environ.get('BREVO_API_KEY', '')
+        if not api_key:
+            logger.warning("BREVO_API_KEY not set in environment")
+            return False
+        
+        # Configure API key
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = api_key
+        
+        # Create API instance
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+        
+        # Generate token if not exists
+        if not user.email_verification_token:
+            user.email_verification_token = uuid.uuid4()
+            user.save()
+        
+        # Build verification URL
+        domain = request.get_host() if request else 'kmpn.onrender.com'
+        protocol = 'https' if request and request.is_secure() else 'http'
+        verification_url = reverse('accounts:verify_email', kwargs={'token': user.email_verification_token})
+        full_url = f"{protocol}://{domain}{verification_url}"
+        
+        logger.info(f"Verification URL: {full_url}")
+        
+        # Render email template
+        html_content = render_to_string('emails/verify_email.html', {
+            'user': user,
+            'verification_url': full_url,
+            'domain': domain,
+            'protocol': protocol,
+            'site_name': 'KPSN',
+        })
+        
+        # Send email via Brevo API
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{'email': user.email, 'name': user.get_full_name() or user.username}],
+            sender={'email': 'noreply@kmpn.or.ke', 'name': 'KPSN'},
+            subject='Verify Your Email - KPSN',
+            html_content=html_content,
+        )
+        
+        api_instance.send_transac_email(send_smtp_email)
+        logger.info(f"Verification email sent via Brevo API to {user.email}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Brevo API error for {user.email}: {str(e)}")
+        return False
+
+
 def send_verification_email(request, user):
     """
     Send email verification link to user using UUID token
+    Tries Brevo API first, falls back to SMTP if available
     Returns: bool - True if email sent successfully, False otherwise
     """
+    # Try Brevo API first if available
+    if BREVO_AVAILABLE and os.environ.get('BREVO_API_KEY'):
+        try:
+            result = send_verification_email_brevo(request, user)
+            if result:
+                return True
+        except Exception as e:
+            logger.error(f"Brevo API failed, falling back to SMTP: {str(e)}")
+    
+    # Fallback to SMTP
     try:
         # Generate UUID token if not exists
         if not user.email_verification_token:
@@ -100,7 +186,7 @@ def send_verification_email(request, user):
             fail_silently=False,
             html_message=message,
         )
-        logger.info(f"Verification email sent to {user.email}")
+        logger.info(f"Verification email sent via SMTP to {user.email}")
         return True
     
     except Exception as e:
@@ -120,7 +206,7 @@ def send_approval_email(request, user):
             domain = request.get_host()
         
         subject = 'Registration Approved - KPSN'
-        message = render_to_string('email/registration_approved.html', {
+        message = render_to_string('emails/registration_approved.html', {
             'user': user,
             'domain': domain,
             'membership_number': user.membership_number,
