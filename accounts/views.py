@@ -1,4 +1,4 @@
-# accounts/views.py - COMPLETE PRODUCTION VERSION WITH TESTIMONIALS & PARTNERS
+# accounts/views.py - COMPLETE PRODUCTION VERSION WITH AUTO-VERIFY
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
@@ -236,11 +236,11 @@ def home(request):
 
 
 # ============================================================
-# REGISTRATION (ROLE-BASED)
+# REGISTRATION (ROLE-BASED) - UPDATED WITH AUTO-VERIFY
 # ============================================================
 
 def register(request):
-    """Role-based user registration view"""
+    """Role-based user registration view with auto-verify fallback"""
     if request.user.is_authenticated:
         return redirect('accounts:dashboard_redirect')
     
@@ -273,9 +273,12 @@ def register(request):
                     }
                 )
                 
+                # Try to send verification email
                 email_sent = False
                 try:
                     email_sent = send_verification_email(request, user)
+                    if email_sent:
+                        logger.info(f"Verification email sent to {user.email}")
                 except Exception as email_error:
                     logger.error(f"Email sending error: {str(email_error)}")
                 
@@ -286,10 +289,15 @@ def register(request):
                         'Please check your email to verify your account.'
                     )
                 else:
-                    messages.warning(
-                        request,
-                        'Registration successful but we could not send the verification email. '
-                        'Please contact support to verify your account or try resending the verification email.'
+                    # Auto-verify if email fails (Render free tier workaround)
+                    user.email_verified = True
+                    user.is_active = True
+                    user.is_verified = True
+                    user.save()
+                    logger.info(f"User {user.email} auto-verified (email failed)")
+                    messages.success(
+                        request, 
+                        f'Registration successful! You can now login. (Email verification skipped)'
                     )
                 
                 return redirect('accounts:login')
@@ -308,7 +316,7 @@ def register(request):
 
 
 # ============================================================
-# AUTHENTICATION (LOGIN/LOGOUT)
+# AUTHENTICATION (LOGIN/LOGOUT) - UPDATED
 # ============================================================
 
 def user_login(request):
@@ -339,17 +347,23 @@ def user_login(request):
                     )
                     return render(request, 'accounts/login.html', {'form': form})
                 
+                # Check if email is verified, but allow auto-verified users
                 if not user.email_verified:
-                    messages.warning(
-                        request,
-                        'Please verify your email before logging in. Check your inbox for the verification link.'
-                    )
-                    try:
-                        send_verification_email(request, user)
-                        messages.info(request, 'A new verification email has been sent to your inbox.')
-                    except:
+                    # If user is auto-verified (is_verified=True), allow login
+                    if user.is_verified:
+                        # Auto-verified user, allow login
                         pass
-                    return render(request, 'accounts/login.html', {'form': form})
+                    else:
+                        messages.warning(
+                            request,
+                            'Please verify your email before logging in. Check your inbox for the verification link.'
+                        )
+                        try:
+                            send_verification_email(request, user)
+                            messages.info(request, 'A new verification email has been sent to your inbox.')
+                        except:
+                            pass
+                        return render(request, 'accounts/login.html', {'form': form})
                 
                 login(request, user)
                 
@@ -1401,15 +1415,6 @@ def get_user_stats(request):
     return JsonResponse(stats)
 
 
-# accounts/views.py
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.urls import reverse
-from django.db.models import Q
-from .models import User, UserActivityLog
-
 # ============================================================
 # ALUMNI VIEWS
 # ============================================================
@@ -1424,6 +1429,7 @@ def alumni_mentorship(request):
         'mentorship_applications': [],  # Add your logic here
     }
     return render(request, 'accounts/alumni_mentorship.html', context)
+
 
 @login_required
 def alumni_directory(request):
@@ -1448,6 +1454,7 @@ def alumni_directory(request):
     }
     return render(request, 'accounts/alumni_directory.html', context)
 
+
 @login_required
 def alumni_events(request):
     """Alumni events view"""
@@ -1457,6 +1464,7 @@ def alumni_events(request):
         'events': [],  # Add your event queryset
     }
     return render(request, 'accounts/alumni_events.html', context)
+
 
 @login_required
 def alumni_mentors(request):
@@ -1468,6 +1476,7 @@ def alumni_mentors(request):
     }
     return render(request, 'accounts/alumni_mentors.html', context)
 
+
 @login_required
 def alumni_jobs(request):
     """Alumni job board view"""
@@ -1476,6 +1485,7 @@ def alumni_jobs(request):
         'jobs': [],  # Add your job queryset
     }
     return render(request, 'accounts/alumni_jobs.html', context)
+
 
 @login_required
 def alumni_research(request):
@@ -1487,6 +1497,7 @@ def alumni_research(request):
     }
     return render(request, 'accounts/alumni_research.html', context)
 
+
 @login_required
 def alumni_giving(request):
     """Alumni giving/donations view"""
@@ -1497,6 +1508,7 @@ def alumni_giving(request):
     }
     return render(request, 'accounts/alumni_giving.html', context)
 
+
 @login_required
 def alumni_resources(request):
     """Alumni resources view"""
@@ -1506,6 +1518,7 @@ def alumni_resources(request):
     }
     return render(request, 'accounts/alumni_resources.html', context)
 
+
 @login_required
 def alumni_stories(request):
     """Alumni stories/testimonials view"""
@@ -1514,6 +1527,7 @@ def alumni_stories(request):
         'stories': [],  # Add your stories queryset
     }
     return render(request, 'accounts/alumni_stories.html', context)
+
 
 @login_required
 def alumni_profile_update(request):
@@ -1533,6 +1547,7 @@ def alumni_profile_update(request):
         'user': request.user,
     }
     return render(request, 'accounts/alumni_profile_update.html', context)
+
 
 # ============================================================
 # MEMBERSHIP VIEWS
@@ -1555,6 +1570,7 @@ def membership_renew(request):
     }
     return render(request, 'accounts/membership_renew.html', context)
 
+
 @login_required
 def membership_status(request):
     """Membership status view"""
@@ -1565,6 +1581,7 @@ def membership_status(request):
         'membership_number': request.user.membership_number,
     }
     return render(request, 'accounts/membership_status.html', context)
+
 
 # ============================================================
 # ACTIVITY LOG VIEWS
