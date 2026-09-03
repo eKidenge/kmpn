@@ -627,10 +627,11 @@
     <div class="container">
         
         <!-- ============================================================
-        EVENT BANNER
+        EVENT BANNER - WITH PROPER STATIC FALLBACK
         ============================================================ -->
         <div class="event-banner-wrapper" data-aos="fade-up" data-aos-duration="800">
-            {% if event.banner_image %}
+            <!-- First try: uploaded banner image -->
+            {% if event.banner_image and event.banner_image.url %}
                 <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" 
                      class="banner-image"
                      onerror="this.style.display='none'; document.getElementById('banner-fallback').style.display='flex';">
@@ -668,9 +669,10 @@
                     </p>
                 </div>
             {% else %}
-                <!-- Fallback Banner -->
-                <div id="banner-fallback" class="event-banner-fallback">
-                    <i class="fas fa-calendar-alt fallback-icon"></i>
+                <!-- Fallback Banner using static image -->
+                <div id="banner-fallback" class="event-banner-fallback" style="display: flex;">
+                    <img src="{% static 'images/kpsn_logo.png' %}" alt="KPSN Logo" 
+                         style="height: 80px; width: auto; margin-bottom: 15px; opacity: 0.7; position: relative; z-index: 1;">
                     <h1 class="fallback-title">
                         <span class="gold-text">{{ event.title }}</span>
                     </h1>
