@@ -1,138 +1,712 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block title %}{{ event.title }} - KMPN{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* ============================================================
+       GOVERNMENT STYLE FONTS - PROFESSIONAL
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Merriweather:wght@400;700;900&family=Source+Serif+Pro:wght@400;600;700&family=Cormorant+Garamond:wght@400;600;700&family=PT+Serif:wght@400;700&family=Lora:wght@400;600;700&display=swap');
+    
+    :root {
+        --gov-serif: 'Playfair Display', 'Times New Roman', serif;
+        --gov-serif-alt: 'Merriweather', 'Georgia', serif;
+        --gov-serif-body: 'Source Serif Pro', 'Georgia', serif;
+        --gov-serif-heading: 'Cormorant Garamond', 'Georgia', serif;
+        --gov-serif-pt: 'PT Serif', 'Georgia', serif;
+        --gov-serif-lora: 'Lora', 'Georgia', serif;
+    }
+    
+    /* ============================================================
+       EVENT DETAIL PAGE - GOVERNMENT STYLE
+       ============================================================ */
+    
+    .event-detail-wrapper {
+        background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d0 50%, #f0ece0 100%);
+        padding: 40px 0 60px;
+        min-height: 100vh;
+    }
+    
+    .event-detail-wrapper .container {
+        max-width: 1200px;
+    }
+    
+    /* ============================================================
+       BANNER SECTION
+       ============================================================ */
+    .event-banner-wrapper {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+    }
+    
+    .event-banner-wrapper .banner-image {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.6s ease;
+    }
+    
+    .event-banner-wrapper .banner-image:hover {
+        transform: scale(1.02);
+    }
+    
+    .event-banner-wrapper .banner-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 40px 50px;
+        background: linear-gradient(to top, rgba(10, 26, 42, 0.85), transparent);
+        color: var(--white);
+    }
+    
+    .event-banner-wrapper .banner-overlay .banner-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+    
+    .event-banner-wrapper .banner-overlay .banner-badges .badge-gov {
+        padding: 4px 16px;
+        font-family: var(--gov-serif-alt);
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 0;
+    }
+    
+    .event-banner-wrapper .banner-overlay .banner-title {
+        font-family: var(--gov-serif);
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--white);
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    
+    .event-banner-wrapper .banner-overlay .banner-subtitle {
+        font-family: var(--gov-serif-body);
+        font-size: 0.95rem;
+        color: rgba(255,255,255,0.8);
+        font-weight: 300;
+        letter-spacing: 0.3px;
+    }
+    
+    .event-banner-wrapper .banner-overlay .banner-subtitle i {
+        color: var(--gold-color);
+        margin-right: 6px;
+    }
+    
+    /* ============================================================
+       FALLBACK BANNER
+       ============================================================ */
+    .event-banner-fallback {
+        width: 100%;
+        height: 380px;
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .event-banner-fallback::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(212, 168, 67, 0.04);
+        pointer-events: none;
+    }
+    
+    .event-banner-fallback .fallback-icon {
+        font-size: 3.5rem;
+        color: var(--gold-color);
+        margin-bottom: 15px;
+        opacity: 0.8;
+        position: relative;
+        z-index: 1;
+        animation: float 4s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .event-banner-fallback .fallback-title {
+        font-family: var(--gov-serif);
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--white);
+        position: relative;
+        z-index: 1;
+        letter-spacing: 0.5px;
+    }
+    
+    .event-banner-fallback .fallback-title .gold-text {
+        color: var(--gold-color);
+    }
+    
+    .event-banner-fallback .fallback-subtitle {
+        font-family: var(--gov-serif-body);
+        font-size: 1rem;
+        color: rgba(255,255,255,0.7);
+        position: relative;
+        z-index: 1;
+        margin-top: 8px;
+        letter-spacing: 0.3px;
+    }
+    
+    .event-banner-fallback .fallback-divider {
+        width: 60px;
+        height: 3px;
+        background: var(--gold-color);
+        margin: 12px auto;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* ============================================================
+       MAIN CONTENT CARD
+       ============================================================ */
+    .event-main-card {
+        background: var(--white);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        box-shadow: 0 4px 25px rgba(0,0,0,0.06);
+        padding: 35px 40px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .event-main-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-color), var(--gold-dark), var(--gold-color));
+    }
+    
+    .event-main-card .event-description {
+        font-family: var(--gov-serif-body);
+        font-size: 1.05rem;
+        color: var(--gray-700);
+        line-height: 1.9;
+        letter-spacing: 0.3px;
+    }
+    
+    /* ============================================================
+       SIDEBAR - GOVERNMENT STYLE
+       ============================================================ */
+    .event-sidebar-card {
+        background: var(--white);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        box-shadow: 0 4px 25px rgba(0,0,0,0.06);
+        padding: 0;
+        margin-bottom: 25px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .event-sidebar-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gold-color);
+    }
+    
+    .event-sidebar-card .sidebar-header {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 100%);
+        padding: 14px 20px;
+        border-bottom: 3px solid var(--gold-color);
+    }
+    
+    .event-sidebar-card .sidebar-header h6 {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        color: var(--white);
+        margin-bottom: 0;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .event-sidebar-card .sidebar-header h6 i {
+        color: var(--gold-color);
+        margin-right: 8px;
+    }
+    
+    .event-sidebar-card .sidebar-body {
+        padding: 20px;
+    }
+    
+    .event-sidebar-card .sidebar-body .detail-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #f0ece0;
+    }
+    
+    .event-sidebar-card .sidebar-body .detail-item:last-child {
+        border-bottom: none;
+    }
+    
+    .event-sidebar-card .sidebar-body .detail-item .detail-label {
+        font-family: var(--gov-serif-alt);
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--gray-600);
+        display: block;
+        margin-bottom: 2px;
+    }
+    
+    .event-sidebar-card .sidebar-body .detail-item .detail-value {
+        font-family: var(--gov-serif-body);
+        font-size: 0.9rem;
+        color: var(--dark-blue);
+    }
+    
+    .event-sidebar-card .sidebar-body .detail-item .detail-value i {
+        color: var(--gold-color);
+        width: 20px;
+        text-align: center;
+    }
+    
+    /* ============================================================
+       REGISTRATION BUTTON - GOVERNMENT STYLE
+       ============================================================ */
+    .btn-register-gov {
+        background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);
+        color: var(--white);
+        border: none;
+        padding: 14px 28px;
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        width: 100%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        cursor: pointer;
+        border-radius: 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-register-gov::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-register-gov:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-register-gov:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(201, 168, 76, 0.35);
+        color: var(--white);
+        text-decoration: none;
+    }
+    
+    .btn-register-gov:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    /* ============================================================
+       SECTION CARDS - GOVERNMENT STYLE
+       ============================================================ */
+    .gov-section-card {
+        background: var(--white);
+        border: 1px solid rgba(201, 168, 76, 0.12);
+        box-shadow: 0 2px 15px rgba(0,0,0,0.04);
+        margin-bottom: 25px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .gov-section-card .section-header-gov {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 100%);
+        padding: 14px 22px;
+        border-bottom: 3px solid var(--gold-color);
+    }
+    
+    .gov-section-card .section-header-gov h5 {
+        font-family: var(--gov-serif);
+        font-weight: 700;
+        color: var(--white);
+        margin-bottom: 0;
+        font-size: 1.05rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .gov-section-card .section-header-gov h5 i {
+        color: var(--gold-color);
+        margin-right: 10px;
+    }
+    
+    .gov-section-card .section-body-gov {
+        padding: 22px 25px;
+    }
+    
+    .gov-section-card .section-body-gov p,
+    .gov-section-card .section-body-gov li {
+        font-family: var(--gov-serif-body);
+        font-size: 0.95rem;
+        color: var(--gray-700);
+        line-height: 1.8;
+        letter-spacing: 0.2px;
+    }
+    
+    .gov-section-card .section-body-gov ul {
+        padding-left: 20px;
+    }
+    
+    .gov-section-card .section-body-gov ul li {
+        margin-bottom: 6px;
+    }
+    
+    /* ============================================================
+       ORGANIZER CARD
+       ============================================================ */
+    .organizer-card .organizer-name {
+        font-family: var(--gov-serif);
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        margin-bottom: 2px;
+    }
+    
+    .organizer-card .organizer-detail {
+        font-family: var(--gov-serif-body);
+        font-size: 0.85rem;
+        color: var(--gray-600);
+        padding: 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .organizer-card .organizer-detail i {
+        color: var(--gold-color);
+        width: 20px;
+        text-align: center;
+    }
+    
+    .organizer-card .organizer-detail a {
+        color: var(--gold-color);
+        transition: color 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .organizer-card .organizer-detail a:hover {
+        color: var(--gold-dark);
+        text-decoration: underline;
+    }
+    
+    /* ============================================================
+       ZOOM CARD
+       ============================================================ */
+    .zoom-card .zoom-link {
+        font-family: var(--gov-serif-alt);
+        font-weight: 700;
+        color: var(--gold-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .zoom-card .zoom-link:hover {
+        color: var(--gold-dark);
+        text-decoration: underline;
+    }
+    
+    .zoom-card .zoom-detail {
+        font-family: var(--gov-serif-body);
+        font-size: 0.85rem;
+        color: var(--gray-700);
+        padding: 3px 0;
+    }
+    
+    .zoom-card .zoom-detail i {
+        color: var(--gold-color);
+        width: 20px;
+        text-align: center;
+    }
+    
+    /* ============================================================
+       ALERT - GOVERNMENT STYLE
+       ============================================================ */
+    .alert-gov {
+        background: #f5f0e8;
+        border-left: 4px solid var(--gold-color);
+        padding: 14px 18px;
+        font-family: var(--gov-serif-body);
+        font-size: 0.9rem;
+        color: var(--gray-700);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .alert-gov i {
+        color: var(--gold-color);
+        font-size: 1.1rem;
+    }
+    
+    .alert-gov.alert-success-gov {
+        background: #e8f5e9;
+        border-left-color: var(--success-color);
+    }
+    
+    .alert-gov.alert-success-gov i {
+        color: var(--success-color);
+    }
+    
+    .alert-gov.alert-danger-gov {
+        background: #fbe9e7;
+        border-left-color: var(--danger-color);
+    }
+    
+    .alert-gov.alert-danger-gov i {
+        color: var(--danger-color);
+    }
+    
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 992px) {
+        .event-banner-wrapper .banner-image {
+            height: 280px;
+        }
+        
+        .event-banner-wrapper .banner-overlay {
+            padding: 25px 30px;
+        }
+        
+        .event-banner-wrapper .banner-overlay .banner-title {
+            font-size: 1.6rem;
+        }
+        
+        .event-banner-fallback {
+            height: 280px;
+        }
+        
+        .event-banner-fallback .fallback-title {
+            font-size: 1.8rem;
+        }
+        
+        .event-main-card {
+            padding: 25px 25px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .event-detail-wrapper {
+            padding: 20px 0 40px;
+        }
+        
+        .event-banner-wrapper .banner-image {
+            height: 200px;
+        }
+        
+        .event-banner-wrapper .banner-overlay {
+            padding: 18px 20px;
+        }
+        
+        .event-banner-wrapper .banner-overlay .banner-title {
+            font-size: 1.2rem;
+        }
+        
+        .event-banner-wrapper .banner-overlay .banner-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .event-banner-fallback {
+            height: 200px;
+            padding: 20px;
+        }
+        
+        .event-banner-fallback .fallback-title {
+            font-size: 1.3rem;
+        }
+        
+        .event-banner-fallback .fallback-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .event-main-card {
+            padding: 18px 16px;
+        }
+        
+        .event-main-card .event-description {
+            font-size: 0.95rem;
+        }
+        
+        .gov-section-card .section-body-gov {
+            padding: 16px 18px;
+        }
+        
+        .event-sidebar-card .sidebar-body {
+            padding: 16px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .event-banner-wrapper .banner-image {
+            height: 160px;
+        }
+        
+        .event-banner-wrapper .banner-overlay {
+            padding: 12px 14px;
+        }
+        
+        .event-banner-wrapper .banner-overlay .banner-title {
+            font-size: 1rem;
+        }
+        
+        .event-banner-fallback {
+            height: 160px;
+        }
+        
+        .event-banner-fallback .fallback-icon {
+            font-size: 2rem;
+        }
+        
+        .event-banner-fallback .fallback-title {
+            font-size: 1rem;
+        }
+        
+        .event-main-card {
+            padding: 14px 12px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="section-padding">
+<section class="event-detail-wrapper">
     <div class="container">
-        <!-- Event Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card-government">
-                    {% if event.banner_image %}
-                        <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" 
-                             style="width: 100%; height: 300px; object-fit: cover;">
-                    {% endif %}
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="mb-2">
-                                    <span class="badge" style="background: var(--gold-color); color: white; padding: 6px 12px;">
-                                        {{ event.get_event_type_display }}
-                                    </span>
-                                    <span class="badge" style="background: var(--secondary-color); color: white; padding: 6px 12px;">
-                                        {% if event.is_virtual %}Virtual{% else %}In-Person{% endif %}
-                                    </span>
-                                    {% if event.status == 'ongoing' %}
-                                        <span class="badge" style="background: var(--success-color); color: white; padding: 6px 12px;">
-                                            <i class="fas fa-play me-1"></i> Ongoing
-                                        </span>
-                                    {% elif event.is_past %}
-                                        <span class="badge" style="background: var(--danger-color); color: white; padding: 6px 12px;">
-                                            Past
-                                        </span>
-                                    {% else %}
-                                        <span class="badge" style="background: var(--info-color); color: white; padding: 6px 12px;">
-                                            Upcoming
-                                        </span>
-                                    {% endif %}
-                                </div>
-                                <h1 class="h2 mb-3">{{ event.title }}</h1>
-                                <p class="text-muted">{{ event.description|safe }}</p>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card" style="background: var(--cream-color); border: 1px solid var(--gold-color);">
-                                    <div class="card-body">
-                                        <h6 class="mb-3">Event Details</h6>
-                                        <p class="small mb-2">
-                                            <i class="fas fa-calendar-alt text-gold me-2"></i>
-                                            <strong>Date:</strong><br>
-                                            {{ event.start_date|date:"F d, Y" }}
-                                        </p>
-                                        <p class="small mb-2">
-                                            <i class="fas fa-clock text-gold me-2"></i>
-                                            <strong>Time:</strong><br>
-                                            {{ event.start_date|date:"g:i A" }} - {{ event.end_date|date:"g:i A" }}
-                                        </p>
-                                        <p class="small mb-2">
-                                            <i class="fas fa-{% if event.is_virtual %}wifi{% else %}map-marker-alt{% endif %} text-gold me-2"></i>
-                                            <strong>Location:</strong><br>
-                                            {% if event.is_virtual %}
-                                                Virtual (Link provided upon registration)
-                                            {% else %}
-                                                {{ event.venue|default:"TBD" }}
-                                                {% if event.address %}<br>{{ event.address }}{% endif %}
-                                                {% if event.city %}, {{ event.city }}{% endif %}
-                                            {% endif %}
-                                        </p>
-                                        <p class="small mb-2">
-                                            <i class="fas fa-users text-gold me-2"></i>
-                                            <strong>Attendees:</strong><br>
-                                            {{ event.current_attendees }}/{% if event.max_attendees %}{{ event.max_attendees }}{% else %}Unlimited{% endif %}
-                                        </p>
-                                        <p class="small mb-3">
-                                            <i class="fas fa-ticket-alt text-gold me-2"></i>
-                                            <strong>Registration:</strong><br>
-                                            {% if event.requires_registration %}
-                                                {{ event.registration_fee }} {{ event.currency }}
-                                            {% else %}
-                                                Free
-                                            {% endif %}
-                                        </p>
-                                        <hr>
-                                        
-                                        <!-- Registration Action -->
-                                        {% if user.is_authenticated %}
-                                            {% if is_registered %}
-                                                <div class="alert alert-success mb-2">
-                                                    <i class="fas fa-check-circle me-2"></i> You are registered!
-                                                    <a href="{% url 'events:cancel' slug=event.slug %}" class="btn btn-sm btn-outline-danger mt-2 w-100">
-                                                        <i class="fas fa-times me-1"></i> Cancel Registration
-                                                    </a>
-                                                </div>
-                                            {% elif event.is_past %}
-                                                <button class="btn btn-secondary w-100" disabled>
-                                                    <i class="fas fa-times me-2"></i> Event Passed
-                                                </button>
-                                            {% elif not event.has_capacity %}
-                                                <button class="btn btn-secondary w-100" disabled>
-                                                    <i class="fas fa-times me-2"></i> Fully Booked
-                                                </button>
-                                            {% elif not registration_open %}
-                                                <button class="btn btn-secondary w-100" disabled>
-                                                    <i class="fas fa-clock me-2"></i> Registration Closed
-                                                </button>
-                                            {% else %}
-                                                <a href="{% url 'events:register' slug=event.slug %}" class="btn-gold w-100">
-                                                    <i class="fas fa-ticket-alt me-2"></i> Register Now
-                                                </a>
-                                            {% endif %}
-                                        {% else %}
-                                            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn-gold w-100">
-                                                <i class="fas fa-sign-in-alt me-2"></i> Login to Register
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        
+        <!-- ============================================================
+        EVENT BANNER
+        ============================================================ -->
+        <div class="event-banner-wrapper" data-aos="fade-up" data-aos-duration="800">
+            {% if event.banner_image %}
+                <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" 
+                     class="banner-image"
+                     onerror="this.style.display='none'; document.getElementById('banner-fallback').style.display='flex';">
+                <div class="banner-overlay">
+                    <div class="banner-badges">
+                        <span class="badge-gov" style="background: var(--gold-color); color: white;">
+                            {{ event.get_event_type_display }}
+                        </span>
+                        <span class="badge-gov" style="background: var(--secondary-color); color: white;">
+                            {% if event.is_virtual %}Virtual{% else %}In-Person{% endif %}
+                        </span>
+                        {% if event.status == 'ongoing' %}
+                            <span class="badge-gov" style="background: var(--success-color); color: white;">
+                                <i class="fas fa-play me-1"></i> Ongoing
+                            </span>
+                        {% elif event.is_past %}
+                            <span class="badge-gov" style="background: var(--danger-color); color: white;">
+                                Past
+                            </span>
+                        {% else %}
+                            <span class="badge-gov" style="background: var(--info-color); color: white;">
+                                Upcoming
+                            </span>
+                        {% endif %}
                     </div>
+                    <h1 class="banner-title">{{ event.title }}</h1>
+                    <p class="banner-subtitle">
+                        <i class="fas fa-calendar-alt"></i> {{ event.start_date|date:"F d, Y" }} &bull;
+                        <i class="fas fa-clock"></i> {{ event.start_date|date:"g:i A" }}
+                        {% if event.is_virtual %}
+                            <i class="fas fa-wifi ms-2"></i> Virtual
+                        {% else %}
+                            <i class="fas fa-map-marker-alt ms-2"></i> {{ event.venue|default:"TBD" }}
+                        {% endif %}
+                    </p>
                 </div>
-            </div>
+            {% else %}
+                <!-- Fallback Banner -->
+                <div id="banner-fallback" class="event-banner-fallback">
+                    <i class="fas fa-calendar-alt fallback-icon"></i>
+                    <h1 class="fallback-title">
+                        <span class="gold-text">{{ event.title }}</span>
+                    </h1>
+                    <div class="fallback-divider"></div>
+                    <p class="fallback-subtitle">
+                        <i class="fas fa-calendar-alt me-2"></i> {{ event.start_date|date:"F d, Y" }}
+                        &bull; <i class="fas fa-clock me-2"></i> {{ event.start_date|date:"g:i A" }}
+                    </p>
+                </div>
+            {% endif %}
         </div>
         
-        <!-- Event Details -->
+        <!-- ============================================================
+        MAIN CONTENT ROW
+        ============================================================ -->
         <div class="row g-4">
-            <!-- Main Content -->
+            
+            <!-- ============================================================
+            LEFT COLUMN - MAIN CONTENT
+            ============================================================ -->
             <div class="col-lg-8">
+                
+                <!-- Description Card -->
+                <div class="event-main-card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="100">
+                    <div class="event-description">
+                        {{ event.description|safe }}
+                    </div>
+                </div>
+                
                 <!-- Agenda -->
                 {% if event.agenda %}
-                <div class="card-government mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-list-ul me-2"></i> Agenda</h5>
+                <div class="gov-section-card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="150">
+                    <div class="section-header-gov">
+                        <h5><i class="fas fa-list-ul"></i> Agenda</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="section-body-gov">
                         {{ event.agenda|safe }}
                     </div>
                 </div>
@@ -140,11 +714,11 @@
                 
                 <!-- Speakers -->
                 {% if event.speakers %}
-                <div class="card-government mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-user-tie me-2"></i> Speakers</h5>
+                <div class="gov-section-card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="200">
+                    <div class="section-header-gov">
+                        <h5><i class="fas fa-user-tie"></i> Speakers</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="section-body-gov">
                         {{ event.speakers|safe }}
                     </div>
                 </div>
@@ -152,82 +726,282 @@
                 
                 <!-- Program -->
                 {% if event.program %}
-                <div class="card-government">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i> Program</h5>
+                <div class="gov-section-card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="250">
+                    <div class="section-header-gov">
+                        <h5><i class="fas fa-calendar-day"></i> Program</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="section-body-gov">
                         {{ event.program|safe }}
                     </div>
                 </div>
                 {% endif %}
+                
             </div>
             
-            <!-- Sidebar -->
+            <!-- ============================================================
+            RIGHT COLUMN - SIDEBAR
+            ============================================================ -->
             <div class="col-lg-4">
-                <!-- Organizer Info -->
-                <div class="card-government mb-4">
-                    <div class="card-header">
-                        <h6 class="mb-0"><i class="fas fa-building me-2"></i> Organizer</h6>
+                
+                <!-- Event Details Sidebar -->
+                <div class="event-sidebar-card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="100">
+                    <div class="sidebar-header">
+                        <h6><i class="fas fa-info-circle"></i> Event Details</h6>
                     </div>
-                    <div class="card-body">
-                        <p class="small mb-2">
-                            <strong>{{ event.organizer_name }}</strong>
-                        </p>
-                        {% if event.organizer_email %}
-                            <p class="small mb-1">
-                                <i class="fas fa-envelope me-2"></i>
-                                <a href="mailto:{{ event.organizer_email }}" class="text-dark">{{ event.organizer_email }}</a>
-                            </p>
+                    <div class="sidebar-body">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-calendar-alt"></i> Date</span>
+                            <span class="detail-value">{{ event.start_date|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-clock"></i> Time</span>
+                            <span class="detail-value">{{ event.start_date|date:"g:i A" }} - {{ event.end_date|date:"g:i A" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-{% if event.is_virtual %}wifi{% else %}map-marker-alt{% endif %}"></i> Location</span>
+                            <span class="detail-value">
+                                {% if event.is_virtual %}
+                                    Virtual Event
+                                {% else %}
+                                    {{ event.venue|default:"TBD" }}
+                                    {% if event.address %}<br><span style="font-size:0.8rem;color:var(--gray-600);">{{ event.address }}</span>{% endif %}
+                                    {% if event.city %}<br><span style="font-size:0.8rem;color:var(--gray-600);">{{ event.city }}{% if event.country %}, {{ event.country }}{% endif %}</span>{% endif %}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-users"></i> Attendees</span>
+                            <span class="detail-value">{{ event.current_attendees }}/{% if event.max_attendees %}{{ event.max_attendees }}{% else %}Unlimited{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-ticket-alt"></i> Registration</span>
+                            <span class="detail-value">
+                                {% if event.requires_registration %}
+                                    {{ event.registration_fee }} {{ event.currency }}
+                                {% else %}
+                                    <i class="fas fa-check-circle" style="color:var(--success-color);"></i> Free
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-calendar-check"></i> Registration Deadline</span>
+                            <span class="detail-value">
+                                {% if event.registration_deadline %}
+                                    {{ event.registration_deadline|date:"F d, Y" }}
+                                {% else %}
+                                    No deadline
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Registration Card -->
+                <div class="event-sidebar-card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="150">
+                    <div class="sidebar-header" style="background: linear-gradient(135deg, var(--gold-color) 0%, var(--gold-dark) 100%);">
+                        <h6><i class="fas fa-ticket-alt"></i> Registration</h6>
+                    </div>
+                    <div class="sidebar-body">
+                        {% if user.is_authenticated %}
+                            {% if is_registered %}
+                                <div class="alert-gov alert-success-gov">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>You are registered for this event!</span>
+                                </div>
+                                <a href="{% url 'events:cancel' slug=event.slug %}" 
+                                   class="btn-register-gov" 
+                                   style="background: var(--danger-color);"
+                                   onclick="return confirm('Are you sure you want to cancel your registration?');">
+                                    <i class="fas fa-times"></i> Cancel Registration
+                                </a>
+                            {% elif event.is_past %}
+                                <div class="alert-gov alert-danger-gov">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <span>This event has passed.</span>
+                                </div>
+                                <button class="btn-register-gov" disabled style="background: var(--gray-500);">
+                                    <i class="fas fa-times"></i> Event Passed
+                                </button>
+                            {% elif not event.has_capacity %}
+                                <div class="alert-gov alert-danger-gov">
+                                    <i class="fas fa-users"></i>
+                                    <span>Event is fully booked.</span>
+                                </div>
+                                <button class="btn-register-gov" disabled style="background: var(--gray-500);">
+                                    <i class="fas fa-times"></i> Fully Booked
+                                </button>
+                            {% elif not registration_open %}
+                                <div class="alert-gov alert-danger-gov">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Registration is closed.</span>
+                                </div>
+                                <button class="btn-register-gov" disabled style="background: var(--gray-500);">
+                                    <i class="fas fa-clock"></i> Registration Closed
+                                </button>
+                            {% else %}
+                                <a href="{% url 'events:register' slug=event.slug %}" class="btn-register-gov">
+                                    <i class="fas fa-ticket-alt"></i> Register Now
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert-gov">
+                                <i class="fas fa-lock"></i>
+                                <span>Please login to register for this event.</span>
+                            </div>
+                            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn-register-gov">
+                                <i class="fas fa-sign-in-alt"></i> Login to Register
+                            </a>
                         {% endif %}
-                        {% if event.organizer_phone %}
-                            <p class="small mb-1">
-                                <i class="fas fa-phone me-2"></i> {{ event.organizer_phone }}
-                            </p>
-                        {% endif %}
-                        {% if event.organizer_website %}
-                            <p class="small mb-0">
-                                <i class="fas fa-globe me-2"></i>
-                                <a href="{{ event.organizer_website }}" target="_blank" class="text-gold">{{ event.organizer_website }}</a>
-                            </p>
+                        
+                        {% if event.registration_link %}
+                            <div style="margin-top: 12px; text-align: center; border-top: 1px solid #f0ece0; padding-top: 12px;">
+                                <span style="font-family: var(--gov-serif-body); font-size: 0.75rem; color: var(--gray-600);">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    <a href="{{ event.registration_link }}" target="_blank" style="color: var(--gold-color); text-decoration: none;">
+                                        External Registration
+                                    </a>
+                                </span>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
                 
-                <!-- Zoom Info -->
-                {% if event.is_virtual and event.zoom_meeting_link %}
-                <div class="card-government">
-                    <div class="card-header">
-                        <h6 class="mb-0"><i class="fas fa-video me-2"></i> Zoom Meeting</h6>
+                <!-- Organizer Card -->
+                <div class="event-sidebar-card organizer-card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="200">
+                    <div class="sidebar-header">
+                        <h6><i class="fas fa-building"></i> Organizer</h6>
                     </div>
-                    <div class="card-body">
+                    <div class="sidebar-body">
+                        <div class="organizer-name">{{ event.organizer_name }}</div>
+                        {% if event.organizer_email %}
+                            <div class="organizer-detail">
+                                <i class="fas fa-envelope"></i>
+                                <a href="mailto:{{ event.organizer_email }}">{{ event.organizer_email }}</a>
+                            </div>
+                        {% endif %}
+                        {% if event.organizer_phone %}
+                            <div class="organizer-detail">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ event.organizer_phone }}</span>
+                            </div>
+                        {% endif %}
+                        {% if event.organizer_website %}
+                            <div class="organizer-detail">
+                                <i class="fas fa-globe"></i>
+                                <a href="{{ event.organizer_website }}" target="_blank">{{ event.organizer_website }}</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Zoom Meeting Card -->
+                {% if event.is_virtual and event.zoom_meeting_link %}
+                <div class="event-sidebar-card zoom-card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="250">
+                    <div class="sidebar-header" style="background: linear-gradient(135deg, #1a237e 0%, #283593 100%);">
+                        <h6><i class="fas fa-video"></i> Zoom Meeting</h6>
+                    </div>
+                    <div class="sidebar-body">
                         {% if is_registered %}
-                            <p class="small mb-2">
-                                <i class="fas fa-link me-2"></i>
-                                <a href="{{ event.zoom_meeting_link }}" target="_blank" class="text-gold">
+                            <div class="organizer-detail" style="margin-bottom: 8px;">
+                                <i class="fas fa-link"></i>
+                                <a href="{{ event.zoom_meeting_link }}" target="_blank" class="zoom-link">
                                     Join Zoom Meeting
                                 </a>
-                            </p>
+                            </div>
                             {% if event.zoom_meeting_id %}
-                                <p class="small mb-1">
-                                    <i class="fas fa-id-card me-2"></i> Meeting ID: {{ event.zoom_meeting_id }}
-                                </p>
+                                <div class="zoom-detail">
+                                    <i class="fas fa-id-card"></i>
+                                    <span>Meeting ID: <strong>{{ event.zoom_meeting_id }}</strong></span>
+                                </div>
                             {% endif %}
                             {% if event.zoom_password %}
-                                <p class="small mb-0">
-                                    <i class="fas fa-lock me-2"></i> Passcode: {{ event.zoom_password }}
-                                </p>
+                                <div class="zoom-detail">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Passcode: <strong>{{ event.zoom_password }}</strong></span>
+                                </div>
                             {% endif %}
                         {% else %}
-                            <p class="text-muted small mb-0">
-                                <i class="fas fa-lock me-2"></i> Register to access Zoom link
-                            </p>
+                            <div class="alert-gov">
+                                <i class="fas fa-lock"></i>
+                                <span>Register to access the Zoom meeting link.</span>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
                 {% endif %}
+                
+                <!-- Share Card -->
+                <div class="event-sidebar-card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="300">
+                    <div class="sidebar-header" style="background: linear-gradient(135deg, var(--navy-blue) 0%, var(--secondary-color) 100%);">
+                        <h6><i class="fas fa-share-alt"></i> Share Event</h6>
+                    </div>
+                    <div class="sidebar-body" style="text-align: center;">
+                        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                               target="_blank" 
+                               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #3b5998; color: white; border-radius: 0; transition: all 0.3s ease;"
+                               onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ event.title }}" 
+                               target="_blank" 
+                               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #1da1f2; color: white; border-radius: 0; transition: all 0.3s ease;"
+                               onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" 
+                               target="_blank" 
+                               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #0a66c2; color: white; border-radius: 0; transition: all 0.3s ease;"
+                               onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="mailto:?subject={{ event.title }}&body={{ request.build_absolute_uri }}" 
+                               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #ea4335; color: white; border-radius: 0; transition: all 0.3s ease;"
+                               onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                            <button onclick="navigator.clipboard.writeText('{{ request.build_absolute_uri }}')" 
+                                    style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: var(--gold-color); color: white; border: none; border-radius: 0; cursor: pointer; transition: all 0.3s ease;"
+                                    onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"
+                                    title="Copy link">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div style="margin-top: 10px; font-family: var(--gov-serif-body); font-size: 0.7rem; color: var(--gray-500);">
+                            <i class="fas fa-share-alt me-1"></i> Share with your network
+                        </div>
+                    </div>
+                </div>
+                
             </div>
+            <!-- End Sidebar -->
+            
         </div>
+        <!-- End Row -->
+        
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ============================================================
+    // COPY LINK TO CLIPBOARD
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyBtn = document.querySelector('button[title="Copy link"]');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(function() {
+                    const original = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(function() {
+                        this.innerHTML = original;
+                    }.bind(this), 2000);
+                }.bind(this));
+            });
+        }
+    });
+</script>
 {% endblock %}
