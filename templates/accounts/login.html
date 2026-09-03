@@ -693,7 +693,7 @@
                         {% if form.errors %}
                             <div class="alert" role="alert">
                                 <i class="fas fa-exclamation-circle"></i>
-                                <span>Your email and password didn't match. Please try again.</span>
+                                <span>Your email/username and password didn't match. Please try again.</span>
                             </div>
                         {% endif %}
                         
@@ -716,15 +716,16 @@
                             <div class="form-group">
                                 <label for="{{ form.username.id_for_label }}" class="form-label">
                                     <i class="fas fa-envelope field-icon"></i>
-                                    Email Address
+                                    Email or Username
                                     <span class="required-star">*</span>
                                 </label>
-                                <input type="email" name="{{ form.username.name }}" 
+                                <input type="text" name="{{ form.username.name }}" 
                                        id="{{ form.username.id_for_label }}" 
                                        class="form-control {% if form.username.errors %}is-invalid{% endif %}"
-                                       placeholder="Enter your email address" 
+                                       placeholder="Enter your email or username" 
                                        value="{{ form.username.value|default:'' }}"
                                        required autofocus>
+                                <small class="form-text text-muted">Enter your registered email address or username.</small>
                                 {% if form.username.errors %}
                                     <div class="invalid-feedback">
                                         {{ form.username.errors|join:", " }}
@@ -850,13 +851,13 @@
     });
     
     // ============================================================
-    // AUTO-FOCUS ON EMAIL FIELD
+    // AUTO-FOCUS ON EMAIL/USERNAME FIELD
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-        const emailField = document.querySelector('input[name="username"]');
-        if (emailField) {
+        const usernameField = document.querySelector('input[name="username"]');
+        if (usernameField) {
             setTimeout(function() {
-                emailField.focus();
+                usernameField.focus();
             }, 400);
         }
     });
@@ -877,7 +878,7 @@
     });
     
     // ============================================================
-    // ENTER KEY TO SUBMIT (Browser default, but ensure it works)
+    // ENTER KEY TO SUBMIT
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
