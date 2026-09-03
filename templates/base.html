@@ -547,382 +547,365 @@
         }
 
         /* ============================================================
-           5. NAVBAR - FIXED VERSION
-           ============================================================ */
-        
-        .navbar-government {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
-            border-bottom: 4px solid var(--gold-color);
-            padding: 6px 0;
-            box-shadow: var(--shadow-lg);
-            position: sticky;
-            top: 0;
-            z-index: var(--z-fixed);
-            transition: var(--transition-normal);
-            min-height: 68px;
-        }
-        
-        .navbar-government .container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 15px;
-        }
-        
-        .navbar-government .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 4px 0;
-            flex-shrink: 0;
-            text-decoration: none;
-        }
-        
-        .navbar-government .navbar-brand .brand-logo {
-            height: var(--logo-height);
-            width: auto;
-            display: block;
-            object-fit: contain;
-        }
-        
-        .navbar-government .navbar-brand .brand-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.1;
-        }
-        
-        .navbar-government .navbar-brand .brand-text .gold-text {
-            color: var(--gold-color);
-            font-family: var(--font-heading);
-            font-size: 1.3rem;
-            font-weight: 900;
-            letter-spacing: 0.5px;
-        }
-        
-        .navbar-government .navbar-brand .brand-text .brand-sub {
-            font-size: 0.55rem;
-            font-weight: 300;
-            color: rgba(255,255,255,0.6);
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-        }
-        
-        .navbar-government .navbar-brand:hover {
-            transform: scale(1.02);
-        }
-        
-        .navbar-government .navbar-toggler {
-            border: 2px solid rgba(255,255,255,0.25);
-            padding: 6px 10px;
-            border-radius: var(--radius-sm);
-            transition: var(--transition-normal);
-            flex-shrink: 0;
-        }
-        
-        .navbar-government .navbar-toggler:hover {
-            border-color: var(--gold-color);
-            background: rgba(255,255,255,0.05);
-        }
-        
-        .navbar-government .navbar-toggler .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.85)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.5' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-            width: 26px;
-            height: 26px;
-        }
-        
-        .navbar-government .navbar-collapse {
-            flex-grow: 0;
-        }
-        
-        .navbar-government .navbar-nav {
-            display: flex;
-            align-items: center;
-            gap: 1px;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .navbar-government .nav-link {
-            color: rgba(255,255,255,0.85) !important;
-            font-family: var(--font-secondary);
-            font-weight: 600;
-            font-size: 0.78rem;
-            letter-spacing: 0.3px;
-            padding: 6px 10px !important;
-            transition: var(--transition-normal);
-            text-transform: uppercase;
-            position: relative;
-            border-radius: var(--radius-sm);
-            white-space: nowrap;
-        }
-        
-        .navbar-government .nav-link i {
-            font-size: 0.8rem;
-            margin-right: 4px;
-        }
-        
-        .navbar-government .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: var(--gold-color);
-            transition: var(--transition-normal);
-            transform: translateX(-50%);
-        }
-        
-        .navbar-government .nav-link:hover::after,
-        .navbar-government .nav-link.active::after {
-            width: 60%;
-        }
-        
-        .navbar-government .nav-link:hover,
-        .navbar-government .nav-link.active {
-            color: var(--white) !important;
-            background: rgba(212, 168, 67, 0.08);
-        }
-        
-        .navbar-government .nav-link .badge-notification {
-            background-color: var(--danger-color);
-            color: var(--white);
-            border-radius: var(--radius-full);
-            padding: 1px 7px;
-            font-size: 0.55rem;
-            font-weight: 700;
-            margin-left: 3px;
-            border: 1px solid rgba(255,255,255,0.3);
-            animation: pulse-badge 2s infinite;
-            vertical-align: top;
-        }
-        
-        @keyframes pulse-badge {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .navbar-government .nav-login {
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 4px 14px !important;
-            border-radius: var(--radius-sm);
-        }
-        
-        .navbar-government .nav-login:hover {
-            border-color: var(--gold-color);
-            background: rgba(255,255,255,0.05);
-        }
-        
-        .navbar-government .nav-register {
-            background: var(--gold-color) !important;
-            color: var(--dark-blue) !important;
-            padding: 4px 16px !important;
-            border-radius: var(--radius-sm);
-            font-weight: 700 !important;
-            border: none;
-        }
-        
-        .navbar-government .nav-register:hover {
-            background: var(--gold-dark) !important;
-            color: #fff !important;
-        }
-        
-        .navbar-government .nav-register i {
-            color: var(--dark-blue);
-        }
-        
-        .navbar-government .nav-register:hover i {
-            color: #fff;
-        }
-        
-        .navbar-government .dropdown-menu {
-            background: #fff;
-            border: none;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            padding: 6px 0;
-            min-width: 210px;
-            margin-top: 6px;
-            border-top: 3px solid var(--gold-color);
-        }
-        
-        .navbar-government .dropdown-menu .dropdown-item {
-            font-family: var(--font-secondary);
-            font-weight: 500;
-            font-size: 0.85rem;
-            color: var(--gray-700);
-            padding: 6px 18px;
-            transition: 0.2s ease;
-            border-left: 3px solid transparent;
-        }
-        
-        .navbar-government .dropdown-menu .dropdown-item:hover {
-            background: var(--cream-color);
-            color: var(--gold-color);
-            border-left-color: var(--gold-color);
-        }
-        
-        .navbar-government .dropdown-menu .dropdown-item i {
-            width: 20px;
-            text-align: center;
-            color: var(--gold-color);
-        }
-        
-        .navbar-government .dropdown-menu .dropdown-divider {
-            margin: 4px 0;
-            border-color: var(--gray-200);
-        }
-        
-        .navbar-government .dropdown-menu .dropdown-item.text-danger {
-            color: var(--danger-color) !important;
-        }
-        
-        .navbar-government .dropdown-menu .dropdown-item.text-danger:hover {
-            background: #fbe9e7;
-            color: var(--danger-color) !important;
-            border-left-color: var(--danger-color);
-        }
-        
-        .navbar-government .dropdown-toggle::after {
-            border-top-color: rgba(255,255,255,0.5);
-            margin-left: 4px;
-        }
-        
-        @media (max-width: 991.98px) {
-            .navbar-government {
-                min-height: 62px;
-                padding: 4px 0;
-            }
-            
-            .navbar-government .navbar-collapse {
-                flex-grow: 1;
-                width: 100%;
-                background: rgba(10, 26, 42, 0.98);
-                backdrop-filter: blur(10px);
-                border-radius: var(--radius-md);
-                margin-top: 8px;
-                padding: 10px 12px;
-                max-height: 80vh;
-                overflow-y: auto;
-            }
-            
-            .navbar-government .navbar-nav {
-                flex-direction: column;
-                align-items: stretch;
-                width: 100%;
-                gap: 0;
-            }
-            
-            .navbar-government .nav-link {
-                padding: 10px 14px !important;
-                border-bottom: 1px solid rgba(255,255,255,0.04);
-                width: 100%;
-                text-align: left;
-                font-size: 0.85rem;
-                border-radius: var(--radius-sm);
-            }
-            
-            .navbar-government .nav-link::after {
-                display: none;
-            }
-            
-            .navbar-government .nav-link:hover,
-            .navbar-government .nav-link.active {
-                background: rgba(212, 168, 67, 0.08);
-            }
-            
-            .navbar-government .nav-login {
-                border: 1px solid rgba(255,255,255,0.15);
-                text-align: center;
-                margin-top: 4px;
-                padding: 10px 14px !important;
-            }
-            
-            .navbar-government .nav-register {
-                background: var(--gold-color) !important;
-                color: var(--dark-blue) !important;
-                text-align: center;
-                margin-top: 4px;
-                padding: 10px 14px !important;
-                border-radius: var(--radius-sm);
-            }
-            
-            .navbar-government .nav-register:hover {
-                background: var(--gold-dark) !important;
-                color: #fff !important;
-            }
-            
-            .navbar-government .dropdown-menu {
-                background: rgba(255,255,255,0.04);
-                border: none;
-                box-shadow: none;
-                padding-left: 20px;
-                border-top: none;
-                margin-top: 0;
-                border-radius: 0;
-                width: 100%;
-            }
-            
-            .navbar-government .dropdown-menu .dropdown-item {
-                color: rgba(255,255,255,0.8);
-                padding: 6px 14px;
-                border-left: 2px solid transparent;
-                font-size: 0.8rem;
-            }
-            
-            .navbar-government .dropdown-menu .dropdown-item:hover {
-                background: rgba(255,255,255,0.04);
-                color: var(--gold-color);
-                border-left-color: var(--gold-color);
-            }
-            
-            .navbar-government .dropdown-menu .dropdown-divider {
-                border-color: rgba(255,255,255,0.06);
-            }
-            
-            .navbar-government .dropdown-toggle::after {
-                float: right;
-                margin-top: 8px;
-            }
-            
-            .navbar-government .dropdown-menu .dropdown-item.text-danger {
-                color: #e74c3c !important;
-            }
-            
-            .navbar-government .dropdown-menu .dropdown-item.text-danger:hover {
-                background: rgba(231, 76, 60, 0.1);
-                color: #e74c3c !important;
-            }
-        }
-        
-        @media (max-width: 575.98px) {
-            .navbar-government .navbar-brand .brand-logo {
-                height: var(--logo-height-mobile);
-            }
-            
-            .navbar-government .navbar-brand .brand-text .gold-text {
-                font-size: 1rem;
-            }
-            
-            .navbar-government .navbar-brand .brand-text .brand-sub {
-                font-size: 0.45rem;
-                letter-spacing: 0.5px;
-            }
-            
-            .navbar-government .navbar-toggler .navbar-toggler-icon {
-                width: 22px;
-                height: 22px;
-            }
-            
-            .navbar-government .nav-link {
-                font-size: 0.8rem;
-                padding: 8px 12px !important;
-            }
-            
-            .navbar-government .navbar-collapse {
-                padding: 8px 8px;
-            }
-        }
+   5. NAVBAR - LEAN VERSION
+   ============================================================ */
+
+.navbar-government {
+    background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-color) 50%, var(--navy-blue) 100%);
+    border-bottom: 3px solid var(--gold-color);
+    padding: 4px 0;
+    box-shadow: var(--shadow-lg);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-fixed);
+    transition: var(--transition-normal);
+    min-height: 62px;
+}
+
+.navbar-government .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+}
+
+.navbar-government .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.navbar-government .navbar-brand .brand-logo {
+    height: var(--logo-height);
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+
+.navbar-government .navbar-brand .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.navbar-government .navbar-brand .brand-text .gold-text {
+    color: var(--gold-color);
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+}
+
+.navbar-government .navbar-brand .brand-text .brand-sub {
+    font-size: 0.5rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.navbar-government .navbar-brand:hover {
+    transform: scale(1.02);
+}
+
+.navbar-government .navbar-toggler {
+    border: 2px solid rgba(255,255,255,0.2);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-normal);
+    flex-shrink: 0;
+}
+
+.navbar-government .navbar-toggler:hover {
+    border-color: var(--gold-color);
+    background: rgba(255,255,255,0.05);
+}
+
+.navbar-government .navbar-toggler .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.85)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.5' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    width: 24px;
+    height: 24px;
+}
+
+.navbar-government .navbar-collapse {
+    flex-grow: 0;
+}
+
+.navbar-government .navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-government .nav-link {
+    color: rgba(255,255,255,0.85) !important;
+    font-family: var(--font-secondary);
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.2px;
+    padding: 4px 9px !important;
+    transition: var(--transition-normal);
+    text-transform: uppercase;
+    position: relative;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+
+.navbar-government .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 1px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--gold-color);
+    transition: var(--transition-normal);
+    transform: translateX(-50%);
+}
+
+.navbar-government .nav-link:hover::after,
+.navbar-government .nav-link.active::after {
+    width: 50%;
+}
+
+.navbar-government .nav-link:hover,
+.navbar-government .nav-link.active {
+    color: var(--white) !important;
+    background: rgba(212, 168, 67, 0.06);
+}
+
+.navbar-government .nav-link .badge-notification {
+    background-color: var(--danger-color);
+    color: var(--white);
+    border-radius: var(--radius-full);
+    padding: 1px 6px;
+    font-size: 0.5rem;
+    font-weight: 700;
+    margin-left: 2px;
+    border: 1px solid rgba(255,255,255,0.3);
+    animation: pulse-badge 2s infinite;
+    vertical-align: top;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.navbar-government .nav-login {
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 3px 12px !important;
+    border-radius: var(--radius-sm);
+}
+
+.navbar-government .nav-login:hover {
+    border-color: var(--gold-color);
+    background: rgba(255,255,255,0.05);
+}
+
+.navbar-government .nav-register {
+    background: var(--gold-color) !important;
+    color: var(--dark-blue) !important;
+    padding: 3px 14px !important;
+    border-radius: var(--radius-sm);
+    font-weight: 700 !important;
+    border: none;
+}
+
+.navbar-government .nav-register:hover {
+    background: var(--gold-dark) !important;
+    color: #fff !important;
+}
+
+.navbar-government .dropdown-menu {
+    background: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 4px 0;
+    min-width: 190px;
+    margin-top: 4px;
+    border-top: 3px solid var(--gold-color);
+}
+
+.navbar-government .dropdown-menu .dropdown-item {
+    font-family: var(--font-secondary);
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--gray-700);
+    padding: 5px 16px;
+    transition: 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.navbar-government .dropdown-menu .dropdown-item:hover {
+    background: var(--cream-color);
+    color: var(--gold-color);
+    border-left-color: var(--gold-color);
+}
+
+.navbar-government .dropdown-menu .dropdown-divider {
+    margin: 3px 0;
+    border-color: var(--gray-200);
+}
+
+.navbar-government .dropdown-menu .dropdown-item.text-danger {
+    color: var(--danger-color) !important;
+}
+
+.navbar-government .dropdown-menu .dropdown-item.text-danger:hover {
+    background: #fbe9e7;
+    color: var(--danger-color) !important;
+    border-left-color: var(--danger-color);
+}
+
+.navbar-government .dropdown-toggle::after {
+    border-top-color: rgba(255,255,255,0.4);
+    margin-left: 3px;
+    font-size: 0.6rem;
+}
+
+/* Mobile */
+@media (max-width: 991.98px) {
+    .navbar-government {
+        min-height: 56px;
+        padding: 3px 0;
+    }
+    
+    .navbar-government .navbar-collapse {
+        flex-grow: 1;
+        width: 100%;
+        background: rgba(10, 26, 42, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius-md);
+        margin-top: 6px;
+        padding: 8px 10px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .navbar-government .navbar-nav {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 0;
+    }
+    
+    .navbar-government .nav-link {
+        padding: 8px 12px !important;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        width: 100%;
+        text-align: left;
+        font-size: 0.8rem;
+        border-radius: var(--radius-sm);
+    }
+    
+    .navbar-government .nav-link::after {
+        display: none;
+    }
+    
+    .navbar-government .nav-link:hover,
+    .navbar-government .nav-link.active {
+        background: rgba(212, 168, 67, 0.08);
+    }
+    
+    .navbar-government .nav-login {
+        border: 1px solid rgba(255,255,255,0.12);
+        text-align: center;
+        margin-top: 3px;
+        padding: 8px 12px !important;
+    }
+    
+    .navbar-government .nav-register {
+        background: var(--gold-color) !important;
+        color: var(--dark-blue) !important;
+        text-align: center;
+        margin-top: 3px;
+        padding: 8px 12px !important;
+        border-radius: var(--radius-sm);
+    }
+    
+    .navbar-government .nav-register:hover {
+        background: var(--gold-dark) !important;
+        color: #fff !important;
+    }
+    
+    .navbar-government .dropdown-menu {
+        background: rgba(255,255,255,0.04);
+        border: none;
+        box-shadow: none;
+        padding-left: 16px;
+        border-top: none;
+        margin-top: 0;
+        border-radius: 0;
+        width: 100%;
+    }
+    
+    .navbar-government .dropdown-menu .dropdown-item {
+        color: rgba(255,255,255,0.8);
+        padding: 5px 12px;
+        border-left: 2px solid transparent;
+        font-size: 0.75rem;
+    }
+    
+    .navbar-government .dropdown-menu .dropdown-item:hover {
+        background: rgba(255,255,255,0.04);
+        color: var(--gold-color);
+        border-left-color: var(--gold-color);
+    }
+    
+    .navbar-government .dropdown-menu .dropdown-divider {
+        border-color: rgba(255,255,255,0.06);
+    }
+    
+    .navbar-government .dropdown-toggle::after {
+        float: right;
+        margin-top: 6px;
+    }
+    
+    .navbar-government .dropdown-menu .dropdown-item.text-danger {
+        color: #e74c3c !important;
+    }
+    
+    .navbar-government .dropdown-menu .dropdown-item.text-danger:hover {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .navbar-government .navbar-brand .brand-logo {
+        height: var(--logo-height-mobile);
+    }
+    
+    .navbar-government .navbar-brand .brand-text .gold-text {
+        font-size: 0.95rem;
+    }
+    
+    .navbar-government .navbar-brand .brand-text .brand-sub {
+        font-size: 0.4rem;
+        letter-spacing: 0.3px;
+    }
+    
+    .navbar-government .navbar-toggler .navbar-toggler-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .navbar-government .nav-link {
+        font-size: 0.75rem;
+        padding: 6px 10px !important;
+    }
+    
+    .navbar-government .navbar-collapse {
+        padding: 6px 6px;
+    }
+}
 
         /* ============================================================
            6. BUTTONS
@@ -3922,102 +3905,83 @@
     <a class="skip-link" href="#main-content">Skip to main content</a>
     
     <!-- ============================================================
-    NAVBAR - FIXED VERSION
-    ============================================================ -->
-    <nav class="navbar navbar-expand-lg navbar-government" role="navigation" aria-label="Main navigation">
-        <div class="container">
-            <!-- Brand -->
-            <a class="navbar-brand" href="{% url 'home' %}" aria-label="KPSN Home">
-                <img src="{% static 'images/kpsn_logo.png' %}" alt="KPSN Logo" class="brand-logo">
-                <div class="brand-text">
-                    <span class="gold-text">KPSN</span>
-                    <span class="brand-sub">Kenya Postgraduate Scholars Network</span>
-                </div>
-            </a>
-            
-            <!-- Toggler -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <!-- Navigation -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
-                            <i class="fas fa-home" aria-hidden="true"></i> Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'communities' in request.path %}active{% endif %}" href="{% url 'communities:list' %}">
-                            <i class="fas fa-users" aria-hidden="true"></i> Communities
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'opportunities' in request.path %}active{% endif %}" href="{% url 'opportunities:list' %}">
-                            <i class="fas fa-briefcase" aria-hidden="true"></i> Opportunities
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'events' in request.path %}active{% endif %}" href="{% url 'events:list' %}">
-                            <i class="fas fa-calendar-alt" aria-hidden="true"></i> Events
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'resources' in request.path %}active{% endif %}" href="{% url 'resources:list' %}">
-                            <i class="fas fa-book" aria-hidden="true"></i> Resources
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'forums' in request.path %}active{% endif %}" href="{% url 'forums:list' %}">
-                            <i class="fas fa-comments" aria-hidden="true"></i> Forums
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'members:directory' in request.path %}active{% endif %}" href="{% url 'members:directory' %}">
-                            <i class="fas fa-address-book" aria-hidden="true"></i> Directory
-                        </a>
-                    </li>
-                    
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle" aria-hidden="true"></i>
-                                {{ user.get_full_name|default:user.username|truncatechars:12 }}
-                                {% if unread_notifications_count %}
-                                    <span class="badge-notification">{{ unread_notifications_count }}</span>
-                                {% endif %}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{% url 'members:dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
-                                <li><a class="dropdown-item" href="{% url 'profiles:view' username=user.username %}"><i class="fas fa-user me-2"></i> Profile</a></li>
-                                <li><a class="dropdown-item" href="{% url 'members:edit_profile' %}"><i class="fas fa-edit me-2"></i> Edit Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'notifications:list' %}"><i class="fas fa-bell me-2"></i> Notifications {% if unread_notifications_count %}<span class="badge bg-danger ms-2">{{ unread_notifications_count }}</span>{% endif %}</a></li>
-                                <li><a class="dropdown-item" href="{% url 'events:my_events' %}"><i class="fas fa-calendar-check me-2"></i> My Events</a></li>
-                                <li><a class="dropdown-item" href="{% url 'opportunities:my_applications' %}"><i class="fas fa-file-alt me-2"></i> My Applications</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link nav-login" href="{% url 'accounts:login' %}">
-                                <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Login
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-register" href="{% url 'accounts:register' %}">
-                                <i class="fas fa-user-plus" aria-hidden="true"></i> Register
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
+NAVBAR - LEAN VERSION (NO ICONS)
+============================================================ -->
+<nav class="navbar navbar-expand-lg navbar-government" role="navigation" aria-label="Main navigation">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand" href="{% url 'home' %}" aria-label="KPSN Home">
+            <img src="{% static 'images/kpsn_logo.png' %}" alt="KPSN Logo" class="brand-logo">
+            <div class="brand-text">
+                <span class="gold-text">KPSN</span>
+                <span class="brand-sub">Kenya Postgraduate Scholars Network</span>
             </div>
+        </a>
+        
+        <!-- Toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Navigation - Lean & Clean -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'communities' in request.path %}active{% endif %}" href="{% url 'communities:list' %}">Communities</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'opportunities' in request.path %}active{% endif %}" href="{% url 'opportunities:list' %}">Opportunities</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'events' in request.path %}active{% endif %}" href="{% url 'events:list' %}">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'resources' in request.path %}active{% endif %}" href="{% url 'resources:list' %}">Resources</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'forums' in request.path %}active{% endif %}" href="{% url 'forums:list' %}">Forums</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'members:directory' in request.path %}active{% endif %}" href="{% url 'members:directory' %}">Directory</a>
+                </li>
+                
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.get_full_name|default:user.username|truncatechars:12 }}
+                            {% if unread_notifications_count %}
+                                <span class="badge-notification">{{ unread_notifications_count }}</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{% url 'members:dashboard' %}">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profiles:view' username=user.username %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'members:edit_profile' %}">Edit Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'notifications:list' %}">Notifications {% if unread_notifications_count %}<span class="badge bg-danger ms-2">{{ unread_notifications_count }}</span>{% endif %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'events:my_events' %}">My Events</a></li>
+                            <li><a class="dropdown-item" href="{% url 'opportunities:my_applications' %}">My Applications</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link nav-login" href="{% url 'accounts:login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-register" href="{% url 'accounts:register' %}">Register</a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
     
     <!-- ============================================================
     MESSAGES
