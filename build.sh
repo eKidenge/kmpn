@@ -33,13 +33,13 @@ User.objects.filter(email='admin@kmpn.org').delete()
 # Create superuser
 User.objects.create_superuser(
     username='admin',
-    email='admin@kmpn.org',
+    email='admin@kpsn.org',
     password='Admin@123'
 )
 
 print("Superuser created")
 print("   Username: admin")
-print("   Email: admin@kmpn.org")
+print("   Email: admin@kpsn.org")
 print("   Password: Admin@123")
 
 # Optional demo user
@@ -47,13 +47,13 @@ User.objects.filter(email='member@kmpn.org').delete()
 
 User.objects.create_user(
     username='member',
-    email='member@kmpn.org',
+    email='member@kpsn.org',
     password='Member@123'
 )
 
 print("Demo user created")
 print("   Username: member")
-print("   Email: member@kmpn.org")
+print("   Email: member@kpsn.org")
 print("   Password: Member@123")
 EOF
 
