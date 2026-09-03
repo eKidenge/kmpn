@@ -178,7 +178,7 @@ def create_users():
     if not User.objects.filter(username='admin').exists():
         admin = User.objects.create_superuser(
             username='admin',
-            email='admin@kmpn.org',
+            email='admin@kpsn.org',
             password='admin123',
             first_name='System',
             last_name='Administrator',
@@ -194,7 +194,7 @@ def create_users():
     
     # Create executives
     for i in range(5):
-        email = f"executive{i+1}@kmpn.org"
+        email = f"executive{i+1}@kpsn.org"
         if not User.objects.filter(email=email).exists():
             user = User.objects.create_user(
                 username=f"executive_{i+1}",
@@ -219,7 +219,7 @@ def create_users():
     
     # Create moderators
     for i in range(10):
-        email = f"moderator{i+1}@kmpn.org"
+        email = f"moderator{i+1}@kpsn.org"
         if not User.objects.filter(email=email).exists():
             user = User.objects.create_user(
                 username=f"moderator_{i+1}",
