@@ -387,11 +387,11 @@ class AdminUserEditForm(forms.ModelForm):
 
 
 # ============================================================
-# USER LOGIN FORM - UPDATED (FIXED VERSION)
+# USER LOGIN FORM - SIMPLIFIED (LESS RESTRICTIVE)
 # ============================================================
 
 class UserLoginForm(AuthenticationForm):
-    """Custom login form that supports both email and username login"""
+    """Simplified login form - allows all active users to login"""
     
     username = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -443,31 +443,9 @@ class UserLoginForm(AuthenticationForm):
                     code='invalid_login',
                 )
             else:
+                # Let Django's built-in confirm_login_allowed handle it
+                # This only checks if user.is_active is True
                 self.confirm_login_allowed(self.user_cache)
-                
-                # Check for locked account
-                if self.user_cache.is_locked():
-                    raise ValidationError(
-                        'Your account is temporarily locked due to multiple failed login attempts. Please try again later.'
-                    )
-                
-                # Check registration status
-                if self.user_cache.registration_status == 'rejected':
-                    raise ValidationError(
-                        'Your registration application was rejected. Please contact support.'
-                    )
-                
-                if self.user_cache.registration_status == 'pending':
-                    raise ValidationError(
-                        'Your registration is pending review. You will receive an email once approved.'
-                    )
-                
-                if not self.user_cache.email_verified:
-                    # If user is auto-verified (is_verified=True), allow login
-                    if not self.user_cache.is_verified:
-                        raise ValidationError(
-                            'Please verify your email before logging in. Check your inbox for the verification link.'
-                        )
         
         return self.cleaned_data
 
