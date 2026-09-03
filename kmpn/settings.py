@@ -32,6 +32,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-klhv+hv&ax8ryewe6*4*(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
+
 # ============================================================
 # ALLOWED HOSTS - ADD YOUR RENDER URL HERE
 # ============================================================
@@ -126,11 +127,28 @@ WSGI_APPLICATION = 'kmpn.wsgi.application'
 
 
 # ============================================================
-# DATABASE CONFIGURATION
+# DATABASE CONFIGURATION - SQLITE (with optional PostgreSQL)
 # ============================================================
 
-# Use PostgreSQL in production with Render's DATABASE_URL
-if os.environ.get('DATABASE_URL'):
+# Determine if we're on Render
+IS_RENDER = os.environ.get('RENDER', False)
+
+# Check if we should force SQLite
+FORCE_SQLITE = os.environ.get('FORCE_SQLITE', 'False') == 'True'
+
+# Determine database path for SQLite
+if IS_RENDER and not FORCE_SQLITE:
+    # On Render, use the mounted disk if available for SQLite
+    DATA_DIR = Path('/opt/render/project/src/data')
+    DATA_DIR.mkdir(exist_ok=True)
+    SQLITE_DB_PATH = DATA_DIR / 'db.sqlite3'
+else:
+    # Local development or forced SQLite
+    SQLITE_DB_PATH = BASE_DIR / 'db.sqlite3'
+
+# Database configuration
+if os.environ.get('DATABASE_URL') and not FORCE_SQLITE:
+    # Use PostgreSQL from DATABASE_URL
     DATABASES = {
         'default': dj_database_url.config(
             default=os.environ.get('DATABASE_URL'),
@@ -139,14 +157,14 @@ if os.environ.get('DATABASE_URL'):
         )
     }
 else:
+    # Use SQLite
     DATABASES = {
         'default': {
-            'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3'),
-            'NAME': os.environ.get('DB_NAME', BASE_DIR / 'db.sqlite3'),
-            'USER': os.environ.get('DB_USER', ''),
-            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-            'HOST': os.environ.get('DB_HOST', ''),
-            'PORT': os.environ.get('DB_PORT', ''),
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': SQLITE_DB_PATH,
+            'OPTIONS': {
+                'timeout': 20,  # Handle concurrent writes
+            }
         }
     }
 
@@ -509,16 +527,15 @@ if not LOGS_DIR.exists():
 # RENDER.COM SPECIFIC SETTINGS
 # ============================================================
 
-# Detect if running on Render
-IS_RENDER = os.environ.get('RENDER', False)
-
+# Detect if running on Render (already defined above, but keep for clarity)
 if IS_RENDER:
     # Disable HTTPS redirect on Render since they handle it
     SECURE_SSL_REDIRECT = False
     # Use Render's provided host
     ALLOWED_HOSTS.append('.onrender.com')
-    # Use the database URL provided by Render
-    if os.environ.get('DATABASE_URL'):
+    
+    # If we're using PostgreSQL via DATABASE_URL (and not forcing SQLite)
+    if os.environ.get('DATABASE_URL') and not FORCE_SQLITE:
         DATABASES['default'] = dj_database_url.config(
             default=os.environ.get('DATABASE_URL'),
             conn_max_age=600,
