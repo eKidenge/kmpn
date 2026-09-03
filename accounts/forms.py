@@ -235,10 +235,22 @@ class RoleBasedRegistrationForm(UserCreationForm):
         user.research_interests = self.cleaned_data.get('research_interests')
         user.research_keywords = self.cleaned_data.get('research_keywords', [])
         
-        # Set role to prospective_member (will be approved by admin)
-        user.role = 'prospective_member'
-        user.registration_status = 'pending'
-        user.is_active = False
+        # ============================================================
+        # AUTO-APPROVE USERS - FIX FOR FUTURE USERS
+        # ============================================================
+        # OLD (Restrictive - causes login issues):
+        # user.role = 'prospective_member'
+        # user.registration_status = 'pending'
+        # user.is_active = False
+        
+        # NEW (Auto-approve):
+        user.role = self.cleaned_data['role']  # Use the role they selected
+        user.registration_status = 'approved'   # Auto-approved!
+        user.is_active = True                   # Active immediately!
+        user.is_verified = True                 # Verified immediately!
+        user.email_verified = True              # Email verified immediately!
+        user.is_active_member = True            # Active member immediately!
+        # ============================================================
         
         user.notification_preferences = {
             'email_notifications': True,
@@ -252,14 +264,14 @@ class RoleBasedRegistrationForm(UserCreationForm):
         if commit:
             user.save()
             
-            # Create registration application with requested role
+            # Create registration application for record keeping (auto-approved)
             RegistrationApplication.objects.create(
                 user=user,
                 requested_role=self.cleaned_data['role'],
                 motivation=self.cleaned_data.get('motivation', ''),
                 experience=self.cleaned_data.get('experience', ''),
                 cv=self.cleaned_data.get('cv'),
-                status=RegistrationApplication.ApplicationStatus.PENDING
+                status=RegistrationApplication.ApplicationStatus.APPROVED  # Auto-approved!
             )
         
         return user
@@ -503,7 +515,7 @@ class UserUpdateForm(forms.ModelForm):
 
 
 # ============================================================
-# ORIGINAL REGISTRATION FORM (KEPT FOR COMPATIBILITY)
+# ORIGINAL REGISTRATION FORM (KEPT FOR COMPATIBILITY) - UPDATED
 # ============================================================
 
 class UserRegistrationForm(UserCreationForm):
@@ -610,7 +622,16 @@ class UserRegistrationForm(UserCreationForm):
         user.institution = self.cleaned_data.get('institution')
         user.academic_level = self.cleaned_data.get('academic_level')
         user.research_interests = self.cleaned_data.get('research_interests')
-        user.is_active = False
+        
+        # ============================================================
+        # AUTO-APPROVE - FIX FOR FUTURE USERS
+        # ============================================================
+        user.is_active = True
+        user.is_verified = True
+        user.email_verified = True
+        user.registration_status = 'approved'
+        user.is_active_member = True
+        # ============================================================
         
         if commit:
             user.save()
