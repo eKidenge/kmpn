@@ -3076,3 +3076,23 @@ WARNING 2026-08-07 15:39:34,067 log 2704 6868 Not Found: /favicon.ico
 WARNING 2026-08-07 15:39:34,569 log 2704 6868 "GET /favicon.ico HTTP/1.1" 404 5301
 WARNING 2026-09-03 15:44:20,366 log 10600 7504 Not Found: /favicon.ico
 WARNING 2026-09-03 15:44:20,478 log 10600 7504 "GET /favicon.ico HTTP/1.1" 404 5301
+ERROR 2026-09-03 16:52:32,868 log 9624 2608 Internal Server Error: /members/manage-verifications/
+Traceback (most recent call last):
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\CS\venv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\CS\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\CS\OneDrive\Desktop\PROJECTS\kmpn\accounts\decorators.py", line 32, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\CS\OneDrive\Desktop\PROJECTS\kmpn\members\views.py", line 260, in manage_verifications
+    return render(request, 'members/manage_verifications.html', context)
+  File "C:\Users\CS\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\CS\venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: members/manage_verifications.html
+ERROR 2026-09-03 16:52:32,991 log 9624 2608 "GET /members/manage-verifications/ HTTP/1.1" 500 115863
