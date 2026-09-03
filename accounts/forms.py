@@ -2,6 +2,7 @@
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
+from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from .models import User, RegistrationApplication, RoleChangeRequest
@@ -386,23 +387,26 @@ class AdminUserEditForm(forms.ModelForm):
 
 
 # ============================================================
-# USER LOGIN FORM
+# USER LOGIN FORM - UPDATED (FIXED VERSION)
 # ============================================================
 
 class UserLoginForm(AuthenticationForm):
-    """Custom login form"""
+    """Custom login form that supports both email and username login"""
     
-    username = forms.EmailField(
-        widget=forms.EmailInput(attrs={
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Enter your email'
-        })
+            'placeholder': 'Enter your email or username',
+            'autofocus': True
+        }),
+        label="Email or Username"
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': 'Enter your password'
-        })
+        }),
+        label="Password"
     )
     remember_me = forms.BooleanField(
         required=False,
@@ -411,28 +415,61 @@ class UserLoginForm(AuthenticationForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['username'].label = 'Email'
+        self.fields['username'].label = 'Email or Username'
     
     def clean(self):
-        cleaned_data = super().clean()
-        username = cleaned_data.get('username')
-        password = cleaned_data.get('password')
+        username_or_email = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
         
-        if username and password:
+        if username_or_email and password:
+            # Try to find user by email first
             try:
-                user = User.objects.get(email=username)
-                if user.is_locked():
-                    raise ValidationError('Your account is temporarily locked due to multiple failed login attempts. Please try again later.')
-                if user.registration_status == 'rejected':
-                    raise ValidationError('Your registration application was rejected. Please contact support.')
-                if user.registration_status == 'pending':
-                    raise ValidationError('Your registration is pending review. You will receive an email once approved.')
-                if not user.email_verified:
-                    raise ValidationError('Please verify your email before logging in. Check your inbox for the verification link.')
+                user = User.objects.get(email=username_or_email)
+                username = user.username
             except User.DoesNotExist:
-                pass
+                # If not found by email, use the input as username
+                username = username_or_email
+            
+            # Authenticate with the resolved username
+            self.user_cache = authenticate(
+                self.request, 
+                username=username, 
+                password=password
+            )
+            
+            if self.user_cache is None:
+                raise ValidationError(
+                    "Invalid email/username or password. Please try again.",
+                    code='invalid_login',
+                )
+            else:
+                self.confirm_login_allowed(self.user_cache)
+                
+                # Check for locked account
+                if self.user_cache.is_locked():
+                    raise ValidationError(
+                        'Your account is temporarily locked due to multiple failed login attempts. Please try again later.'
+                    )
+                
+                # Check registration status
+                if self.user_cache.registration_status == 'rejected':
+                    raise ValidationError(
+                        'Your registration application was rejected. Please contact support.'
+                    )
+                
+                if self.user_cache.registration_status == 'pending':
+                    raise ValidationError(
+                        'Your registration is pending review. You will receive an email once approved.'
+                    )
+                
+                if not self.user_cache.email_verified:
+                    # If user is auto-verified (is_verified=True), allow login
+                    if not self.user_cache.is_verified:
+                        raise ValidationError(
+                            'Please verify your email before logging in. Check your inbox for the verification link.'
+                        )
         
-        return cleaned_data
+        return self.cleaned_data
 
 
 # ============================================================
